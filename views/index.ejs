@@ -1,11 +1,20 @@
-<!DOCTYPE html>
-
-<html id="conditionizr" lang="cn"  style="">
+<!doctype html>
+<html lang="en" ng-app="willGiveApp">
 <head>
+    <meta charset="utf-8">
+    <title>WillGive</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="angularJs/willGiveApp.js"></script>
 </head>
-
 <body>
-<p>WelCome to WillGive</p>
-</body>
 
+<div class="view-container">
+    <div ng-view class="view-frame"></div>
+    Welcome to WillGive
+</div>
+
+</body>
 </html>

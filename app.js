@@ -1,14 +1,12 @@
 
-/**
- * Module dependencies.
- */
-
+///////////////////////////////////////////////////////////////////////////
+// Module dependencies
+///////////////////////////////////////////////////////////////////////////
 var express = require('express');
 var http = require('http');
 var https = require('https');
 var path = require('path');
 var dateFormat = require('dateformat');
-
 var passport = require('passport');
 var fpass = require('passport-facebook').Strategy;
 var LocalStrategy = require('passport-local').Strategy;
@@ -18,10 +16,11 @@ var flash = require('connect-flash');
 var constants = require('./lib/common/constants');
 
 
+
+///////////////////////////////////////////////////////////////////////////
+// Environments Settings
+///////////////////////////////////////////////////////////////////////////
 var app = express();
-
-
-
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
@@ -38,9 +37,9 @@ app.use(flash());
 app.use(express.methodOverride());
 
 
-/*********************************************************
- *Log4js configuration
- *********************************************************/
+///////////////////////////////////////////////////////////////////////////
+// Log4js configuration
+///////////////////////////////////////////////////////////////////////////
 var log4js = require('log4js');
 log4js.configure({
     appenders: [
@@ -65,7 +64,9 @@ exports.logger=function(name){
     return logger;
 }
 
-
+///////////////////////////////////////////////////////////////////////////
+// Router / Middleware configuration
+///////////////////////////////////////////////////////////////////////////
 app.use(app.router);
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -86,7 +87,9 @@ var serverOptions = {
     cert: fs.readFileSync('./my_cert.pem')
 };
 
-//Home page
+///////////////////////////////////////////////////////////////////////////
+// Page Routing
+///////////////////////////////////////////////////////////////////////////
 app.get('/', function (req,res){
     if(req.user) {
         console.log(req.user);
@@ -97,9 +100,12 @@ app.get('/', function (req,res){
 });
 
 
+///////////////////////////////////////////////////////////////////////////
+// Start Server
+///////////////////////////////////////////////////////////////////////////
 https.createServer(serverOptions,app).listen(app.get('port'), function(){
-                              console.log('Express server listening on port ' + app.get('port'));
-                              });
+    console.log('Express server listening on port ' + app.get('port'));
+});
 
 
 
