@@ -21,6 +21,7 @@
     "passport-facebook":"*",
     "connect-flash":"*",
     "log4js":"*",
+    "qrcode":"*",
     "request":"*"
   }
 }
