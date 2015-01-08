@@ -10,27 +10,59 @@
     <script src="jquery/dist/jquery.js"></script>
     <script src="angular/angular.js"></script>
     <script src="angularJs/willGiveApp.js"></script>
+    <!-- Go to www.addthis.com/dashboard to customize your tools -->
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-54ade3b442958c1a" async="async"></script>
+
+    <%include layout/navbar.ejs%>
 </head>
 <body>
 
-    <div class="view-container">
-        <div ng-view class="view-frame"></div>
-        Welcome to WillGive
-    </div>
+
     <div class="container">
-        <form class="form-signin">
-            <h2 class="form-signin-heading">Please sign in</h2>
-            <label for="inputEmail" class="sr-only">Email address</label>
-            <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-            <label for="inputPassword" class="sr-only">Password</label>
-            <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" value="remember-me"> Remember me
-                </label>
+        <div class="hero-unit">
+            <h1 class="text-center"> Welcome to WillGive </h1>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div id="carousel-example-generic" class="carousel slide" data-interval="3000" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                        <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                        <li data-target="#carousel-example-generic" data-slide-to="1" class=""></li>
+                        <li data-target="#carousel-example-generic" data-slide-to="2" class=""></li>
+                    </ol>
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <img alt="First slide" src="resources/images/donateNow_1.png">
+                        </div>
+                        <div class="item">
+                            <img alt="Second slide" src="resources/images/donateNow_2.jpg">
+                        </div>
+                        <div class="item">
+                            <img alt="Third slide" src="resources/images/donateNow_3.jpeg">
+                        </div>
+                    </div>
+
+
+                    <!-- Controls -->
+                    <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </a>
+                    <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </a>
+                </div> <!-- Carousel -->
+
+                </hr>
             </div>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-        </form>
+        </div>
+
+
     </div>
+    <%include layout/footer.ejs%>
+
 </body>
+
 </html>

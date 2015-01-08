@@ -11,6 +11,7 @@ var passport = require('passport');
 var fpass = require('passport-facebook').Strategy;
 var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
+var qr = require('qr-image');
 
 //User's code in lib folder
 var constants = require('./lib/common/constants');
@@ -96,8 +97,25 @@ app.get('/', function (req,res){
         console.log(req.user);
         res.render('index',{provider:req.user.provider,customerId:req.user.customerId, randomKey:req.user.randomKey,firstName: req.user.firstName, lastName: req.user.lastName});
     } else {
+        var code = qr.image("abcd", { type: 'png' });
         res.render('index');
+        //res.type('png');
+        //var svg_string = qr.imageSync('I love QR!', { type: 'svg' });
+        //save qrcode to local file
+        //code.pipe(fs.createWriteStream('i_love_qr.png'));
+        //code.pipe(res);
     }
+
+});
+
+app.get('/contactus', function (req,res){
+    res.render('contactUs');
+});
+app.get('/aboutus', function (req,res){
+    res.render('aboutUs');
+});
+app.get('/login', function (req,res){
+    res.render('login');
 });
 
 
