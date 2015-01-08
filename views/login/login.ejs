@@ -11,11 +11,11 @@
     <script src="angular/angular.js"></script>
     <script src="angularJs/willGiveApp.js"></script>
 
-    <%include layout/navbar.ejs%>
+    <%include ../layout/navbar.ejs%>
 </head>
 <body>
 
-<form class="form-signin col-xs-4 col-xs-offset-4">
+<form class="form-signin col-xs-4 col-xs-offset-4" action="/login" method="post">
     <h2 class="form-signin-heading">Please sign in</h2>
     <label for="inputEmail" class="sr-only">Email address</label>
     <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
@@ -26,9 +26,16 @@
             <input type="checkbox" value="remember-me"> Remember me
         </label>
     </div>
+    <ul class="nobullet secondary">
+        <p class="secondary">
+            <a class="link" href="/forgotPassword">
+                Forgot your password?
+            </a>
+        </p>
+    </ul>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
 </form>
-<%include layout/footer.ejs%>
+<%include ../layout/footer.ejs%>
 
 </body>
 
