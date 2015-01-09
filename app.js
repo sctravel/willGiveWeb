@@ -125,6 +125,14 @@ app.get('/login/forgotPassword', function (req,res){
     res.render('login/forgotPassword');
 });
 
+app.get('/login/resetPassword',function(req,res){
+    var email = req.query.email;
+    var randomString = req.query.randomString;
+
+    console.warn("email:"+email+"; randomString:"+randomString);
+    res.render('/login/resetPassword',{email:email,randomString:randomString});
+})
+
 
 ///////////////////////////////////////////////////////////////////////////
 // Start Server
