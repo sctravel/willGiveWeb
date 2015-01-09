@@ -114,8 +114,15 @@ app.get('/contactus', function (req,res){
 app.get('/aboutus', function (req,res){
     res.render('aboutUs');
 });
-app.get('/login', function (req,res){
-    res.render('login');
+
+app.get('/login/signin', function (req,res){
+    res.render('login/signin');
+});
+app.get('/login/signup', function (req,res){
+    res.render('login/signup');
+});
+app.get('/login/forgotPassword', function (req,res){
+    res.render('login/forgotPassword');
 });
 
 
