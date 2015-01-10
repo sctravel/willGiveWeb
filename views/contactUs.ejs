@@ -10,45 +10,45 @@
     <script src="jquery/dist/jquery.js"></script>
     <script src="angular/angular.js"></script>
     <script src="angularJs/willGiveApp.js"></script>
-
+    <%activeMenu = "Contact"%>
     <%include layout/navbar.ejs%>
 </head>
 <body>
 <div class="container">
-    <div class="col-md-9 columns">
+    <div class="col-md-7 columns">
         <h3>Get in Touch!</h3>
         <p>We'd love to hear from you. You can either reach out to us as a whole and one of our awesome team members will get back to you, or if you have a specific question reach out to one of our staff. We love getting email all day <em>all day</em>.</p>
         <form role="form">
             <br />
             <div class="row">
                 <div class="col-md-2"><label for="name">Your Name</label></div>
-                <div class="col-md-10"><input type="text" id="name" class="form-control" placeholder="Your Name" /></div>
+                <div class="col-md-8"><input type="text" id="name" class="form-control" placeholder="Your Name" /></div>
             </div>
             <br />
             <div class="row">
                 <div class="col-md-2"><label for="email">Your Email</label></div>
-                <div class="col-md-10"><input type="email" id="email" class="form-control" placeholder="Your email" /></div>
+                <div class="col-md-8"><input type="email" id="email" class="form-control" placeholder="Your email" /></div>
             </div>
             <br />
             <div class="row">
                 <div class="col-md-2"><label>What's up?</label></div>
-                <div class="col-md-10"><textarea rows="3" class="form-control"></textarea></div>
+                <div class="col-md-8"><textarea rows="3" class="form-control"></textarea></div>
             </div>
         </form>
     </div>
 
-    <div class="col-md-3 columns">
+    <div class="col-md-4 columns">
         <h5>Map</h5>
         <!-- Clicking this placeholder fires the mapModal Reveal modal -->
         <p>
-            <a href="" data-toggle="modal" data-target="#myModal">  <iframe width="200" height="200" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.co.in/maps?f=d&amp;source=s_d&amp;saddr=USA&amp;daddr=&amp;hl=en&amp;geocode=&amp;aq=0&amp;oq=usa&amp;sll=13.045084,80.211027&amp;sspn=0.023621,0.027595&amp;mra=ls&amp;ie=UTF8&amp;ll=35.58537,0&amp;spn=108.82926,360&amp;t=m&amp;output=embed"></iframe><br />
+            <a href="" data-toggle="modal" data-target="#myModal"> <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d42988.106131295346!2d-122.12157799999995!3d47.669723999999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54900cad2000ee23%3A0x5e0390eac5d804f2!2sRedmond%2C+WA!5e0!3m2!1sen!2sus!4v1420793309460" width="500" height="400" frameborder="0" style="border:0"></iframe><br />
 
             </a><br />
             <a href="" data-toggle="modal" data-target="#myModal">View Map</a>
         </p>
         <p>
-            Address Line 1.<br />
-            Address Line 2.
+            1000 WillGive way<br />
+            Redmond, WA
         </p>
     </div>
 
@@ -61,7 +61,7 @@
                 </div>
                 <div class="modal-body">
                     <h4>Where We Are</h4>
-                    <p>  <iframe width="700" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.co.in/maps?f=d&amp;source=s_d&amp;saddr=USA&amp;daddr=&amp;hl=en&amp;geocode=&amp;aq=0&amp;oq=usa&amp;sll=13.045084,80.211027&amp;sspn=0.023621,0.027595&amp;mra=ls&amp;ie=UTF8&amp;ll=35.58537,0&amp;spn=108.82926,360&amp;t=m&amp;output=embed"></iframe><br />
+                    <p>  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d42988.106131295346!2d-122.12157799999995!3d47.669723999999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54900cad2000ee23%3A0x5e0390eac5d804f2!2sRedmond%2C+WA!5e0!3m2!1sen!2sus!4v1420793309460" width="500" height="400" frameborder="0" style="border:0"></iframe><br />
                     </p>
 
                 </div>
