@@ -89,6 +89,132 @@ var serverOptions = {
     cert: fs.readFileSync('./my_cert.pem')
 };
 
+
+///////////////////////////////////////////////////////////////////////
+// Passport - Login methods setup
+///////////////////////////////////////////////////////////////////////
+passport.use('local', new LocalStrategy(
+    function (email, password, done) {
+
+        userLogin.manualLogin(email, password, function(error,results){
+            console.dir(results);
+            if(error) {
+                return done(null, false, { message: 'Login Error. Please try again' });
+            }
+            if(results.isAuthenticated == true ) {
+                console.dir(results);
+                return done(null, {provider : results.provider, userId : results.userId, sessionId: results.sessionId,
+                    firstName: results.firstName, lastName: results.lastName} );
+            } else {
+                return done(null, false, { message: results.errorMessage });
+            }
+        });
+    }
+));
+
+//WillGive app under XiTu's FB account
+passport.use(new fpass({
+        clientID:'420297851460293',//'323966477728028',
+        clientSecret:'660a1a721669c9daa0244faa45113b21',
+        callbackURL:'/auth/facebook/callback'
+    },
+    function(accessToken, refreshToken, fbUserData, done){
+        console.dir(fbUserData);
+        console.dir(accessToken);
+        console.dir(refreshToken);
+        userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
+            console.dir(results);
+            if(err) {
+                return done(null, false, { message: 'Internal Error.' });
+            }
+            if(results.isAuthenticated == true ) {
+                console.dir(results);
+                return done(null,{provider:results.provider,customerId :results.customerId, randomKey: results.randomKey,
+                    firstName: results.firstName, lastName: results.lastName});
+            } else {
+                return done(null, false, { message: results.errorMessage });
+            }
+        })
+
+    }
+));
+
+passport.serializeUser(function (user, done) {//保存user对象
+    done(null, {provider:user.provider, userId:user.userId, sessionId:user.sessionId,
+        firstName: user.firstName, lastName: user.lastName});//可以通过数据库方式操作
+});
+
+passport.deserializeUser(function (user, done) {//删除user对象
+    done(null, {provider:user.provider, userId:user.userId, sessionId:user.sessionId,
+        firstName: user.firstName, lastName: user.lastName} );//可以通过数据库方式操作
+});
+
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        console.dir(req.user);
+        return next();
+    }
+
+    res.redirect("/login/signin");
+}
+
+
+app.post('/login/signin',
+    passport.authenticate('local',
+        {
+            failureRedirect: '/login/signin',
+            failureFlash: true }),
+    function(req,res){
+        console.dir(req.body);
+        if(req.body.rememberMe=='on')
+        {
+            req.session.cookie.maxAge = 7*24*60*60*1000;
+            console.log("set cookie maxAge to 1 week");
+        }
+        console.dir(req.session);
+        if(req.session.lastPage) {
+            res.redirect(req.session.lastPage);
+        } else {
+            res.redirect("/");
+        }
+
+    }
+);
+// GET /auth/facebook
+//   Use passport.authenticate() as route middleware to authenticate the
+//   request.  The first step in Facebook authentication will involve
+//   redirecting the user to facebook.com.  After authorization, Facebook will
+//   redirect the user back to this application at /auth/facebook/callback
+app.get('/auth/facebook',
+    passport.authenticate('facebook',{ scope: ['user_about_me', 'email', 'public_profile'] }),
+    function(req, res){
+        // The request will be redirected to Facebook for authentication, so this
+        // function will not be called.
+    });
+
+// GET /auth/facebook/callback
+//   Use passport.authenticate() as route middleware to authenticate the
+//   request.  If authentication fails, the user will be redirected back to the
+//   login page.  Otherwise, the primary route function function will be called,
+//   which, in this example, will redirect the user to the home page.
+app.get('/auth/facebook/callback',
+    passport.authenticate('facebook', {
+        failureRedirect: '/login/signin' })
+    ,
+    function(req,res){
+        console.dir(req.session);
+        if(req.session.lastPage) {
+            res.redirect(req.session.lastPage);
+        } else {
+            res.redirect("/");
+        }
+
+    }
+);
+
+
+
 ///////////////////////////////////////////////////////////////////////////
 // Page Routing
 ///////////////////////////////////////////////////////////////////////////
@@ -133,6 +259,65 @@ app.get('/login/resetPassword',function(req,res){
     res.render('/login/resetPassword',{email:email,randomString:randomString});
 })
 
+
+
+
+app.get('/services/getConfirmPic',function(req,res){
+    var conf = confirmPicGenerator.generateConfirmPic();
+    req.session.confirmText = conf[0];
+    console.log("text is "+conf[0]);
+    res.end(conf[1]);
+})
+
+/////////////////////////////////////////////////////////
+//find back password
+//////////////////////////////////////////////////////////
+app.post('/services/login/updatePassword',function(req,res){
+    var email = req.body.email;
+    var randomString = req.body.randomString;
+    var password = req.body.password;
+
+    console.log("password we got is "+password);
+    forgotPassword.findPasswordByEmail(email,randomString,password,function(err,results){
+        if(err) {
+            console.error(err);
+            res.send("error");
+            return;
+        }
+        res.send(results);
+
+    })
+
+})
+
+app.post('/services/login/validateEmailLink',function(req,res){
+    var email = req.body.email;
+    var randomString = req.body.randomString;
+
+    forgotPassword.validateEmailLink(email,randomString,function(err,results){
+        if(err){
+            console.error(err);
+            return;
+        }
+        res.send(results);
+    })
+
+})
+
+app.post('/services/login/forgotPassword',function(req,res){
+    console.log("post to forgot password");
+    var email = req.body.email;
+
+    forgotPassword.forgotPassword(email,function(err,results){
+        if(err) {
+            console.error(err);
+            res.send("error");
+            return;
+        }
+        console.info("Email exists? "+results);
+        res.send(results);
+    })
+})
 
 ///////////////////////////////////////////////////////////////////////////
 // Start Server
