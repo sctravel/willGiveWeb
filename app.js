@@ -141,6 +141,10 @@ https.createServer(serverOptions,app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
 
+http.createServer(app).listen(80, function(){
+    console.log('Express server listening on port 80');
+});
+
 
 
 
