@@ -257,6 +257,10 @@ app.get('/login/resetPassword',function(req,res){
     res.render('/login/resetPassword',{email:email,randomString:randomString});
 })
 
+app.get('/payment', function (req,res){
+    res.render('payment');
+});
+
 
 
 
@@ -342,6 +346,11 @@ app.post('/services/login/forgotPassword',function(req,res){
 https.createServer(serverOptions,app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
+
+/*
+http.createServer(app).listen(80, function(){
+    console.log('Express server listening on port 80');
+});*/
 
 
 
