@@ -51,12 +51,16 @@ log4js.configure({
             filename: 'logs/access.log',
             maxLogSize: 1024*1024*100,
             backups:3,
-            category: 'normal'
+            "layout": {
+                "type": "pattern",
+                "pattern": "%m"
+            },
+            "category": "app"
         }
     ],
     replaceConsole: true
 });
-var logger = log4js.getLogger('normal');
+var logger = log4js.getLogger('WillGive');
 logger.setLevel('INFO');
 app.use(log4js.connectLogger(logger, {level:log4js.levels.INFO}));
 
@@ -95,9 +99,11 @@ var serverOptions = {
 // Passport - Login methods setup
 ///////////////////////////////////////////////////////////////////////
 passport.use('local', new LocalStrategy(
-    function (email, password, done) {
-        console.log("email-"+email+"; password-"+password);
-        userLogin.manualLogin(email, password, function(error,results){
+    function (username, password, done) {
+        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!email-"+username+"; password-"+password);
+        userLogin.manualLogin(username, password, function(error,results){
             console.dir(results);
             if(error) {
                 return done(null, false, { message: 'Login Error. Please try again' });
@@ -120,9 +126,7 @@ passport.use(new fpass({
         callbackURL:'/auth/facebook/callback'
     },
     function(accessToken, refreshToken, fbUserData, done){
-        console.dir(fbUserData);
-        console.dir(accessToken);
-        console.dir(refreshToken);
+
         userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
             console.dir(results);
             if(err) {
@@ -240,7 +244,7 @@ app.get('/aboutus', function (req,res){
 });
 
 app.get('/login/signin', function (req,res){
-    res.render('login/signin');
+    res.render('login/signin',{error: req.flash('error'), success: req.flash('success'), message:req.flash('message') });
 });
 app.get('/login/signup', function (req,res){
     res.render('login/signup');
@@ -256,6 +260,17 @@ app.get('/login/resetPassword',function(req,res){
     console.warn("email:"+email+"; randomString:"+randomString);
     res.render('/login/resetPassword',{email:email,randomString:randomString});
 })
+
+//app.all('/users', isLoggedIn);
+app.get('/logout', isLoggedIn, function (req, res) {
+    console.log(req.user.email + " logged out.");
+    userLogin.logoutUserLoginHistory(req.user.email, req.user.sessionId, function(err, results){
+        console.info("");//write logout history success
+    })
+    req.flash('success','Logged out!');
+    req.logout();
+    res.redirect("/");
+});
 
 app.get('/payment', function (req,res){
     res.render('payment');
