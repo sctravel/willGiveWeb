@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/social-buttons.css">
 
-    <script src="/jquery/dist/jquery.js"></script>
-    <script src="/angular/angular.js"></script>
-    <script src="/angularJs/willGiveApp.js"></script>
     <%activeMenu = "SignIn"%>
     <%include ../layout/navbar.ejs%>
 </head>
@@ -19,14 +16,15 @@
 <div class="container" style="height: 420px">
     <h2 class="form-signin-heading text-center">WillGive Login</h2>
     <hr align="left" width="100%" background="0xff0000">
-    <form class="form-signin col-xs-4 col-xs-offset-1" action="/login" method="post" style="padding-top: 30px">
+    <form id="userSignInForm" class="form-signin col-xs-4 col-xs-offset-1" action="/services/login/signin" method="post" style="padding-top: 2%">
+        <div id="signInReporter" style="padding-bottom: 2%"></div>
 
         <div class="input-group input-group-lg">
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-envelope"></span>
           </span>
             <label for="inputEmail" class="sr-only">Email address</label>
-            <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+            <input type="email" id="inputEmail" name="email" class="form-control" placeholder="Email address" required autofocus>
         </div>
         <div style="padding-top: 2px"> &nbsp</div>
 
@@ -35,7 +33,7 @@
                 <span class="glyphicon glyphicon-lock"></span>
               </span>
             <label for="inputPassword" class="sr-only">Password</label>
-            <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+            <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" minlength="8" required>
         </div>
 
 
@@ -69,6 +67,75 @@
 </div>
 <%include ../layout/footer.ejs%>
 
+
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/angular/angular.min.js"></script>
+<script src="/jquery-validation/dist/jquery.validate.js"></script>
+<script src="/angularJs/willGiveApp.js"></script>
+<script src="/assets/js/messageReporter.js"></script>
+<script>
+    var reporter = new MessageReporter("signInReporter");
+    reporter.clear();
+
+    //@notice: name attribute in form, not id attributes
+    var formValidateParams = {
+        errorClass: "my-error-class",
+        //validClass: "my-valid-class",
+        rules: {
+            password: {
+                required: true,
+                minlength: 8
+                //remote: "users.php"
+            },
+            email: {
+                required : true,
+                email : true
+            }
+        },
+        messages: {
+            password: {
+                required: "Required.",
+                minlength: "Password at least 8 chars.",
+            },
+            email: {
+                required: "Required.",
+                email: "Please enter a validate email address.",
+                remote: "This email is already in use. Please use Forgot Password from the login page to retrieve account."
+            },
+            usage: "Please check my terms."
+        }
+    };
+    $("#userSignInForm").validate(
+        formValidateParams
+    );
+
+    /*
+    $( "#userSignInForm" ).submit(function( event ) {
+        event.preventDefault();
+        reporter.clear();
+
+        if (!$("#userSignInForm").valid()) {
+            console.log("Sign Up form is not valid!");
+            return;
+        }
+
+        var userAccountInfo={};
+        userAccountInfo.email = $('#signupEmail').val();
+        userAccountInfo.password = $('#signupPassword').val();
+        userAccountInfo.provider="willgive";
+
+        console.log("User Signing In!");
+        $.post("/services/login/signin", {userAccountInfo : userAccountInfo}, function(data){
+            if(data.isAuthenticated) {
+                console.log("user-"+userAccountInfo.email+" successfully logged in");
+                window.location.href="/";
+            } else {
+                reporter.errorStatus(data);
+                reporter.render();
+            }
+        })
+    });*/
+</script>
 </body>
 
 </html>

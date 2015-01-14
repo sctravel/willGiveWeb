@@ -14,6 +14,7 @@ var flash = require('connect-flash');
 var qr = require('qr-image');
 
 //User's code in lib folder
+var userLogin = require('./lib/db/userLogin');
 var constants = require('./lib/common/constants');
 global.activeMenu = "Home";
 
@@ -95,7 +96,7 @@ var serverOptions = {
 ///////////////////////////////////////////////////////////////////////
 passport.use('local', new LocalStrategy(
     function (email, password, done) {
-
+        console.log("email-"+email+"; password-"+password);
         userLogin.manualLogin(email, password, function(error,results){
             console.dir(results);
             if(error) {
@@ -114,7 +115,7 @@ passport.use('local', new LocalStrategy(
 
 //WillGive app under XiTu's FB account
 passport.use(new fpass({
-        clientID:'420297851460293',//'323966477728028',
+        clientID:'323966477728028',
         clientSecret:'660a1a721669c9daa0244faa45113b21',
         callbackURL:'/auth/facebook/callback'
     },
@@ -125,11 +126,11 @@ passport.use(new fpass({
         userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
             console.dir(results);
             if(err) {
-                return done(null, false, { message: 'Internal Error.' });
+                return done(null, false, { message: 'Facebook Login Error.' });
             }
             if(results.isAuthenticated == true ) {
                 console.dir(results);
-                return done(null,{provider:results.provider,customerId :results.customerId, randomKey: results.randomKey,
+                return done(null,{provider:results.provider, userId :results.userId, sessionId: results.sessionId,
                     firstName: results.firstName, lastName: results.lastName});
             } else {
                 return done(null, false, { message: results.errorMessage });
@@ -155,23 +156,20 @@ function isLoggedIn(req, res, next) {
         console.dir(req.user);
         return next();
     }
-
     res.redirect("/login/signin");
 }
 
 
-app.post('/login/signin',
+app.post('/services/login/signin',
     passport.authenticate('local',
-        {
-            failureRedirect: '/login/signin',
-            failureFlash: true }),
+        { failureRedirect: '/login/signin', failureFlash: true }
+    ),
     function(req,res){
         console.dir(req.body);
-        if(req.body.rememberMe=='on')
-        {
-            req.session.cookie.maxAge = 7*24*60*60*1000;
-            console.log("set cookie maxAge to 1 week");
-        }
+
+        req.session.cookie.maxAge = 1*24*60*60*1000;
+        console.log("set cookie maxAge to 1 day");
+
         console.dir(req.session);
         if(req.session.lastPage) {
             res.redirect(req.session.lastPage);
@@ -281,7 +279,7 @@ app.post('/services/login/updatePassword',function(req,res){
     forgotPassword.findPasswordByEmail(email,randomString,password,function(err,results){
         if(err) {
             console.error(err);
-            res.send("error");
+            res.send(constants.services.CALLBACK_SUCCESS);
             return;
         }
         res.send(results);
@@ -289,6 +287,25 @@ app.post('/services/login/updatePassword',function(req,res){
     })
 
 })
+
+//Data Services for account
+app.post('/services/login/signup', function(req,res) {
+    console.dir(req.body);
+    var newAccountInfo = req.body.newAccountInfo;
+    //newAccountInfo.provider=constants.login.LOGIN_PROVIDER.WILLGIVE;
+    userLogin.addNewUserAccount(newAccountInfo, function(err,results){
+        if(err) {
+            console.error(err);
+            res.send(err.toString());
+        } else {
+            console.info(results);
+            res.send(constants.services.CALLBACK_SUCCESS);
+        }
+    });
+});
+
+//Use Passport to handle signin
+
 
 app.post('/services/login/validateEmailLink',function(req,res){
     var email = req.body.email;
@@ -311,7 +328,7 @@ app.post('/services/login/forgotPassword',function(req,res){
     forgotPassword.forgotPassword(email,function(err,results){
         if(err) {
             console.error(err);
-            res.send("error");
+            res.send(constants.services.CALLBACK_FAILED);
             return;
         }
         console.info("Email exists? "+results);

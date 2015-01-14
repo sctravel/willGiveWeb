@@ -8,43 +8,60 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/social-buttons.css">
 
-    <script src="/jquery/dist/jquery.js"></script>
-    <script src="/angular/angular.js"></script>
-    <script src="/angularJs/willGiveApp.js"></script>
     <%activeMenu = "SignUp"%>
     <%include ../layout/navbar.ejs%>
 </head>
 <body>
 
-<div class="container" style="height: 420px">
+<div class="container" style="min-height: 50%">
     <h2 class="form-signin-heading text-center">WillGive SignUp</h2>
     <hr align="left" width="100%" background="0xff0000">
-    <form class="form-signin col-xs-4 col-xs-offset-1" action="/signup" method="post" style="padding-top: 30px">
+    <form id="userSignupForm" class="form-signin col-xs-4 col-xs-offset-1"  method="post" style="padding-top: 2%">
+        <div id="signUpReporter" style="padding-bottom: 2%"></div>
+        <div class="row form-group-lg">
+            <div class=" col-xs-6"  >
+                <label for="signupFirstName" class="sr-only">First Name</label>
+                <input type="text" id="signupFirstName" name="signupFirstName" class="form-control" placeholder="First Name" required>
+            </div>
+            <div class="col-xs-6"  >
+                <label for="signupLastName" class="sr-only">Last Name</label>
+                <input type="text" id="signupLastName" name="signupLastName" class="form-control" placeholder="Last Name" required>
+             </div>
+        </div>
+        <div style="padding-bottom: 1%"> &nbsp</div>
+
         <div class="input-group input-group-lg">
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-envelope"></span>
           </span>
             <label for="signupEmail" class="sr-only">Email address</label>
-            <input type="email" id="signupEmail" class="form-control" placeholder="Email address" required autofocus>
+            <input type="email" id="signupEmail" name="signupEmail" class="form-control" placeholder="Email address" required autofocus>
         </div>
-        <div style="padding-top: 2px"> &nbsp</div>
+        <div style="padding-bottom: 1%"> &nbsp</div>
+        <div class="input-group input-group-lg" style="padding-bottom: 1%">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-lock"></span>
+              </span>
+            <label for="signupPassword" class="sr-only">Password</label>
+            <input type="password" id="signupPassword" name="signupPassword" class="form-control" placeholder="Password" minlength="8" required>
+        </div>
+        <div style="padding-bottom: 1%"> &nbsp</div>
 
         <div class="input-group input-group-lg">
               <span class="input-group-addon">
                 <span class="glyphicon glyphicon-lock"></span>
               </span>
-            <label for="signupPassword" class="sr-only">Password</label>
-            <input type="password" id="signupPassword" class="form-control" placeholder="Password" required>
+            <label for="signupPasswordConfirm" class="sr-only">Confirm Password</label>
+            <input type="password" id="signupPasswordConfirm" name="signupPasswordConfirm" class="form-control" placeholder="Confirm Password" equalTo="#signupPassword" minlength="8" required>
         </div>
-
-        <div style="padding-top: 20px"> &nbsp</div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit" >SIGN UP</button>
+        <div style="padding-bottom: 1%"> &nbsp</div>
+        <button id="submitSignupFormButton" class="btn btn-lg btn-primary btn-block" type="submit" >SIGN UP</button>
 
     </form>
     <div class="col-xs-2 text-center">
         <h3>Or</h3>
     </div>
-    <div class="col-xs-5" style="padding-top: 30px">
+    <div class="col-xs-5" style="padding-top: 2%">
         <a href="/auth/facebook" ><button class="btn btn-lg btn-facebook"><i class="fa fa-facebook"></i>f | Sign up with Facebook</button></a>
         <br>
         <ul class="secondary note nobullet">
@@ -55,13 +72,112 @@
     </div>
 
 </div>
-<div class="container">
+<div class="container" style="padding-top: 2%">
     <div class="text-center" >
         Already have an account? <a href="/login/signin">Sign In</a>
     </div>
 </div>
 <%include ../layout/footer.ejs%>
 
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/angular/angular.min.js"></script>
+<script src="/jquery-validation/dist/jquery.validate.js"></script>
+<script src="/angularJs/willGiveApp.js"></script>
+<script src="/assets/js/messageReporter.js"></script>
+
+<script>
+    var reporter = new MessageReporter("signUpReporter");
+    reporter.clear();
+
+    //@notice: name attribute in form, not id attributes
+    var formValidateParams = {
+        errorClass: "my-error-class",
+        //validClass: "my-valid-class",
+        rules: {
+            signupFirstName: "required",
+            signupLastName: "required",
+            signupPassword: {
+                required: true,
+                minlength: 8
+                //remote: "users.php"
+            },
+            signupPasswordConfirm : {
+                required: true,
+                minlength: 8,
+                equalTo : signupPassword
+            },
+            signupEmail: {
+                required : true,
+                email : true
+            }
+        },
+        messages: {
+            signupFirstName: {
+                required: "Required."
+            },
+            signupLastName: {
+                required: "Required."
+            },
+            signupPassword: {
+                required: "Required.",
+                minlength: "Password at least 8 chars.",
+                equalTo: "Password doesn't match."
+
+            },
+            signupPasswordConfirm: {
+                required: "Required.",
+                minlength: "password at least 8 chars.",
+                equalTo: "Password doesn't match."
+            },
+            signupEmail: {
+                required: "Required.",
+                email: "Please enter a validate email address.",
+                remote: "This email is already in use. Please use Forgot Password from the login page to retrieve account."
+            },
+            usage: "Please check my terms."
+        }
+    };
+    $("#userSignupForm").validate(
+       formValidateParams
+    );
+
+    $( "#userSignupForm" ).submit(function( event ) {
+        event.preventDefault();
+        reporter.clear();
+
+        if (!$("#userSignupForm").valid()) {
+            console.log("Sign Up form is not valid!");
+            return;
+        }
+
+        var newAccountInfo={};
+        newAccountInfo.firstName = $('#signupFirstName').val();
+        newAccountInfo.lastName = $('#signupLastName').val();
+        newAccountInfo.email = $('#signupEmail').val();
+        newAccountInfo.password = $('#signupPassword').val();
+        newAccountInfo.passwordConf = $('#signupPasswordConfirm').val();
+        newAccountInfo.provider="willgive";
+        console.log("Submitting Signup forms!");
+        $.post("/services/login/signup", {newAccountInfo : newAccountInfo}, function(data){
+            if(data=="success") {
+                console.log("successfully created a new account");
+                window.location.href="/login/signin";
+            } else {
+                reporter.errorStatus(data);
+                reporter.render();
+            }
+        })
+    });
+
+</script>
+<style>
+    .my-error-class {
+        color:#FF0000;  /* red */
+    }
+    .my-valid-class {
+        color:#00CC00; /* green */
+    }
+</style>
 </body>
 
 </html>
