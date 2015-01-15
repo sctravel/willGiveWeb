@@ -221,26 +221,26 @@ app.get('/auth/facebook/callback',
 // Page Routing
 ///////////////////////////////////////////////////////////////////////////
 app.get('/', function (req,res){
-    if(req.user) {
+    //if(req.user) {
         console.log(req.user);
-        res.render('index',{provider:req.user.provider,customerId:req.user.customerId, randomKey:req.user.randomKey,firstName: req.user.firstName, lastName: req.user.lastName});
-    } else {
-        var code = qr.image("abcd", { type: 'png' });
-        res.render('index');
+        res.render('index',{user: req.user});
+    //} else {
+        //var code = qr.image("abcd", { type: 'png' });
+        //res.render('index');
         //res.type('png');
         //var svg_string = qr.imageSync('I love QR!', { type: 'svg' });
         //save qrcode to local file
         //code.pipe(fs.createWriteStream('i_love_qr.png'));
         //code.pipe(res);
-    }
+    //}
 
 });
 
 app.get('/contactus', function (req,res){
-    res.render('contactUs');
+    res.render('contactUs', {user: req.user});
 });
 app.get('/aboutus', function (req,res){
-    res.render('aboutUs');
+    res.render('aboutUs', {user: req.user});
 });
 
 app.get('/login/signin', function (req,res){
@@ -262,9 +262,9 @@ app.get('/login/resetPassword',function(req,res){
 })
 
 //app.all('/users', isLoggedIn);
-app.get('/logout', isLoggedIn, function (req, res) {
-    console.log(req.user.email + " logged out.");
-    userLogin.logoutUserLoginHistory(req.user.email, req.user.sessionId, function(err, results){
+app.get('/login/logout', isLoggedIn, function (req, res) {
+    console.log(req.user.userId + " logged out.");
+    userLogin.logoutUserLoginHistory(req.user.userId, req.user.sessionId, function(err, results){
         console.info("");//write logout history success
     })
     req.flash('success','Logged out!');
