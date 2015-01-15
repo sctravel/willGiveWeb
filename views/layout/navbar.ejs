@@ -10,16 +10,19 @@
             <a class="navbar-brand" href="#">WillGive</a>
         </div>
         <% 
-         var menuClass = new Array("#", "#","#","#","#");
+         var menuClass = new Array("#", "#","#","#","#","#");
          if(activeMenu == "Home") menuClass[0] = "active";
          if(activeMenu == "About") menuClass[1] = "active";
          if(activeMenu == "Contact") menuClass[2] = "active";
          if(activeMenu == "SignIn") menuClass[3] = "active";
          if(activeMenu == "SignUp") menuClass[4] = "active";
-       %>
+         if(activeMenu == "Charities") menuClass[5] = "active";
+
+        %>
         <div class="collapse navbar-collapse" id="exampleNavbarCollapse">
             <ul class="nav navbar-nav">
                 <li class="<%=menuClass[0]%>"><a href="/">Home</a></li>
+                <li class="<%=menuClass[5]%>"><a href="/">Charities</a></li>
                 <li class="<%=menuClass[1]%>"><a href="/aboutus">About Us</a></li>
                 <li class="<%=menuClass[2]%>"><a href="/contactus">Contact Us</a></li>
             </ul>

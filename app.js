@@ -15,6 +15,7 @@ var qr = require('qr-image');
 
 //User's code in lib folder
 var userLogin = require('./lib/db/userLogin');
+var forgotPassword = require('./lib/db/forgotPassword');
 var constants = require('./lib/common/constants');
 global.activeMenu = "Home";
 
@@ -171,7 +172,7 @@ app.post('/services/login/signin',
     function(req,res){
         console.dir(req.body);
 
-        req.session.cookie.maxAge = 1*24*60*60*1000;
+        //req.session.cookie.maxAge = 1*24*60*60*1000;
         console.log("set cookie maxAge to 1 day");
 
         console.dir(req.session);
@@ -258,7 +259,7 @@ app.get('/login/resetPassword',function(req,res){
     var randomString = req.query.randomString;
 
     console.warn("email:"+email+"; randomString:"+randomString);
-    res.render('/login/resetPassword',{email:email,randomString:randomString});
+    res.render('login/resetPassword', {email:email,randomString:randomString});
 })
 
 //app.all('/users', isLoggedIn);
@@ -289,16 +290,15 @@ app.get('/services/getConfirmPic',function(req,res){
 /////////////////////////////////////////////////////////
 //find back password
 //////////////////////////////////////////////////////////
-app.post('/services/login/updatePassword',function(req,res){
+app.post('/services/login/resetPassword',function(req,res){
     var email = req.body.email;
     var randomString = req.body.randomString;
     var password = req.body.password;
 
-    console.log("password we got is "+password);
-    forgotPassword.findPasswordByEmail(email,randomString,password,function(err,results){
+    forgotPassword.updatePasswordByEmail(email,randomString,password,function(err,results){
         if(err) {
             console.error(err);
-            res.send(constants.services.CALLBACK_SUCCESS);
+            res.send(err.toString());
             return;
         }
         res.send(results);
@@ -333,6 +333,7 @@ app.post('/services/login/validateEmailLink',function(req,res){
     forgotPassword.validateEmailLink(email,randomString,function(err,results){
         if(err){
             console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
             return;
         }
         res.send(results);
@@ -347,7 +348,9 @@ app.post('/services/login/forgotPassword',function(req,res){
     forgotPassword.forgotPassword(email,function(err,results){
         if(err) {
             console.error(err);
-            res.send(constants.services.CALLBACK_FAILED);
+            console.info("Email exists? Error!");
+
+            res.send(err.toString());
             return;
         }
         console.info("Email exists? "+results);
