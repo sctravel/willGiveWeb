@@ -1,4 +1,4 @@
-
+﻿
 ///////////////////////////////////////////////////////////////////////////
 // Module dependencies
 ///////////////////////////////////////////////////////////////////////////
@@ -14,8 +14,10 @@ var flash = require('connect-flash');
 var qr = require('qr-image');
 
 //User's code in lib folder
+var userLogin = require('./lib/db/userLogin');
+var forgotPassword = require('./lib/db/forgotPassword');
 var constants = require('./lib/common/constants');
-
+global.activeMenu = "Home";
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -50,12 +52,16 @@ log4js.configure({
             filename: 'logs/access.log',
             maxLogSize: 1024*1024*100,
             backups:3,
-            category: 'normal'
+            "layout": {
+                "type": "pattern",
+                "pattern": "%m"
+            },
+            "category": "app"
         }
     ],
     replaceConsole: true
 });
-var logger = log4js.getLogger('normal');
+var logger = log4js.getLogger('WillGive');
 logger.setLevel('INFO');
 app.use(log4js.connectLogger(logger, {level:log4js.levels.INFO}));
 
@@ -89,35 +95,268 @@ var serverOptions = {
     cert: fs.readFileSync('./my_cert.pem')
 };
 
+
+///////////////////////////////////////////////////////////////////////
+// Passport - Login methods setup
+///////////////////////////////////////////////////////////////////////
+passport.use('local', new LocalStrategy(
+    function (username, password, done) {
+        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!email-"+username+"; password-"+password);
+        userLogin.manualLogin(username, password, function(error,results){
+            console.dir(results);
+            if(error) {
+                return done(null, false, { message: 'Login Error. Please try again' });
+            }
+            if(results.isAuthenticated == true ) {
+                console.dir(results);
+                return done(null, {provider : results.provider, userId : results.userId, sessionId: results.sessionId,
+                    firstName: results.firstName, lastName: results.lastName} );
+            } else {
+                return done(null, false, { message: results.errorMessage });
+            }
+        });
+    }
+));
+
+//WillGive app under XiTu's FB account
+passport.use(new fpass({
+        clientID:'323966477728028',
+        clientSecret:'660a1a721669c9daa0244faa45113b21',
+        callbackURL:'/auth/facebook/callback'
+    },
+    function(accessToken, refreshToken, fbUserData, done){
+
+        userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
+            console.dir(results);
+            if(err) {
+                return done(null, false, { message: 'Facebook Login Error.' });
+            }
+            if(results.isAuthenticated == true ) {
+                console.dir(results);
+                return done(null,{provider:results.provider, userId :results.userId, sessionId: results.sessionId,
+                    firstName: results.firstName, lastName: results.lastName});
+            } else {
+                return done(null, false, { message: results.errorMessage });
+            }
+        })
+
+    }
+));
+
+passport.serializeUser(function (user, done) {//保存user对象
+    done(null, {provider:user.provider, userId:user.userId, sessionId:user.sessionId,
+        firstName: user.firstName, lastName: user.lastName});//可以通过数据库方式操作
+});
+
+passport.deserializeUser(function (user, done) {//删除user对象
+    done(null, {provider:user.provider, userId:user.userId, sessionId:user.sessionId,
+        firstName: user.firstName, lastName: user.lastName} );//可以通过数据库方式操作
+});
+
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        console.dir(req.user);
+        return next();
+    }
+    res.redirect("/login/signin");
+}
+
+
+app.post('/services/login/signin',
+    passport.authenticate('local',
+        { failureRedirect: '/login/signin', failureFlash: true }
+    ),
+    function(req,res){
+        console.dir(req.body);
+
+        //req.session.cookie.maxAge = 1*24*60*60*1000;
+        console.log("set cookie maxAge to 1 day");
+
+        console.dir(req.session);
+        if(req.session.lastPage) {
+            res.redirect(req.session.lastPage);
+        } else {
+            res.redirect("/");
+        }
+
+    }
+);
+// GET /auth/facebook
+//   Use passport.authenticate() as route middleware to authenticate the
+//   request.  The first step in Facebook authentication will involve
+//   redirecting the user to facebook.com.  After authorization, Facebook will
+//   redirect the user back to this application at /auth/facebook/callback
+app.get('/auth/facebook',
+    passport.authenticate('facebook',{ scope: ['user_about_me', 'email', 'public_profile'] }),
+    function(req, res){
+        // The request will be redirected to Facebook for authentication, so this
+        // function will not be called.
+    });
+
+// GET /auth/facebook/callback
+//   Use passport.authenticate() as route middleware to authenticate the
+//   request.  If authentication fails, the user will be redirected back to the
+//   login page.  Otherwise, the primary route function function will be called,
+//   which, in this example, will redirect the user to the home page.
+app.get('/auth/facebook/callback',
+    passport.authenticate('facebook', {
+        failureRedirect: '/login/signin' })
+    ,
+    function(req,res){
+        console.dir(req.session);
+        if(req.session.lastPage) {
+            res.redirect(req.session.lastPage);
+        } else {
+            res.redirect("/");
+        }
+
+    }
+);
+
+
+
 ///////////////////////////////////////////////////////////////////////////
 // Page Routing
 ///////////////////////////////////////////////////////////////////////////
 app.get('/', function (req,res){
-    if(req.user) {
+    //if(req.user) {
         console.log(req.user);
         res.render('indexUber',{provider:req.user.provider,customerId:req.user.customerId, randomKey:req.user.randomKey,firstName: req.user.firstName, lastName: req.user.lastName});
-    } else {
-        var code = qr.image("abcd", { type: 'png' });
-        res.render('indexUber');
+    //} else {
+      //  var code = qr.image("abcd", { type: 'png' });
+        //res.render('indexUber');
         //res.type('png');
         //var svg_string = qr.imageSync('I love QR!', { type: 'svg' });
         //save qrcode to local file
         //code.pipe(fs.createWriteStream('i_love_qr.png'));
         //code.pipe(res);
-    }
+    //}
 
 });
 
 app.get('/contactus', function (req,res){
-    res.render('contactUs');
+    res.render('contactUs', {user: req.user});
 });
 app.get('/aboutus', function (req,res){
-    res.render('aboutUs');
-});
-app.get('/login', function (req,res){
-    res.render('login');
+    res.render('aboutUs', {user: req.user});
 });
 
+app.get('/login/signin', function (req,res){
+    res.render('login/signin',{error: req.flash('error'), success: req.flash('success'), message:req.flash('message') });
+});
+app.get('/login/signup', function (req,res){
+    res.render('login/signup');
+});
+app.get('/login/forgotPassword', function (req,res){
+    res.render('login/forgotPassword');
+});
+
+app.get('/login/resetPassword',function(req,res){
+    var email = req.query.email;
+    var randomString = req.query.randomString;
+
+    console.warn("email:"+email+"; randomString:"+randomString);
+    res.render('login/resetPassword', {email:email,randomString:randomString});
+})
+
+//app.all('/users', isLoggedIn);
+app.get('/login/logout', isLoggedIn, function (req, res) {
+    console.log(req.user.userId + " logged out.");
+    userLogin.logoutUserLoginHistory(req.user.userId, req.user.sessionId, function(err, results){
+        console.info("");//write logout history success
+    })
+    req.flash('success','Logged out!');
+    req.logout();
+    res.redirect("/");
+});
+
+app.get('/payment', function (req,res){
+    res.render('payment');
+});
+
+
+
+
+app.get('/services/getConfirmPic',function(req,res){
+    var conf = confirmPicGenerator.generateConfirmPic();
+    req.session.confirmText = conf[0];
+    console.log("text is "+conf[0]);
+    res.end(conf[1]);
+})
+
+/////////////////////////////////////////////////////////
+//find back password
+//////////////////////////////////////////////////////////
+app.post('/services/login/resetPassword',function(req,res){
+    var email = req.body.email;
+    var randomString = req.body.randomString;
+    var password = req.body.password;
+
+    forgotPassword.updatePasswordByEmail(email,randomString,password,function(err,results){
+        if(err) {
+            console.error(err);
+            res.send(err.toString());
+            return;
+        }
+        res.send(results);
+
+    })
+
+})
+
+//Data Services for account
+app.post('/services/login/signup', function(req,res) {
+    console.dir(req.body);
+    var newAccountInfo = req.body.newAccountInfo;
+    //newAccountInfo.provider=constants.login.LOGIN_PROVIDER.WILLGIVE;
+    userLogin.addNewUserAccount(newAccountInfo, function(err,results){
+        if(err) {
+            console.error(err);
+            res.send(err.toString());
+        } else {
+            console.info(results);
+            res.send(constants.services.CALLBACK_SUCCESS);
+        }
+    });
+});
+
+//Use Passport to handle signin
+
+
+app.post('/services/login/validateEmailLink',function(req,res){
+    var email = req.body.email;
+    var randomString = req.body.randomString;
+
+    forgotPassword.validateEmailLink(email,randomString,function(err,results){
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        res.send(results);
+    })
+
+})
+
+app.post('/services/login/forgotPassword',function(req,res){
+    console.log("post to forgot password");
+    var email = req.body.email;
+
+    forgotPassword.forgotPassword(email,function(err,results){
+        if(err) {
+            console.error(err);
+            console.info("Email exists? Error!");
+
+            res.send(err.toString());
+            return;
+        }
+        console.info("Email exists? "+results);
+        res.send(results);
+    })
+})
 
 ///////////////////////////////////////////////////////////////////////////
 // Start Server
@@ -125,6 +364,11 @@ app.get('/login', function (req,res){
 https.createServer(serverOptions,app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
+
+/*
+http.createServer(app).listen(80, function(){
+    console.log('Express server listening on port 80');
+});*/
 
 
 

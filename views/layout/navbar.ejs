@@ -9,17 +9,43 @@
             </button>
             <a class="navbar-brand" href="#">WillGive</a>
         </div>
+        <% 
+         var menuClass = new Array("#", "#","#","#","#","#");
+         if(activeMenu == "Home") menuClass[0] = "active";
+         if(activeMenu == "About") menuClass[1] = "active";
+         if(activeMenu == "Contact") menuClass[2] = "active";
+         if(activeMenu == "SignIn") menuClass[3] = "active";
+         if(activeMenu == "SignUp") menuClass[4] = "active";
+         if(activeMenu == "Charities") menuClass[5] = "active";
 
+        %>
         <div class="collapse navbar-collapse" id="exampleNavbarCollapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="/">Home</a></li>
-                <li class="#"><a href="/aboutus">About Us</a></li>
-                <li class="#"><a href="/contactus">Contact Us</a></li>
+                <li class="<%=menuClass[0]%>"><a href="/">Home</a></li>
+                <li class="<%=menuClass[5]%>"><a href="/">Charities</a></li>
+                <li class="<%=menuClass[1]%>"><a href="/aboutus">About Us</a></li>
+                <li class="<%=menuClass[2]%>"><a href="/contactus">Contact Us</a></li>
             </ul>
+            <% if ( 'undefined' == typeof user ) { %>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/login">Login</a></li>
-                <li><a href="#">Signup</a></li>
+                <li class="<%=menuClass[3]%>"><a href="/login/signin">SignIn</a></li>
+                <li class="<%=menuClass[4]%>"><a href="/login/signup">SignUp</a></li>
             </ul>
+            <% } else { %>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">Welcome, <%=user.firstName%> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Settings</a></li>
+                    </ul>
+                </li>
+                <li class="<%=menuClass[4]%>"><a href="/login/logout">Logout</a></li>
+            </ul>
+            <% }%>
         </div>
+
     </div>
 </nav>
