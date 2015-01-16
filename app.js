@@ -95,10 +95,10 @@ var serverOptions = {
 app.get('/', function (req,res){
     if(req.user) {
         console.log(req.user);
-        res.render('index',{provider:req.user.provider,customerId:req.user.customerId, randomKey:req.user.randomKey,firstName: req.user.firstName, lastName: req.user.lastName});
+        res.render('indexUber',{provider:req.user.provider,customerId:req.user.customerId, randomKey:req.user.randomKey,firstName: req.user.firstName, lastName: req.user.lastName});
     } else {
         var code = qr.image("abcd", { type: 'png' });
-        res.render('index');
+        res.render('indexUber');
         //res.type('png');
         //var svg_string = qr.imageSync('I love QR!', { type: 'svg' });
         //save qrcode to local file
