@@ -339,6 +339,49 @@ app.post('/services/login/validateEmailLink',function(req,res){
 
 })
 
+//https://stripe.com/docs/tutorials/forms
+
+app.post('/payment/stripePayment',function(req,res){
+
+    console.warn("start payment process");
+
+    //'stripeToken
+    console.dir(req.body);
+    console.dir(req.body.stripeToken);
+
+
+    var stripe = require("stripe")("sk_test_zjF1XdDy0TZAYnuifaHR0iDf");
+
+// (Assuming you're using express - expressjs.com)
+// Get the credit card details submitted by the form
+    var stripeToken = req.body.stripeToken;
+
+    stripe.customers.create({
+        card: stripeToken,
+        description: 'payinguser@example.com'
+    }).then(function(customer) {
+        return stripe.charges.create({
+            amount: 1000, // amount in cents, again
+            currency: "usd",
+            customer: customer.id
+        });
+    }).then(function(charge) {
+        saveStripeCustomerId(user, customer.id);
+    });
+
+// Later...
+    var customerId = getStripeCustomerId(user);
+
+    stripe.charges.create({
+        amount: 1500, // amount in cents, again
+        currency: "usd",
+        customer: customerId
+    });
+
+    console.warn("end payment process");
+
+})
+
 app.post('/services/login/forgotPassword',function(req,res){
     console.log("post to forgot password");
     var email = req.body.email;
