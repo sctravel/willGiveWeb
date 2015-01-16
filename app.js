@@ -222,10 +222,8 @@ app.get('/auth/facebook/callback',
 // Page Routing
 ///////////////////////////////////////////////////////////////////////////
 app.get('/', function (req,res){
-    //if(req.user) {
-        console.log(req.user);
-        res.render('indexUber',{provider:req.user.provider,customerId:req.user.customerId, randomKey:req.user.randomKey,firstName: req.user.firstName, lastName: req.user.lastName});
-    //} else {
+     console.log(req.user);
+     res.render('indexUber',{user: req.user});
       //  var code = qr.image("abcd", { type: 'png' });
         //res.render('indexUber');
         //res.type('png');
