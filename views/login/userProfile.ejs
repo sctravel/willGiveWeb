@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en" ng-app="willGiveApp" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>WillGive</title>
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
+    <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+
+    <%activeMenu = "SignUp"%>
+    <%include ../layout/navbar.ejs%>
+</head>
+<body>
+<div class="container" style="height:auto; min-height: 90%;">
+    <div class="row row-offcanvas row-offcanvas-left">
+
+        <!-- sidebar -->
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas"   id="sidebar" role="navigation"  >
+            <div data-spy="affix" data-offset-top="15" data-offset-bottom="30">
+                <ul class="nav" style="color: #000000;" id="sidebar-nav">
+                    <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" > <strong> <%=user.firstName%></strong></li>
+                    <li>
+                        <a href="/users/account" style="color: #000000;"><strong>Edit Profile</strong></a>
+                    </li>
+                    <li  >
+                        <a href="/users/settings" style="color: #000000;">Settings</a>
+                    </li>
+                    <li>
+                        <a href="/users/paymentMethod" style="color: #000000;">Payment Method</a>
+                    </li>
+                    <li>
+                        <a href="/users/contribution" style="color: #000000;">Contribution</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- main area -->
+        <div class="col-xs-12 col-sm-9" data-spy="scroll"  style="padding-left: 5%" data-target="#sidebar-nav">
+            <div class="row">
+                <h3 class="col-xs-3 col-xs-height col-top" style="margin-top: 0px; padding-bottom: 3%;" id="profilePicture">Picture</h3>
+                <div class="col-xs-9 col-xs-height col-top">
+                    <p>Twitter Bootstrap is a front-end toolkit to rapidly build web applications. It is a framework that uses some of the latest browser techniques to provide you with stylish typography, navigation, buttons, tables, etc. One of the primary changes in Bootstrap 3 is an emphasis on Mobile-First responsive design. The goal is to elevate the mobile experience to a first-class citizen of the design process, because several billion mobile users is quite a large market to tap into. So, sites built with the current Bootstrap version target mobile devices and scale for larger screens depending on screen size. </p>
+                </div>
+            </div>
+            </hr>
+            <div class="row">
+
+                <h3 class="col-xs-3 col-xs-height col-top" style="margin-top: 0px; padding-bottom: 3%;"  id="profileBasicInfo">Basic Info</h3>
+                <div class="col-xs-9 col-xs-height col-top" style="padding-bottom: 1%">
+                    <div class="form-group" style="padding-bottom: 1%">
+                        <label class="control-label col-xs-4" for="firstName">Email</label>
+                        <div class="input-group col-xs-6"  >
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-email"></span>
+                            </span>
+                            <input type="text" id="email" name="email" class="form-control" placeholder="<%=user.email%>" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="padding-bottom: 1%">
+                        <label class="control-label col-xs-4" for="firstName">First Name</label>
+                        <div class="input-group col-xs-6"  >
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-user"></span>
+                            </span>
+                            <input type="text" id="firstName" name="firstName" class="form-control" placeholder="<%=user.firstName%>" required>
+                        </div>
+                    </div>
+                    <div class="form-group" style="padding-bottom: 1%">
+                        <label class="control-label col-xs-4" for="lastName">Last Name</label>
+                        <div class="input-group col-xs-6"  >
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-user"></span>
+                            </span>
+                            <input type="text" id="lastName" name="lastName" class="form-control" placeholder="<%=user.lastName%>" required>
+                        </div>
+                    </div>
+                    <div class="col-xs-4" style="padding-top: 1%;padding-bottom: 2%; float: left">
+                        <button id="submitUpdateProfileButton" class="btn btn-primary btn-block" type="submit" >Update</button>
+                    </div>
+                </div>
+
+            </div>
+            </hr>
+            <div class="row">
+
+            <h3 class="col-xs-3 col-xs-height col-top" style="margin-top: 0px;padding-bottom: 3%;"  id="profilePassword">Password</h3>
+            <div class="col-xs-9 col-xs-height col-top">
+                <div class="form-group" style="padding-bottom: 1%">
+                    <label class="control-label col-xs-4" for="oldPassword">Old Password</label>
+                    <div class="input-group col-xs-6" >
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-lock"></span>
+                        </span>
+                        <input type="password" id="oldPassword" name="oldPassword" class="form-control" placeholder="" minlength="8" required>
+                    </div>
+                </div>
+                <div class="form-group" style="padding-bottom: 1%">
+                    <label class="control-label col-xs-4" for="newPassword">New Password</label>
+
+                    <div class="input-group col-xs-6">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-lock"></span>
+                        </span>
+                        <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="" minlength="8" required>
+                    </div>
+                </div>
+                <div class="form-group" style="padding-bottom: 1%">
+                    <label class="control-label col-xs-4" for="confirmPassword">Confirm Password</label>
+
+                    <div class="input-group col-xs-6">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-lock"></span>
+                        </span>
+                        <label for="confirmPassword" class="sr-only">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="" equalTo="#signupPassword" minlength="8" required>
+                    </div>
+                </div>
+                <div class="col-xs-4" style="padding-top: 1%; padding-bottom: 2%;float: left">
+                    <button id="submitUpdateProfileButton" class="btn btn-primary btn-block" type="submit" >Change Password</button>
+                </div>
+            </div>
+            </hr>
+        </div><!-- /.col-xs-12 main -->
+    </div><!--/.row-->
+</div><!--/.container-->
+<%include ../layout/footer.ejs%>
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/angular/angular.min.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/jquery-validation/dist/jquery.validate.js"></script>
+</body>
+</html>

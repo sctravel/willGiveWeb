@@ -34,21 +34,23 @@
             <% } else { %>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">Welcome, <%=user.firstName%> <b class="caret"></b></a>
+                    <a href="" data-toggle="dropdown" class="dropdown-toggle">Welcome, <%=user.firstName%> <b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
+                        <li><a href="/users/account">Edit Profile</a></li>
+                        <li><a href="/users/settings">Settings</a></li>
+                        <li><a href="/users/settings">Payment Method</a></li>
+                        <li><a href="/users/contribution">Contribution</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Settings</a></li>
+                        <li><a href="/login/logout">Logout</a></li>
                     </ul>
                 </li>
-                <li class="<%=menuClass[4]%>"><a href="/login/logout">Logout</a></li>
             </ul>
             <% }%>
         </div>
 
     </div>
 </nav>
+<script src="bootstrap/dist/js/bootstrap.min.js"></script>
 
 <div style="padding-bottom: 30px">
     &nbsp;

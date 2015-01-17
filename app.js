@@ -111,7 +111,7 @@ passport.use('local', new LocalStrategy(
             }
             if(results.isAuthenticated == true ) {
                 console.dir(results);
-                return done(null, {provider : results.provider, userId : results.userId, sessionId: results.sessionId,
+                return done(null, {provider : results.provider, email:results.email, userId : results.userId, sessionId: results.sessionId,
                     firstName: results.firstName, lastName: results.lastName} );
             } else {
                 return done(null, false, { message: results.errorMessage });
@@ -135,7 +135,7 @@ passport.use(new fpass({
             }
             if(results.isAuthenticated == true ) {
                 console.dir(results);
-                return done(null,{provider:results.provider, userId :results.userId, sessionId: results.sessionId,
+                return done(null,{provider:results.provider, email: results.email, userId :results.userId, sessionId: results.sessionId,
                     firstName: results.firstName, lastName: results.lastName});
             } else {
                 return done(null, false, { message: results.errorMessage });
@@ -146,12 +146,12 @@ passport.use(new fpass({
 ));
 
 passport.serializeUser(function (user, done) {//保存user对象
-    done(null, {provider:user.provider, userId:user.userId, sessionId:user.sessionId,
+    done(null, {provider:user.provider, email:user.email, userId:user.userId, sessionId:user.sessionId,
         firstName: user.firstName, lastName: user.lastName});//可以通过数据库方式操作
 });
 
 passport.deserializeUser(function (user, done) {//删除user对象
-    done(null, {provider:user.provider, userId:user.userId, sessionId:user.sessionId,
+    done(null, {provider:user.provider, email:user.email, userId:user.userId, sessionId:user.sessionId,
         firstName: user.firstName, lastName: user.lastName} );//可以通过数据库方式操作
 });
 
@@ -246,11 +246,24 @@ app.get('/login/signin', function (req,res){
     res.render('login/signin',{error: req.flash('error'), success: req.flash('success'), message:req.flash('message') });
 });
 app.get('/login/signup', function (req,res){
-    res.render('login/signup');
+    res.render('login/signup', {user: req.user});
 });
 app.get('/login/forgotPassword', function (req,res){
-    res.render('login/forgotPassword');
+    res.render('login/forgotPassword', {user: req.user});
 });
+
+app.get('/users/account', isLoggedIn, function(req,res){
+    res.render('login/userProfile', {user: req.user});
+})
+app.get('/users/settings', isLoggedIn, function(req,res){
+    res.render('login/userSettings', {user: req.user});
+})
+app.get('/users/paymentMethod', isLoggedIn, function(req,res){
+    res.render('login/userPaymentMethod', {user: req.user});
+})
+app.get('/users/contribution', isLoggedIn, function(req,res){
+    res.render('login/userContribution', {user: req.user});
+})
 
 app.get('/login/resetPassword',function(req,res){
     var email = req.query.email;

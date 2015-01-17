@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" ng-app="willGiveApp" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>WillGive</title>
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
+    <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+
+    <%activeMenu = "SignUp"%>
+    <%include ../layout/navbar.ejs%>
+</head>
+<body>
+<div class="container" style="height:auto; min-height: 90%;">
+    <div class="row row-offcanvas row-offcanvas-left">
+
+        <!-- sidebar -->
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas"   id="sidebar" role="navigation"  >
+            <div data-spy="affix" data-offset-top="15" data-offset-bottom="30">
+                <ul class="nav" style="color: #000000;" id="sidebar-nav">
+                    <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" > <strong> <%=user.firstName%></strong></li>
+                    <li>
+                        <a href="/users/account" style="color: #000000;">Edit Profile</a>
+                    </li>
+                    <li  >
+                        <a href="/users/settings" style="color: #000000;">Settings</a>
+                    </li>
+                    <li>
+                        <a href="/users/paymentMethod" style="color: #000000;"><strong>Payment Method</strong></a>
+                    </li>
+                    <li>
+                        <a href="/users/contribution" style="color: #000000;">Contribution</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- main area -->
+        <div class="col-xs-12 col-sm-9" data-spy="scroll" data-target="#sidebar-nav">
+            <h1 id="section1">Picture</h1>
+            <p>Twitter Bootstrap is a front-end toolkit to rapidly build web applications. It is a framework that uses some of the latest browser techniques to provide you with stylish typography, navigation, buttons, tables, etc. One of the primary changes in Bootstrap 3 is an emphasis on Mobile-First responsive design. The goal is to elevate the mobile experience to a first-class citizen of the design process, because several billion mobile users is quite a large market to tap into. So, sites built with the current Bootstrap version target mobile devices and scale for larger screens depending on screen size. </p>
+
+            <p>Vestibulum porttitor massa eget pellentesque eleifend. Suspendisse tempor, nisi eu placerat auctor,
+                est erat tempus neque, pellentesque venenatis eros lorem vel quam. Nulla luctus malesuada porttitor.
+                Fusce risus mi, luctus scelerisque hendrerit feugiat, volutpat gravida nisi. Quisque facilisis risus
+                in lacus sagittis malesuada. Suspendisse non purus diam. Nunc commodo felis sit amet tortor
+                adipiscing varius. Fusce commodo nulla quis fermentum hendrerit. Donec vulputate, tellus sed
+                venenatis sodales, purus nibh ullamcorper quam, sit amet tristique justo velit molestie lorem.</p>
+
+            <h1 id="section2">Email</h1>
+            <p>Fusce sollicitudin lacus lacinia mi tincidunt ullamcorper. Aenean velit ipsum, vestibulum nec
+                tincidunt eu, lobortis vitae erat. Nullam ultricies fringilla ultricies. Sed euismod nibh quis
+                tincidunt dapibus. Nulla quam velit, porta sit amet felis eu, auctor fringilla elit. Donec
+                convallis tincidunt nibh, quis pellentesque sapien condimentum a. Phasellus purus dui, rhoncus
+                id suscipit id, ornare et sem. Duis aliquet posuere arcu a ornare. Pellentesque consequat libero
+                id massa accumsan volutpat. Fusce a hendrerit lacus. Nam elementum ac eros eu porttitor.
+                Phasellus enim mi, auctor sit amet luctus a, commodo fermentum arcu. In volutpat scelerisque
+                quam, nec lacinia libero.</p>
+
+            <h1 id="section3">Name</h1>
+            <h1 id="section4">Password</h1>
+
+            <p>Aliquam a lacinia orci, iaculis porttitor neque. Nullam cursus dolor tempus mauris posuere, eu
+                scelerisque sem tincidunt. Praesent blandit sapien at sem pulvinar, vel egestas orci varius.
+                Praesent vitae purus at ante aliquet luctus vel quis nibh. Mauris id nulla vitae est lacinia
+                rhoncus a vel justo. Donec iaculis quis sapien vel molestie. Aliquam sed elementum orci.
+                Vestibulum tristique tempor risus et malesuada. Sed eget ligula sed quam placerat dapibus.
+                Integer accumsan ac massa at tempus.</p>
+
+        </div><!-- /.col-xs-12 main -->
+    </div><!--/.row-->
+</div><!--/.container-->
+<%include ../layout/footer.ejs%>
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/angular/angular.min.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/jquery-validation/dist/jquery.validate.js"></script>
+</body>
+</html>
