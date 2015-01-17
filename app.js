@@ -101,9 +101,7 @@ var serverOptions = {
 ///////////////////////////////////////////////////////////////////////
 passport.use('local', new LocalStrategy(
     function (username, password, done) {
-        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!email-"+username+"; password-"+password);
         userLogin.manualLogin(username, password, function(error,results){
             console.dir(results);
             if(error) {
@@ -112,7 +110,7 @@ passport.use('local', new LocalStrategy(
             if(results.isAuthenticated == true ) {
                 console.dir(results);
                 return done(null, {provider : results.provider, email:results.email, userId : results.userId, sessionId: results.sessionId,
-                    firstName: results.firstName, lastName: results.lastName} );
+                    firstName: results.firstName, lastName: results.lastName, imageIconUrl: results.imageIconUrl} );
             } else {
                 return done(null, false, { message: results.errorMessage });
             }
@@ -127,7 +125,7 @@ passport.use(new fpass({
         callbackURL:'/auth/facebook/callback'
     },
     function(accessToken, refreshToken, fbUserData, done){
-
+        console.dir(fbUserData);
         userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
             console.dir(results);
             if(err) {
@@ -136,7 +134,7 @@ passport.use(new fpass({
             if(results.isAuthenticated == true ) {
                 console.dir(results);
                 return done(null,{provider:results.provider, email: results.email, userId :results.userId, sessionId: results.sessionId,
-                    firstName: results.firstName, lastName: results.lastName});
+                    firstName: results.firstName, lastName: results.lastName, imageIconUrl: results.imageIconUrl});
             } else {
                 return done(null, false, { message: results.errorMessage });
             }
@@ -147,12 +145,12 @@ passport.use(new fpass({
 
 passport.serializeUser(function (user, done) {//保存user对象
     done(null, {provider:user.provider, email:user.email, userId:user.userId, sessionId:user.sessionId,
-        firstName: user.firstName, lastName: user.lastName});//可以通过数据库方式操作
+        firstName: user.firstName, lastName: user.lastName, imageIconUrl: user.imageIconUrl});//可以通过数据库方式操作
 });
 
 passport.deserializeUser(function (user, done) {//删除user对象
     done(null, {provider:user.provider, email:user.email, userId:user.userId, sessionId:user.sessionId,
-        firstName: user.firstName, lastName: user.lastName} );//可以通过数据库方式操作
+        firstName: user.firstName, lastName: user.lastName, imageIconUrl: user.imageIconUrl} );//可以通过数据库方式操作
 });
 
 
@@ -253,6 +251,7 @@ app.get('/login/forgotPassword', function (req,res){
 });
 
 app.get('/users/account', isLoggedIn, function(req,res){
+    console.dir(req.user);
     res.render('login/userProfile', {user: req.user});
 })
 app.get('/users/settings', isLoggedIn, function(req,res){
@@ -322,6 +321,7 @@ app.post('/services/login/resetPassword',function(req,res){
 app.post('/services/login/signup', function(req,res) {
     console.dir(req.body);
     var newAccountInfo = req.body.newAccountInfo;
+    newAccountInfo.imageIconUrl = constants.SITE_URL+"/images/blank_icon.jpg";
     //newAccountInfo.provider=constants.login.LOGIN_PROVIDER.WILLGIVE;
     userLogin.addNewUserAccount(newAccountInfo, function(err,results){
         if(err) {
