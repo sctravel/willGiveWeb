@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app="willGiveApp" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -39,25 +39,66 @@
 
         <!-- main area -->
         <div class="col-xs-12 col-sm-9" data-spy="scroll" data-target="#sidebar-nav">
-            <h1 id="section1">Why Bootstrap?</h1>
-            <p>Twitter Bootstrap is a front-end toolkit to rapidly build web applications. It is a framework that uses some of the latest browser techniques to provide you with stylish typography, navigation, buttons, tables, etc. One of the primary changes in Bootstrap 3 is an emphasis on Mobile-First responsive design. The goal is to elevate the mobile experience to a first-class citizen of the design process, because several billion mobile users is quite a large market to tap into. So, sites built with the current Bootstrap version target mobile devices and scale for larger screens depending on screen size. </p>
+            <h3 id="emailNotification">Emails From WillGive</h3>
+            </hr>
+            <div class="input-group col-xs-6">
+                <label class="checkbox-inline"><input id="receiveEmailUpdate" type="checkbox" value="" checked>
+                    Receive Email Updates From WillGive
+                </label>
+            </div>
+            <div class="input-group col-xs-6">
+                <label class="checkbox-inline"><input id="receiveEmailNotification" type="checkbox" value="" checked>
+                    Receive Email Notification From WillGive
+                </label>
+            </div>
 
-            <p>Vestibulum porttitor massa eget pellentesque eleifend. Suspendisse tempor, nisi eu placerat auctor,
-                est erat tempus neque, pellentesque venenatis eros lorem vel quam. Nulla luctus malesuada porttitor.
-                Fusce risus mi, luctus scelerisque hendrerit feugiat, volutpat gravida nisi. Quisque facilisis risus
-                in lacus sagittis malesuada. Suspendisse non purus diam. Nunc commodo felis sit amet tortor
-                adipiscing varius. Fusce commodo nulla quis fermentum hendrerit. Donec vulputate, tellus sed
-                venenatis sodales, purus nibh ullamcorper quam, sit amet tristique justo velit molestie lorem.</p>
-
-
-
+            </hr>
+            <h3 id="emailNotification">Privacy Setting</h3>
+            <div class="input-group col-xs-6">
+                <label class="checkbox-inline"><input id="allowContributionPublic" type="checkbox" value="" checked>
+                    Allow Contributions Public
+                </label>
+            </div>
+            </hr>
+            </hr>
+            <h3 id="emailNotification">Other Setting</h3>
+            </hr>
+            <div class="form-group" style="padding-bottom: 1%">
+                <label class="control-label col-xs-4" for="defaultAmountPerTime">Default Payment Amount</label>
+                <div class="input-group col-xs-5"  >
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-usd"></span>
+                            </span>
+                    <input type="text" id="defaultAmountPerTime" name="defaultAmountPerTime" class="form-control" placeholder="">
+                </div>
+            </div>
+            <div class="form-group" style="padding-bottom: 1%">
+                <label class="control-label col-xs-4" for="maxAmountPerTime">Max Payment Amount</label>
+                <div class="input-group col-xs-5"  >
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-usd"></span>
+                            </span>
+                    <input type="text" id="maxAmountPerTime" name="maxAmountPerTime" class="form-control" placeholder="">
+                </div>
+            </div>
+            <div class="form-group" style="padding-bottom: 1%">
+                <label class="control-label col-xs-4" for="maxAmountDaily">Max Payment Amount Daily</label>
+                <div class="input-group col-xs-5"  >
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-usd"></span>
+                            </span>
+                    <input type="text" id="maxAmountDaily" name="maxAmountDaily" class="form-control" placeholder="">
+                </div>
+            </div>
+            <div class="col-xs-6" style="padding-top: 1%; padding-bottom: 2%;float: left">
+                <button id="submitUpdateProfilePasswordButton" class="btn btn-primary btn-block" type="submit" >Save</button>
+            </div>
 
         </div><!-- /.col-xs-12 main -->
     </div><!--/.row-->
 </div><!--/.container-->
 <%include ../layout/footer.ejs%>
 <script src="/jquery/dist/jquery.min.js"></script>
-<script src="/angular/angular.min.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
 </body>
