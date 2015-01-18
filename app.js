@@ -222,13 +222,7 @@ app.get('/auth/facebook/callback',
 app.get('/', function (req,res){
      console.log(req.user);
      res.render('indexUber',{user: req.user});
-      //  var code = qr.image("abcd", { type: 'png' });
-        //res.render('indexUber');
-        //res.type('png');
-        //var svg_string = qr.imageSync('I love QR!', { type: 'svg' });
-        //save qrcode to local file
-        //code.pipe(fs.createWriteStream('i_love_qr.png'));
-        //code.pipe(res);
+
     //}
 
 });
