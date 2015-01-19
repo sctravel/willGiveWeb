@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+    <script src="/jquery/dist/jquery.min.js"></script>
+    <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="/jquery-validation/dist/additional-methods.min.js"></script>
 
     <%activeMenu = "SignUp"%>
     <%include ../layout/navbar.ejs%>
@@ -39,67 +43,187 @@
 
         <!-- main area -->
         <div class="col-xs-12 col-sm-9" data-spy="scroll" style="padding-left: 5%" data-target="#sidebar-nav">
-            <h3 id="emailNotification">Emails From WillGive</h3>
-            </hr>
-            <div class="input-group col-xs-6">
-                <label class="checkbox-inline"><input id="receiveEmailUpdate" type="checkbox" value="" checked>
-                    Receive Email Updates From WillGive
-                </label>
-            </div>
-            <div class="input-group col-xs-6">
-                <label class="checkbox-inline"><input id="receiveEmailNotification" type="checkbox" value="" checked>
-                    Receive Email Notification From WillGive
-                </label>
-            </div>
+            <form id="userSettingsForm" class="" style="padding-top: 2%">
+                <div id="successUpdateSettingsMessage" class="form-group col-xs-12" style="padding-bottom: 1%; display : none ">
+                    <h3 style="margin-top: 0px; float: left;color: green">You've successfully updated your settings.</h3>
+                </div>
+                <div id="failUpdateSettingsMessage" class="form-group col-xs-12" style="padding-bottom: 1%; display : none ">
+                    <h3 style="margin-top: 0px; float: left;color: red">Updating user settings failed. Please try again.</h3>
+                </div>
+                <h3 id="emailNotification">Email Settings</h3>
+                </hr>
+                <div class="input-group col-xs-6">
+                    <label class="checkbox-inline"><input id="receiveEmailUpdate" type="checkbox" value="" checked>
+                        Receive Email Updates From WillGive
+                    </label>
+                </div>
+                <div class="input-group col-xs-6">
+                    <label class="checkbox-inline"><input id="receiveEmailNotification" type="checkbox" value="" checked>
+                        Receive Email Notification From WillGive
+                    </label>
+                </div>
 
-            </hr>
-            <h3 id="emailNotification">Privacy Setting</h3>
-            <div class="input-group col-xs-6">
-                <label class="checkbox-inline"><input id="allowContributionPublic" type="checkbox" value="" checked>
-                    Allow Contributions Public
-                </label>
-            </div>
-            </hr>
-            </hr>
-            <h3 id="emailNotification">Other Setting</h3>
-            </hr>
-            <div class="form-group" style="padding-bottom: 1%">
-                <label class="control-label col-xs-4" for="defaultAmountPerTime">Default Payment Amount</label>
-                <div class="input-group col-xs-5"  >
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-usd"></span>
-                            </span>
-                    <input type="text" id="defaultAmountPerTime" name="defaultAmountPerTime" class="form-control" placeholder="">
+                </hr>
+                <h3 id="emailNotification">Privacy Settings</h3>
+                <div class="input-group col-xs-6">
+                    <label class="checkbox-inline"><input id="allowContributionPublic" type="checkbox" value="" checked>
+                        Allow Contributions Public
+                    </label>
                 </div>
-            </div>
-            <div class="form-group" style="padding-bottom: 1%">
-                <label class="control-label col-xs-4" for="maxAmountPerTime">Max Payment Amount</label>
-                <div class="input-group col-xs-5"  >
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-usd"></span>
-                            </span>
-                    <input type="text" id="maxAmountPerTime" name="maxAmountPerTime" class="form-control" placeholder="">
+                </hr>
+                </hr>
+                <h3 id="emailNotification">Payment Options Settings</h3>
+                </hr>
+                <div class="form-group" style="padding-bottom: 1%">
+                    <label class="control-label col-xs-4" for="defaultAmountPerTime">Default Amount Per Time</label>
+                    <div class="input-group col-xs-5"  >
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-usd"></span>
+                                </span>
+                        <input type="number" id="defaultAmountPerTime" name="defaultAmountPerTime" class="form-control" placeholder="">
+                    </div>
                 </div>
-            </div>
-            <div class="form-group" style="padding-bottom: 1%">
-                <label class="control-label col-xs-4" for="maxAmountDaily">Max Payment Amount Daily</label>
-                <div class="input-group col-xs-5"  >
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-usd"></span>
-                            </span>
-                    <input type="text" id="maxAmountDaily" name="maxAmountDaily" class="form-control" placeholder="">
+                <div class="form-group" style="padding-bottom: 1%">
+                    <label class="control-label col-xs-4" for="maxAmountPerTime">Max Amount Per Time</label>
+                    <div class="input-group col-xs-5"  >
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-usd"></span>
+                                </span>
+                        <input type="number" id="maxAmountPerTime" name="maxAmountPerTime" class="form-control" placeholder="">
+                    </div>
                 </div>
-            </div>
-            <div class="col-xs-6" style="padding-top: 1%; padding-bottom: 2%;float: left">
-                <button id="submitUpdateProfilePasswordButton" class="btn btn-primary btn-block" type="submit" >Save All Setting</button>
-            </div>
-
+                <div class="form-group" style="padding-bottom: 1%">
+                    <label class="control-label col-xs-4" for="maxAmountDaily">Max Amount Daily</label>
+                    <div class="input-group col-xs-5"  >
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-usd"></span>
+                                </span>
+                        <input type="number" id="maxAmountDaily" name="maxAmountDaily" class="form-control" placeholder="">
+                    </div>
+                </div>
+                <div class="col-xs-6" style="padding-top: 1%; padding-bottom: 2%;float: left">
+                    <button id="submitUpdateProfilePasswordButton" class="btn btn-primary btn-block" type="submit" >Save All Setting</button>
+                </div>
+            </form>
         </div><!-- /.col-xs-12 main -->
     </div><!--/.row-->
 </div><!--/.container-->
 <%include ../layout/footer.ejs%>
-<script src="/jquery/dist/jquery.min.js"></script>
-<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="/jquery-validation/dist/jquery.validate.js"></script>
+
+
+<script>
+    $.validator.addMethod('minStrict', function (value, el, param) {
+        return value > param;
+    });
+    var userSettings={};
+    function getUserSettings () {
+        $.get("/services/user/settings", function(data){
+            if(data=="failed") {
+            } else {
+                userSettings=data;
+                $('#maxAmountDaily').val(data.maxAmountDaily);
+                $('#maxAmountPerTime').val(data.maxAmountPerTime);
+                $('#defaultAmountPerTime').val(data.defaultAmountPerTime);
+                if(data.receiveEmailUpdate=='N') {
+                    $('#receiveEmailUpdate').prop('checked',false);
+                }
+                if(data.receiveEmailNotification=='N') {
+                    $('#receiveEmailNotification').prop('checked',false);
+                }
+                if(data.allowContributionPublic=='N') {
+                    $('#allowContributionPublic').prop('checked',false);
+                }
+            }
+        });
+    }
+
+    var userSettingsFormValidateParams = {
+        errorClass: "my-error-class",
+        //validClass: "my-valid-class",
+        rules: {
+            defaultAmountPerTime: {
+                required: true,
+                digits : true,
+                minStrict : 0
+                //remote: "users.php"
+            },
+            maxAmountPerTime: {
+                required : true,
+                digits : true,
+                minStrict : 0
+            },
+            maxAmountDaily: {
+                required : true,
+                digits : true,
+                minStrict : 0
+            }
+        },
+        messages: {
+            defaultAmountPerTime: {
+                required: 'Required.',
+                minStrict: 'Must be greater than 0.'
+            },
+            maxAmountPerTime: {
+                required: 'Required.',
+                minStrict: 'Must be greater than 0.'
+            },
+            maxAmountDaily: {
+                required: 'Required.',
+                minStrict: 'Must be greater than 0.'
+            }
+        }
+
+    };
+
+    $("#userSettingsForm").validate(
+            userSettingsFormValidateParams
+    );
+    $("#userSettingsForm").submit(function(event) {
+        event.preventDefault();
+        $('#successUpdateSettingsMessage').hide();
+        $('#failUpdateSettingsMessage').hide();
+
+        if (!$("#userSettingsForm").valid()) {
+            console.log("UserSettingsForm is not valid!");
+            return;
+        }
+
+        userSettings.maxAmountDaily = $('#maxAmountDaily').val();
+        userSettings.maxAmountPerTime = $('#maxAmountPerTime').val();
+        userSettings.defaultAmountPerTime = $('#defaultAmountPerTime').val();
+        if($('#receiveEmailUpdate').prop('checked')) {
+            userSettings.receiveEmailUpdate='Y';
+        } else {
+            userSettings.receiveEmailUpdate='N';
+        }
+        if($('#receiveEmailNotification').prop('checked')) {
+            userSettings.receiveEmailNotification='Y';
+        } else {
+            userSettings.receiveEmailNotification='N';
+        }
+        if($('#allowContributionPublic').prop('checked')) {
+            userSettings.allowContributionPublic='Y';
+        } else {
+            userSettings.allowContributionPublic='N';
+        }
+
+        $.post('/services/user/settings', {userSettings: userSettings}, function(data){
+            if(data=="success") {
+                $('#successUpdateSettingsMessage').show();
+                $('#failUpdateSettingsMessage').hide();
+
+            } else {
+                $('#successUpdateSettingsMessage').hide();
+                $('#failUpdateSettingsMessage').show();
+                getUserSettings();
+            }
+        })
+
+    });
+
+    $( document ).ready(function() {
+        getUserSettings();
+    });
+</script>
 </body>
 </html>
