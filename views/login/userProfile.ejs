@@ -17,7 +17,6 @@
 <body>
 <script>
     function checkImageSize(max_img_size) {
-        alert("The file must be less than " + (max_img_size) + "KB");
 
         var input = $('#myProfileIconInput')[0];
         // check for browser support (may need to be modified)
@@ -25,6 +24,7 @@
         {
             if (input.files[0].size > max_img_size*1024)
             {
+                alert("The file must be less than " + (max_img_size) + "KB");
                 return false;
             }
         }

@@ -305,9 +305,8 @@ app.post('/services/login/profilePictureUpload', function(req,res) {
     req.pipe(req.busboy);
     req.busboy.on('file', function (fieldname, file, filename) {
         var fileNameArray = filename.split('.');
-        var suffix = fileNameArray[fileNameArray.length-1];
-        console.log("Uploading: " + filename+';  fieldName-'+fieldname);
-
+        var suffix = fileNameArray[fileNameArray.length-1].toLowerCase();
+        
         //Path where image will be uploaded
         fstream = fs.createWriteStream(__dirname + '/public/resources/profileIcons/' + fieldname +'.'+suffix);
         file.pipe(fstream);
