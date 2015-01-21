@@ -33,14 +33,16 @@
     }
 
 </script>
-<div class="container" style="height:auto; min-height: 90%;">
+<div class="container sidebar-content" style="height:auto; min-height: 90%;">
     <div class="row row-offcanvas row-offcanvas-left">
 
         <!-- sidebar -->
         <div class="col-xs-6 col-sm-3 sidebar-offcanvas"   id="sidebar" role="navigation"  >
             <div data-spy="affix" data-offset-top="15" data-offset-bottom="30">
                 <ul class="nav" style="color: #000000;" id="sidebar-nav">
-                    <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" > <strong> <%=user.firstName%></strong></li>
+                    <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" >
+                        <img src="<%=user.imageIconUrl%>" height="80" width="80"/> &nbsp;
+                        <strong> <%=user.firstName%></strong></li>
                     <li>
                         <a href="/users/account" style="color: #000000;"><strong>Edit Profile</strong></a>
                     </li>

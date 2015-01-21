@@ -17,14 +17,16 @@
     <%include ../layout/navbar.ejs%>
 </head>
 <body>
-<div class="container" style="height:auto; min-height: 90%; ">
+<div class="container sidebar-content" style="height:auto; min-height: 90%; ">
     <div class="row row-offcanvas row-offcanvas-left">
 
         <!-- sidebar -->
         <div class="col-xs-6 col-sm-3 sidebar-offcanvas"   id="sidebar" role="navigation"  >
             <div data-spy="affix" data-offset-top="15" data-offset-bottom="30">
                 <ul class="nav" style="color: #000000;" id="sidebar-nav">
-                    <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" > <strong> <%=user.firstName%></strong></li>
+                    <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" >
+                        <img src="<%=user.imageIconUrl%>" height="80" width="80"/> &nbsp;
+                        <strong> <%=user.firstName%></strong></li>
                     <li>
                         <a href="/users/account" style="color: #000000;">Edit Profile</a>
                     </li>
@@ -43,7 +45,7 @@
 
         <!-- main area -->
         <div class="col-xs-12 col-sm-9" data-spy="scroll" style="padding-left: 5%" data-target="#sidebar-nav">
-            <form id="userSettingsForm" class="" style="padding-top: 2%">
+            <form id="userSettingsForm" class="">
                 <div id="successUpdateSettingsMessage" class="form-group col-xs-12" style="padding-bottom: 1%; display : none ">
                     <h3 style="margin-top: 0px; float: left;color: green">You've successfully updated your settings.</h3>
                 </div>

@@ -13,14 +13,16 @@
     <%include ../layout/navbar.ejs%>
 </head>
 <body>
-<div class="container" style="height:auto; min-height: 90%;">
+<div class="container sidebar-content" style="height:auto; min-height: 90%;">
     <div class="row row-offcanvas row-offcanvas-left">
 
         <!-- sidebar -->
-        <div class="col-xs-6 col-sm-3 sidebar-offcanvas"   id="sidebar" role="navigation"  >
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation"  >
             <div data-spy="affix" data-offset-top="15" data-offset-bottom="30">
                 <ul class="nav" style="color: #000000;" id="sidebar-nav">
-                    <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" > <strong> <%=user.firstName%></strong></li>
+                    <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" >
+                        <img src="<%=user.imageIconUrl%>" height="80" width="80"/> &nbsp;
+                        <strong> <%=user.firstName%></strong></li>
                     <li>
                         <a href="/users/account" style="color: #000000;">Edit Profile</a>
                     </li>
@@ -40,7 +42,84 @@
         <!-- main area -->
         <div class="col-xs-12 col-sm-9" data-spy="scroll" style="padding-left: 5%" data-target="#sidebar-nav">
             <h1 id="section1">Comming Soon</h1>
+            <form action="" method="POST" id="payment-form">
+                <span class="payment-errors"></span>
 
+                <div class="form-row">
+                    <label>
+                        <span>Card Number</span>
+                        <input type="text" size="20" data-stripe="number"/>
+                    </label>
+                </div>
+
+                <div class="form-row">
+                    <label>
+                        <span>CVC</span>
+                        <input type="text" size="4" data-stripe="cvc"/>
+                    </label>
+                </div>
+
+                <div class="form-row">
+                    <label>
+                        <span>Expiration (MM/YYYY)</span>
+                        <input type="text" size="2" data-stripe="exp-month"/>
+                    </label>
+                    <span> / </span>
+                    <input type="text" size="4" data-stripe="exp-year"/>
+                </div>
+
+                <button type="submit">Submit Payment</button>
+            </form>
+            <form action="/" method="post" id="bindPaymentMethodForm" >
+
+                <div class="form-row">
+                    <label for="name" class="stripeLabel">Your Name</label>
+                    <input type="text" name="name" class="required" />
+                </div>
+
+                <div class="form-row">
+                    <label for="email">E-mail Address</label>
+                    <input type="text" name="email" class="required" />
+                </div>
+
+                <div class="form-row">
+                    <label>Card Number</label>
+                    <input type="text" maxlength="20" autocomplete="off" class="card-number stripe-sensitive required" />
+                </div>
+
+                <div class="form-row">
+                    <label>CVC</label>
+                    <input type="text" maxlength="4" autocomplete="off" class="card-cvc stripe-sensitive required" />
+                </div>
+
+                <div class="form-row">
+                    <label>Expiration</label>
+                    <div class="expiry-wrapper">
+                        <select class="card-expiry-month stripe-sensitive required">
+                        </select>
+                        <script type="text/javascript">
+                            var select = $(".card-expiry-month"),
+                                    month = new Date().getMonth() + 1;
+                            for (var i = 1; i <= 12; i++) {
+                                select.append($("<option value='"+i+"' "+(month === i ? "selected" : "")+">"+i+"</option>"))
+                            }
+                        </script>
+                        <span> / </span>
+                        <select class="card-expiry-year stripe-sensitive required"></select>
+                        <script type="text/javascript">
+                            var select = $(".card-expiry-year"),
+                                    year = new Date().getFullYear();
+
+                            for (var i = 0; i < 12; i++) {
+                                select.append($("<option value='"+(i + year)+"' "+(i === 0 ? "selected" : "")+">"+(i + year)+"</option>"))
+                            }
+                        </script>
+                    </div>
+                </div>
+
+                <button type="submit" name="submit-button">Submit</button>
+                <span class="payment-errors"></span>
+            </form>
 
         </div><!-- /.col-xs-12 main -->
     </div><!--/.row-->
