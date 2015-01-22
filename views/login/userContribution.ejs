@@ -49,135 +49,74 @@
             <div id="resultsContainer" class="">
 
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table id="transactionHistoryTable" class="table table-striped">
                         <thead>
                         <tr>
                             <th>#ID</th>
                             <th>Date</th>
                             <th>Amount($)</th>
                             <th>Contribute To</th>
-                            <th>Header</th>
+                            <th>Status</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr>
-                            <td>1,001</td>
-                            <td>Lorem</td>
-                            <td>ipsum</td>
-                            <td>dolor</td>
-                            <td>sit</td>
-                        </tr>
-                        <tr>
-                            <td>1,002</td>
-                            <td>amet</td>
-                            <td>consectetur</td>
-                            <td>adipiscing</td>
-                            <td>elit</td>
-                        </tr>
-                        <tr>
-                            <td>1,003</td>
-                            <td>Integer</td>
-                            <td>nec</td>
-                            <td>odio</td>
-                            <td>Praesent</td>
-                        </tr>
-                        <tr>
-                            <td>1,003</td>
-                            <td>libero</td>
-                            <td>Sed</td>
-                            <td>cursus</td>
-                            <td>ante</td>
-                        </tr>
-                        <tr>
-                            <td>1,004</td>
-                            <td>dapibus</td>
-                            <td>diam</td>
-                            <td>Sed</td>
-                            <td>nisi</td>
-                        </tr>
-                        <tr>
-                            <td>1,005</td>
-                            <td>Nulla</td>
-                            <td>quis</td>
-                            <td>sem</td>
-                            <td>at</td>
-                        </tr>
-                        <tr>
-                            <td>1,006</td>
-                            <td>nibh</td>
-                            <td>elementum</td>
-                            <td>imperdiet</td>
-                            <td>Duis</td>
-                        </tr>
-                        <tr>
-                            <td>1,007</td>
-                            <td>sagittis</td>
-                            <td>ipsum</td>
-                            <td>Praesent</td>
-                            <td>mauris</td>
-                        </tr>
-                        <tr>
-                            <td>1,008</td>
-                            <td>Fusce</td>
-                            <td>nec</td>
-                            <td>tellus</td>
-                            <td>sed</td>
-                        </tr>
-                        <tr>
-                            <td>1,009</td>
-                            <td>augue</td>
-                            <td>semper</td>
-                            <td>porta</td>
-                            <td>Mauris</td>
-                        </tr>
-                        <tr>
-                            <td>1,010</td>
-                            <td>massa</td>
-                            <td>Vestibulum</td>
-                            <td>lacinia</td>
-                            <td>arcu</td>
-                        </tr>
-                        <tr>
-                            <td>1,011</td>
-                            <td>eget</td>
-                            <td>nulla</td>
-                            <td>Class</td>
-                            <td>aptent</td>
-                        </tr>
+                        <tbody id="transactionHistoryTableBody">
+
 
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div id="botPage" style="float: right"></div>
-
+            <div id="botPage" style="float: left"></div>
+            <div id="noresult" style="display: none" >
+                <h3>Sorry, you have no contribution yet</h3>
+            </div>
 
         </div><!-- /.col-xs-12 main -->
+
     </div><!--/.row-->
 </div><!--/.container-->
 <%include ../layout/footer.ejs%>
 <script src="/jquery/dist/jquery.min.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
+<script src="/assets/js/jquery.simplePagination.js"></script>
 <script>
-   // function initResultPage(searchResults){
-    function initResultPage(){
-        //$('#page').empty();
+    var transactionHistory=[];
+
+    var defaultHTML =
+        '<tr> <td> {Id} </td> '+
+        ' <td> {Date} </td> ' +
+        ' <td class="text-center"> {Amount} </td> ' +
+        ' <td> {Recipient} </td> ' +
+        ' <td> {Status} </td> ' +
+        ' </tr> ';
+
+    function replaceHtml(transaction){
+        return defaultHTML.replace("{Id}",transaction.transaction_id)
+                .replace("{Date}",dateDisplayFormatter(transaction.datetime))
+                .replace("{Amount}",transaction.amount)
+                .replace("{Recipient}",'<a href="/charities/'+transaction.recipient_id+'" style="color:black">'+transaction.name+'</a>')
+                .replace("{Status}",transaction.status)
+                ;
+
+    }
+        // function initResultPage(searchResults){
+    function initResultPage(data){
         $('#botPage').empty();
 
         var itemsOnPage = 20;
-        var resultConainer = $('#resultsContainer');
+        var resultConainer = $('#transactionHistoryTableBody');
 
         $('#botPage').pagination({  //首先获取对应的ID，第二步已经定义了ID为page
-            items: 11,  //这里是项目的总数，假使有100个项目
-            itemsOnPage: 6,  //这里是每页显示多少个项目
+            items: transactionHistory.length,  //这里是项目的总数，假使有100个项目
+            itemsOnPage: itemsOnPage,  //这里是每页显示多少个项目
             onInit: initPage,
             currentPage: 0,
             onPageClick: function(){
                 var page_index = $("#botPage").pagination('getCurrentPage') -1;
                 resultConainer.empty();
                 for(var i=page_index*itemsOnPage;i<(page_index+1)*itemsOnPage;++i) {
-                    resultConainer.append('adfsfsdfsd');
+                    resultConainer.append(replaceHtml(transactionHistory[i]));
                 }
                 //$("#page").pagination('drawPage',$("#botPage").pagination('getCurrentPage'));
 
@@ -186,15 +125,40 @@
         });
         function initPage() {
             resultConainer.empty();
-            for(var i=0;i<itemsOnPage && i< 11;++i) {
-                resultConainer.append('adfsfsdfsd');
+            for(var i=0;i<itemsOnPage && i< transactionHistory.length;++i) {
+                resultConainer.append(replaceHtml(transactionHistory[i]));
             }
         }
     }
+    function displayNoResults(){
+        //resultConainer.empty();
+        $('#botPage').empty();
+        $('#noresult').show(); //text("Sorry, you have no contribution yet.");//add keyword
 
-    $( document).ready(function(){
-        initResultPage();
-    })
+    }
+    function dateDisplayFormatter( cellvalue, options, rowObject ){
+        return cellvalue.substr(0,10);
+    }
+    function getUserTransactionHistory(){
+       $.get('/services/user/getTransactionHistory',function(data){
+           if(!data || data == "failed") {
+               //get history failed
+               return;
+           }
+           if(data.length>0) {
+               console.dir(data);
+               transactionHistory = data;
+               initResultPage(data);
+           }
+           else {
+               displayNoResults();
+           }
+       })
+    }
+
+   $( document).ready(function(){
+       getUserTransactionHistory();
+   })
 </script>
 </body>
 </html>

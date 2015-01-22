@@ -431,6 +431,18 @@ app.post('/services/user/updateBasicInfo', isLoggedIn, function(req,res){
 
 })
 
+
+app.get('/services/user/getTransactionHistory', isLoggedIn, function(req, res){
+    userLogin.getUserTransactionHistory(req.user.userId, function(err, results){
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
+    })
+})
 app.post('/services/user/settings', isLoggedIn, function(req,res){
     var userSettings = req.body.userSettings;
 
