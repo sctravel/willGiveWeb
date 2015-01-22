@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>WillGive</title>
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
+    <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+    <link rel="stylesheet" href="/assets/css/simplePagination.css" >
+
+
+    <%activeMenu = "SignUp"%>
+    <%include ../layout/navbar.ejs%>
+</head>
+<body>
+<div class="container sidebar-content" style="height:auto; min-height: 90%;">
+    <div class="row row-offcanvas row-offcanvas-left">
+
+        <!-- sidebar -->
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas"   id="sidebar" role="navigation"  >
+            <div data-spy="affix" data-offset-top="15" data-offset-bottom="30">
+                <ul class="nav" style="color: #000000;" id="sidebar-nav">
+                    <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" >
+                        <img src="<%=user.imageIconUrl%>" height="80" width="80"/> &nbsp;
+                        <strong> <%=user.firstName%></strong></li>
+                    <li>
+                        <a href="/users/account" style="color: #000000;">Edit Profile</a>
+                    </li>
+                    <li  >
+                        <a href="/users/settings" style="color: #000000;">Settings</a>
+                    </li>
+                    <li>
+                        <a href="/users/paymentMethod" style="color: #000000;">Payment Method</a>
+                    </li>
+                    <li>
+                        <a href="/users/contribution" style="color: #000000;"><strong>My Contributions</strong></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- main area -->
+        <div class="col-xs-12 col-sm-9" data-spy="scroll" style="padding-left: 5%" data-target="#sidebar-nav">
+            <h2 class="sub-header">My Contributions</h2>
+            <div id="page" ></div>
+
+            <div id="resultsContainer" class="">
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>#ID</th>
+                            <th>Date</th>
+                            <th>Amount($)</th>
+                            <th>Contribute To</th>
+                            <th>Header</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1,001</td>
+                            <td>Lorem</td>
+                            <td>ipsum</td>
+                            <td>dolor</td>
+                            <td>sit</td>
+                        </tr>
+                        <tr>
+                            <td>1,002</td>
+                            <td>amet</td>
+                            <td>consectetur</td>
+                            <td>adipiscing</td>
+                            <td>elit</td>
+                        </tr>
+                        <tr>
+                            <td>1,003</td>
+                            <td>Integer</td>
+                            <td>nec</td>
+                            <td>odio</td>
+                            <td>Praesent</td>
+                        </tr>
+                        <tr>
+                            <td>1,003</td>
+                            <td>libero</td>
+                            <td>Sed</td>
+                            <td>cursus</td>
+                            <td>ante</td>
+                        </tr>
+                        <tr>
+                            <td>1,004</td>
+                            <td>dapibus</td>
+                            <td>diam</td>
+                            <td>Sed</td>
+                            <td>nisi</td>
+                        </tr>
+                        <tr>
+                            <td>1,005</td>
+                            <td>Nulla</td>
+                            <td>quis</td>
+                            <td>sem</td>
+                            <td>at</td>
+                        </tr>
+                        <tr>
+                            <td>1,006</td>
+                            <td>nibh</td>
+                            <td>elementum</td>
+                            <td>imperdiet</td>
+                            <td>Duis</td>
+                        </tr>
+                        <tr>
+                            <td>1,007</td>
+                            <td>sagittis</td>
+                            <td>ipsum</td>
+                            <td>Praesent</td>
+                            <td>mauris</td>
+                        </tr>
+                        <tr>
+                            <td>1,008</td>
+                            <td>Fusce</td>
+                            <td>nec</td>
+                            <td>tellus</td>
+                            <td>sed</td>
+                        </tr>
+                        <tr>
+                            <td>1,009</td>
+                            <td>augue</td>
+                            <td>semper</td>
+                            <td>porta</td>
+                            <td>Mauris</td>
+                        </tr>
+                        <tr>
+                            <td>1,010</td>
+                            <td>massa</td>
+                            <td>Vestibulum</td>
+                            <td>lacinia</td>
+                            <td>arcu</td>
+                        </tr>
+                        <tr>
+                            <td>1,011</td>
+                            <td>eget</td>
+                            <td>nulla</td>
+                            <td>Class</td>
+                            <td>aptent</td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="botPage" style="float: right"></div>
+
+
+        </div><!-- /.col-xs-12 main -->
+    </div><!--/.row-->
+</div><!--/.container-->
+<%include ../layout/footer.ejs%>
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/jquery-validation/dist/jquery.validate.js"></script>
+<script>
+   // function initResultPage(searchResults){
+    function initResultPage(){
+        //$('#page').empty();
+        $('#botPage').empty();
+
+        var itemsOnPage = 20;
+        var resultConainer = $('#resultsContainer');
+
+        $('#botPage').pagination({  //首先获取对应的ID，第二步已经定义了ID为page
+            items: 11,  //这里是项目的总数，假使有100个项目
+            itemsOnPage: 6,  //这里是每页显示多少个项目
+            onInit: initPage,
+            currentPage: 0,
+            onPageClick: function(){
+                var page_index = $("#botPage").pagination('getCurrentPage') -1;
+                resultConainer.empty();
+                for(var i=page_index*itemsOnPage;i<(page_index+1)*itemsOnPage;++i) {
+                    resultConainer.append('adfsfsdfsd');
+                }
+                //$("#page").pagination('drawPage',$("#botPage").pagination('getCurrentPage'));
+
+            },
+            cssStyle: 'light-theme'  //这里就是css风格了，可设置light-theme,dark-theme,compact-theme,效果依次按文章开头的大图中展现
+        });
+        function initPage() {
+            resultConainer.empty();
+            for(var i=0;i<itemsOnPage && i< 11;++i) {
+                resultConainer.append('adfsfsdfsd');
+            }
+        }
+    }
+
+    $( document).ready(function(){
+        initResultPage();
+    })
+</script>
+</body>
+</html>

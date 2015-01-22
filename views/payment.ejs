@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title>Stripe Sample Form</title>
+    <title>Will Give payment
+        <form action=""></form></title>
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
     <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.8.1/jquery.validate.min.js"></script>
     <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
     <script type="text/javascript">
-        Stripe.setPublishableKey('pk_test_JlIsUBQpOb8xLNOZrXPCSOOJ');
+        Stripe.setPublishableKey('pk_test_iJPmMQMGarAHRE7oUcM5iBxO');
         $(document).ready(function() {
             function addInputNames() {
                 // Not ideal, but jQuery's validate plugin requires fields to have names
@@ -95,7 +96,7 @@
 </head>
 <body>
 
-<h1>Stripe Example Form</h1>
+<h1>Will Give payment Form</h1>
 
 <form action="/" method="post" id="example-form" style="display: none;">
 
@@ -155,7 +156,7 @@
 -->
 <script>if (window.Stripe) $("#example-form").show()</script>
 <noscript><p>JavaScript is required for the registration form.</p></noscript>
-<form action="/services/stripePayment" method="POST">
+<form action="/payment/stripePayment" method="POST">
     <input type="hidden" autocomplete="off" name="amount" value="100"></input>
     <input type="hidden" autocomplete="off" name="currency" value="usd"></input>
     <input type="hidden" autocomplete="off" name="orderId" value="aaaaaaaa"></input>
@@ -163,7 +164,7 @@
     <script
             src="https://checkout.stripe.com/checkout.js"
             class="stripe-button"
-            data-key="pk_test_JlIsUBQpOb8xLNOZrXPCSOOJ"
+            data-key="pk_test_iJPmMQMGarAHRE7oUcM5iBxO"
             data-image="/square-image.png"
             data-name="Demo Site"
             data-description="2 widgets ($20.00)"

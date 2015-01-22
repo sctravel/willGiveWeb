@@ -5,23 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>WillGive</title>
-    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
 
-    <script src="jquery/dist/jquery.js"></script>
-    <script src="angular/angular.js"></script>
-    <script src="angularJs/willGiveApp.js"></script>
     <%activeMenu = "About"%>
     <%include layout/navbar.ejs%>
 </head>
 <body>
-<div class="container" style="padding-top: 2%">
+<div class="container" style="padding-top: 2%; height:auto; min-height: 90%;  margin: 0 auto -50px;">
     <div class="row text-center">
         <div class="col-md-12"><h2  style="margin:0;"><b>About</b></h2></div>
     </div>
     <hr />
     <div class="row text-center">
         <div class="col-md-6">
-            <img alt="about-us-page" src="resources/images/launch_icon.png" />
+            <img alt="about-us-page" src="images/launch_icon.png" />
 
         </div>
         <div class="col-md-6">
@@ -32,7 +30,10 @@
         </div>
     </div>
 </div>
-</body>
 <%include layout/footer.ejs%>
+
+<script src="/jquery/dist/jquery.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
 
 </html>

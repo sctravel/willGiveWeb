@@ -1,4 +1,4 @@
-﻿
+
 ///////////////////////////////////////////////////////////////////////////
 // Module dependencies
 ///////////////////////////////////////////////////////////////////////////
@@ -39,6 +39,13 @@ app.use(passport.session());
 app.use(flash());
 app.use(express.methodOverride());
 
+//for fileupload
+var busboy = require("connect-busboy");
+app.use(busboy({
+    limits: {
+        fileSize: 0.2 * 1024 * 1024
+    }
+}));
 
 ///////////////////////////////////////////////////////////////////////////
 // Log4js configuration
@@ -76,8 +83,8 @@ exports.logger=function(name){
 ///////////////////////////////////////////////////////////////////////////
 app.use(app.router);
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
 if ('development' == app.get('env')) {
@@ -101,9 +108,7 @@ var serverOptions = {
 ///////////////////////////////////////////////////////////////////////
 passport.use('local', new LocalStrategy(
     function (username, password, done) {
-        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!email-"+username+"; password-"+password);
         userLogin.manualLogin(username, password, function(error,results){
             console.dir(results);
             if(error) {
@@ -111,8 +116,8 @@ passport.use('local', new LocalStrategy(
             }
             if(results.isAuthenticated == true ) {
                 console.dir(results);
-                return done(null, {provider : results.provider, userId : results.userId, sessionId: results.sessionId,
-                    firstName: results.firstName, lastName: results.lastName} );
+                return done(null, {provider : results.provider, email:results.email, userId : results.userId, sessionId: results.sessionId,
+                    firstName: results.firstName, lastName: results.lastName, imageIconUrl: results.imageIconUrl} );
             } else {
                 return done(null, false, { message: results.errorMessage });
             }
@@ -127,7 +132,7 @@ passport.use(new fpass({
         callbackURL:'/auth/facebook/callback'
     },
     function(accessToken, refreshToken, fbUserData, done){
-
+        console.dir(fbUserData);
         userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
             console.dir(results);
             if(err) {
@@ -135,8 +140,8 @@ passport.use(new fpass({
             }
             if(results.isAuthenticated == true ) {
                 console.dir(results);
-                return done(null,{provider:results.provider, userId :results.userId, sessionId: results.sessionId,
-                    firstName: results.firstName, lastName: results.lastName});
+                return done(null,{provider:results.provider, email: results.email, userId :results.userId, sessionId: results.sessionId,
+                    firstName: results.firstName, lastName: results.lastName, imageIconUrl: results.imageIconUrl});
             } else {
                 return done(null, false, { message: results.errorMessage });
             }
@@ -146,13 +151,13 @@ passport.use(new fpass({
 ));
 
 passport.serializeUser(function (user, done) {//保存user对象
-    done(null, {provider:user.provider, userId:user.userId, sessionId:user.sessionId,
-        firstName: user.firstName, lastName: user.lastName});//可以通过数据库方式操作
+    done(null, {provider:user.provider, email:user.email, userId:user.userId, sessionId:user.sessionId,
+        firstName: user.firstName, lastName: user.lastName, imageIconUrl: user.imageIconUrl});//可以通过数据库方式操作
 });
 
 passport.deserializeUser(function (user, done) {//删除user对象
-    done(null, {provider:user.provider, userId:user.userId, sessionId:user.sessionId,
-        firstName: user.firstName, lastName: user.lastName} );//可以通过数据库方式操作
+    done(null, {provider:user.provider, email:user.email, userId:user.userId, sessionId:user.sessionId,
+        firstName: user.firstName, lastName: user.lastName, imageIconUrl: user.imageIconUrl} );//可以通过数据库方式操作
 });
 
 
@@ -224,13 +229,7 @@ app.get('/auth/facebook/callback',
 app.get('/', function (req,res){
      console.log(req.user);
      res.render('indexUber',{user: req.user});
-      //  var code = qr.image("abcd", { type: 'png' });
-        //res.render('indexUber');
-        //res.type('png');
-        //var svg_string = qr.imageSync('I love QR!', { type: 'svg' });
-        //save qrcode to local file
-        //code.pipe(fs.createWriteStream('i_love_qr.png'));
-        //code.pipe(res);
+
     //}
 
 });
@@ -246,11 +245,26 @@ app.get('/login/signin', function (req,res){
     res.render('login/signin',{error: req.flash('error'), success: req.flash('success'), message:req.flash('message') });
 });
 app.get('/login/signup', function (req,res){
-    res.render('login/signup');
+    res.render('login/signup', {user: req.user});
 });
 app.get('/login/forgotPassword', function (req,res){
-    res.render('login/forgotPassword');
+    res.render('login/forgotPassword', {user: req.user});
 });
+
+app.get('/users/account', isLoggedIn, function(req,res){
+    console.log('in /user/account');
+    console.dir(req.user);
+    res.render('login/userProfile', {user: req.user});
+})
+app.get('/users/settings', isLoggedIn, function(req,res){
+    res.render('login/userSettings', {user: req.user});
+})
+app.get('/users/paymentMethod', isLoggedIn, function(req,res){
+    res.render('login/userPaymentMethod', {user: req.user});
+})
+app.get('/users/contribution', isLoggedIn, function(req,res){
+    res.render('login/userContribution', {user: req.user});
+})
 
 app.get('/login/resetPassword',function(req,res){
     var email = req.query.email;
@@ -278,12 +292,47 @@ app.get('/payment', function (req,res){
 
 
 
-app.get('/services/getConfirmPic',function(req,res){
+app.get('/services/getConfirmPic',  function(req,res){
     var conf = confirmPicGenerator.generateConfirmPic();
     req.session.confirmText = conf[0];
     console.log("text is "+conf[0]);
     res.end(conf[1]);
 })
+
+app.post('/services/login/profilePictureUpload', function(req,res) {
+
+    var fstream;
+    req.pipe(req.busboy);
+    req.busboy.on('file', function (fieldname, file, filename) {
+        var fileNameArray = filename.split('.');
+        var suffix = fileNameArray[fileNameArray.length-1].toLowerCase();
+
+        //Path where image will be uploaded
+        fstream = fs.createWriteStream(__dirname + '/public/resources/profileIcons/' + fieldname +'.'+suffix);
+        file.pipe(fstream);
+        fstream.on('close', function () {
+            console.log("Upload Finished of " + fieldname);
+            var iconUrl = '/resources/profileIcons/' + fieldname +'.'+suffix;
+            userLogin.updateUserProfileImageUrl( iconUrl, req.user.userId,function(err, results){
+                if(!err) {
+                    var user = req.user;
+                    user.imageIconUrl = iconUrl;
+                    req.logIn(user, function(error) {
+                        if (error) {
+                            console.warn('after updating basic info login failed');
+                            res.send(constants.services.CALLBACK_FAILED);
+                        }
+                        res.redirect('/users/account');
+                    });
+                }
+            });
+                       //where to go next
+        });
+    });
+
+});
+
+
 
 /////////////////////////////////////////////////////////
 //find back password
@@ -309,6 +358,7 @@ app.post('/services/login/resetPassword',function(req,res){
 app.post('/services/login/signup', function(req,res) {
     console.dir(req.body);
     var newAccountInfo = req.body.newAccountInfo;
+    newAccountInfo.imageIconUrl = constants.SITE_URL+"/images/blank_icon.jpg";
     //newAccountInfo.provider=constants.login.LOGIN_PROVIDER.WILLGIVE;
     userLogin.addNewUserAccount(newAccountInfo, function(err,results){
         if(err) {
@@ -320,6 +370,7 @@ app.post('/services/login/signup', function(req,res) {
         }
     });
 });
+
 
 //Use Passport to handle signin
 
@@ -336,6 +387,141 @@ app.post('/services/login/validateEmailLink',function(req,res){
         }
         res.send(results);
     })
+
+})
+
+
+/////////////////////////////////////
+// User Account related
+/////////////////////////////////////
+app.post('/services/user/updatePassword', isLoggedIn, function(req,res){
+    var updatedData = req.body.updatedData;
+    userLogin.updatePasswordForUserAccount(updatedData, req.user.userId,function(err,results){
+        if(err){
+            console.error(err);
+            res.send(err.toString());
+            return;
+        }
+        res.send(results);
+    })
+
+})
+
+app.post('/services/user/updateBasicInfo', isLoggedIn, function(req,res){
+    var basicInfo = req.body.updatedData;
+    console.log('calling /services/user/updateBasicInfo');
+    userLogin.updateBasicInfoForUserAccount(basicInfo, req.user.userId,function(err,results){
+        if(err){
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        } else {
+            var user = req.user;
+            user.firstName = basicInfo.firstName;
+            user.lastName = basicInfo.lastName;
+
+            req.logIn(user, function(error) {
+                if (error) {
+                    console.warn('after updating basic info login failed');
+                    res.send(constants.services.CALLBACK_FAILED);
+                }
+            });
+            res.send(constants.services.CALLBACK_SUCCESS);
+        }
+    })
+
+})
+
+app.post('/services/user/settings', isLoggedIn, function(req,res){
+    var userSettings = req.body.userSettings;
+
+    userLogin.updateAccountSettingsForUser(userSettings, req.user.userId, function(err,results){
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        res.send(results);
+    })
+
+})
+app.get('/services/user/settings', isLoggedIn, function(req,res) {
+    userLogin.getAccountSettingInfoForUser(req.user.userId, function(err, userSettings){
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        res.send(userSettings);
+    })
+});
+
+
+//https://stripe.com/docs/tutorials/forms
+
+app.post('/payment/stripePayment',function(req,res){
+
+    console.warn("start payment process");
+
+    //'stripeToken
+    console.dir(req.body);
+    console.dir(req.body.stripeToken);
+
+
+    var stripe = require("stripe")("sk_test_zjF1XdDy0TZAYnuifaHR0iDf");
+
+// (Assuming you're using express - expressjs.com)
+// Get the credit card details submitted by the form
+    var stripeToken = req.body.stripeToken;
+
+
+    var charge = stripe.charges.create({
+        amount: 100, // amount in cents, again
+        currency: "usd",
+        card: stripeToken,
+        description: "payinguser@example.com"
+    }, function(err, charge) {
+        if (err && err.type === 'StripeCardError') {
+            // The card has been declined
+        }
+    });
+
+    var savedId;
+
+    console.dir("start saving customers");
+    stripe.customers.create({
+        card: stripeToken,
+        description: 'payinguser@example.com'
+    }).then(function(customer) {
+
+        console.dir("using customerId:"+ customer.id);
+        console.dir("creating customers");
+        return stripe.charges.create({
+            amount: 1000, // amount in cents, again
+            currency: "usd",
+            customer: customer.id
+        });
+
+        console.dir("savedId= "+ savedId);
+    }).then(function(charge) {
+    });
+
+    console.dir("end saving customers");
+
+
+
+// Later...
+   // var customerId = getStripeCustomerId(user);
+
+    //need to update transaction tabele;
+
+    /*
+    stripe.charges.create({
+       amount: 1500, // amount in cents, again
+        currency: "usd",
+        customer: 12345//customerId
+    });*/
+
+    console.warn("end payment process");
 
 })
 

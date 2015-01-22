@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>WillGive</title>
-    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
 
-    <script src="jquery/dist/jquery.js"></script>
-    <script src="angular/angular.js"></script>
-    <script src="angularJs/willGiveApp.js"></script>
     <%activeMenu = "Contact"%>
     <%include layout/navbar.ejs%>
 </head>
@@ -33,6 +31,9 @@
             <div class="row">
                 <div class="col-md-2"><label>What's up?</label></div>
                 <div class="col-md-8"><textarea rows="3" class="form-control"></textarea></div>
+            </div>
+            <div class="row" style="padding-top: 2%">
+                <button type="button" class="btn btn-lg btn-primary center-block">Contact Us</button>
             </div>
         </form>
     </div>
@@ -74,7 +75,10 @@
     </div>
     <hr/>
 </div>
-</body>
 <%include layout/footer.ejs%>
+
+<script src="/jquery/dist/jquery.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
 
 </html>
