@@ -170,8 +170,9 @@ passport.deserializeUser(function (user, done) {//删除user对象
 });
 
 
+//User login, need to separate from recipient login
 function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && ('facebook'==req.user.provider || 'willgive'==req.user.provider)) {
         console.dir(req.user);
         return next();
     }
@@ -274,7 +275,9 @@ app.get('/users/paymentMethod', isLoggedIn, function(req,res){
 app.get('/users/contribution', isLoggedIn, function(req,res){
     res.render('login/userContribution', {user: req.user});
 })
-
+app.get('/users/collections', isLoggedIn, function(req,res){
+    res.render('login/userCollections', {user: req.user});
+})
 app.get('/login/resetPassword',function(req,res){
     var email = req.query.email;
     var randomString = req.query.randomString;
