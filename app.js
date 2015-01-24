@@ -1,4 +1,4 @@
-
+﻿
 ///////////////////////////////////////////////////////////////////////////
 // Module dependencies
 ///////////////////////////////////////////////////////////////////////////
@@ -367,7 +367,7 @@ app.post('/services/login/resetPassword',function(req,res){
 app.post('/services/login/signup', function(req,res) {
     console.dir(req.body);
     var newAccountInfo = req.body.newAccountInfo;
-    newAccountInfo.imageIconUrl = constants.SITE_URL+"/images/blank_icon.jpg";
+    newAccountInfo.imageIconUrl = "/images/blank_icon.jpg";
     //newAccountInfo.provider=constants.login.LOGIN_PROVIDER.WILLGIVE;
     userLogin.addNewUserAccount(newAccountInfo, function(err,results){
         if(err) {
@@ -577,8 +577,8 @@ https.createServer(serverOptions,app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
 
-/*
-http.createServer(app).listen(80, function(){
+
+/*http.createServer(app).listen(80, function(){
     console.log('Express server listening on port 80');
 });*/
 
