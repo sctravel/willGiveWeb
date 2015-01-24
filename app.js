@@ -86,10 +86,23 @@ app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+var facebookCredentials = {
+    clientID:'420297851460293',
+    clientSecret:'dd643be55187ac4e76e6487ccd61e7a0',
+    callbackURL:'/auth/facebook/callback'
+};
 // development only
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
+    facebookCredentials = {
+        clientID:'323966477728028',
+            clientSecret:'660a1a721669c9daa0244faa45113b21',
+        callbackURL:'/auth/facebook/callback'
+    }
 };
+console.log("#########app env: "+app.get('env')+". ##############");
+console.dir(facebookCredentials);
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -126,11 +139,7 @@ passport.use('local', new LocalStrategy(
 ));
 
 //WillGive app under XiTu's FB account
-passport.use(new fpass({
-        clientID:'323966477728028',
-        clientSecret:'660a1a721669c9daa0244faa45113b21',
-        callbackURL:'/auth/facebook/callback'
-    },
+passport.use(new fpass(facebookCredentials,
     function(accessToken, refreshToken, fbUserData, done){
         console.dir(fbUserData);
         userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
@@ -552,6 +561,13 @@ app.post('/services/login/forgotPassword',function(req,res){
         console.info("Email exists? "+results);
         res.send(results);
     })
+})
+
+////////////////////////////////////
+//Recipient Pages / Services
+////////////////////////////////////
+app.get('/recipient/signup', function(req, res) {
+    res.render('recipient/recipientSignUp');
 })
 
 ///////////////////////////////////////////////////////////////////////////
