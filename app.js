@@ -15,6 +15,7 @@ var qr = require('qr-image');
 
 //User's code in lib folder
 var userLogin = require('./lib/db/userLogin');
+var charityOps = require('./lib/db/charityOpetation');
 var forgotPassword = require('./lib/db/forgotPassword');
 var constants = require('./lib/common/constants');
 global.activeMenu = "Home";
@@ -27,7 +28,6 @@ var billingUntil = require('./lib/db/BillingUtil');
 ///////////////////////////////////////////////////////////////////////////
 var app = express();
 // all environments
-app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.favicon());
@@ -140,7 +140,7 @@ passport.use('local', new LocalStrategy(
     }
 ));
 
-//WillGive app under XiTu's FB account
+
 passport.use(new fpass(facebookCredentials,
     function(accessToken, refreshToken, fbUserData, done){
         console.dir(fbUserData);
@@ -253,12 +253,29 @@ app.get('/aboutus', function (req,res){
     res.render('aboutUs', {user: req.user});
 });
 
+app.get('/charities', function (req,res){
+    res.render('charities', {user: req.user});
+});
+
+app.get('/searchCharities', function (req,res){
+    res.render('searchCharities', {user: req.user});
+});
+
+app.get('/listCharities', function (req,res){
+    res.render('listCharities', {user: req.user});
+});
+
+app.get('/hotCharities', function (req,res){
+    res.render('hotCharities', {user: req.user});
+});
+
 app.get('/login/signin', function (req,res){
     res.render('login/signin',{error: req.flash('error'), success: req.flash('success'), message:req.flash('message') });
 });
 app.get('/login/signup', function (req,res){
     res.render('login/signup', {user: req.user});
 });
+
 app.get('/login/forgotPassword', function (req,res){
     res.render('login/forgotPassword', {user: req.user});
 });
@@ -304,7 +321,24 @@ app.get('/payment', function (req,res){
 });
 
 
+app.post('/services/charity/getFavoriteCharity', function(req,res){
+    console.log('calling /services/charity/getFavoriteCharity');
+	charityOps.getFavoriteCharity(req.user.userId, function(err, results){      
+    })
+})
 
+app.get('/services/charity/searchCharity', function(req,res){
+    console.log('calling /services/charity/searchCharity ' + req.query.keyword);
+	charityOps.searchCharity(req.query.keyword, function(err, results){      
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
+    })
+})
 
 app.get('/services/getConfirmPic',  function(req,res){
     var conf = confirmPicGenerator.generateConfirmPic();
@@ -591,14 +625,22 @@ app.get('/recipient/signup', function(req, res) {
 ///////////////////////////////////////////////////////////////////////////
 // Start Server
 ///////////////////////////////////////////////////////////////////////////
-https.createServer(serverOptions,app).listen(app.get('port'), function(){
-    console.log('Express server listening on port ' + app.get('port'));
-});
+if ('development' == app.get('env')) {
+	app.set('port', process.env.PORT || 3000);
+	https.createServer(serverOptions,app).listen(app.get('port'), function(){
+		console.log('Express server listening on port ' + app.get('port'));
+	});
+}else
+{
+	app.set('port', process.env.PORT || 443);
+	https.createServer(serverOptions,app).listen(app.get('port'), function(){
+		console.log('Express server listening on port ' + app.get('port'));
+	});
+	http.createServer(app).listen(80, function(){
+		console.log('Express server listening on port 80');
+	});
+}
 
-
-/*http.createServer(app).listen(80, function(){
-    console.log('Express server listening on port 80');
-});*/
 
 
 
