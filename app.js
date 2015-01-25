@@ -1,4 +1,4 @@
-
+﻿
 ///////////////////////////////////////////////////////////////////////////
 // Module dependencies
 ///////////////////////////////////////////////////////////////////////////
@@ -18,6 +18,8 @@ var userLogin = require('./lib/db/userLogin');
 var forgotPassword = require('./lib/db/forgotPassword');
 var constants = require('./lib/common/constants');
 global.activeMenu = "Home";
+
+var billingUntil = require('./lib/db/BillingUtil');
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -467,6 +469,10 @@ app.get('/services/user/settings', isLoggedIn, function(req,res) {
     })
 });
 
+//known customer
+app.post('/payment/stripePayment/customerId',function(req,res) {
+
+});
 
 //https://stripe.com/docs/tutorials/forms
 
@@ -485,17 +491,10 @@ app.post('/payment/stripePayment',function(req,res){
 // Get the credit card details submitted by the form
     var stripeToken = req.body.stripeToken;
 
+    var amount = req.body.amount;
 
-    var charge = stripe.charges.create({
-        amount: 100, // amount in cents, again
-        currency: "usd",
-        card: stripeToken,
-        description: "payinguser@example.com"
-    }, function(err, charge) {
-        if (err && err.type === 'StripeCardError') {
-            // The card has been declined
-        }
-    });
+    console.dir("amount:"+amount);
+    //save transaction history into database
 
     var savedId;
 
@@ -507,35 +506,51 @@ app.post('/payment/stripePayment',function(req,res){
 
         console.dir("using customerId:"+ customer.id);
         console.dir("creating customers");
-        return stripe.charges.create({
-            amount: 1000, // amount in cents, again
-            currency: "usd",
-            customer: customer.id
+
+        //update customerId into for payment method table
+        var user_id=1;
+        var recipient_id=2;
+        billingUntil.updatePaymentMethodStripeId(user_id,customer.id,function(err,results){
+            if(err){
+                console.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            res.send(results);
         });
 
-        console.dir("savedId= "+ savedId);
-    }).then(function(charge) {
-    });
+        console.dir("end saving customers");
 
-    console.dir("end saving customers");
+        var charge = stripe.charges.create({
+            amount: amount, // amount in cents, again
+            currency: "usd",
+            card: stripeToken,
+            description: "payinguser@example.com",
+            //customer: customer.id
+        }, function(err, charge) {
+            if (err && err.type === 'StripeCardError') {
+                // The card has been declined
+            }
+            exports.insertTransactionHistroy(amount,user_id,recipient_id,Date.now(),Date.now(),"Processing", function(err,results){
+                if(err){
+                    console.error(err);
+                    res.send(constants.services.CALLBACK_FAILED);
+                    return;
+                }
+                res.send(results);
+            });
+
+        });
+
+        console.dir("end saving charges");
 
 
+           console.warn("end payment process");
 
-// Later...
-   // var customerId = getStripeCustomerId(user);
+        })
 
-    //need to update transaction tabele;
 
-    /*
-    stripe.charges.create({
-       amount: 1500, // amount in cents, again
-        currency: "usd",
-        customer: 12345//customerId
-    });*/
-
-    console.warn("end payment process");
-
-})
+});
 
 app.post('/services/login/forgotPassword',function(req,res){
     console.log("post to forgot password");
@@ -552,7 +567,7 @@ app.post('/services/login/forgotPassword',function(req,res){
         console.info("Email exists? "+results);
         res.send(results);
     })
-})
+});
 
 ///////////////////////////////////////////////////////////////////////////
 // Start Server
