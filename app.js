@@ -88,10 +88,23 @@ app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+var facebookCredentials = {
+    clientID:'420297851460293',
+    clientSecret:'dd643be55187ac4e76e6487ccd61e7a0',
+    callbackURL:'/auth/facebook/callback'
+};
 // development only
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
+    facebookCredentials = {
+        clientID:'323966477728028',
+            clientSecret:'660a1a721669c9daa0244faa45113b21',
+        callbackURL:'/auth/facebook/callback'
+    }
 };
+console.log("#########app env: "+app.get('env')+". ##############");
+console.dir(facebookCredentials);
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -128,11 +141,7 @@ passport.use('local', new LocalStrategy(
 ));
 
 //WillGive app under XiTu's FB account
-passport.use(new fpass({
-        clientID:'323966477728028',
-        clientSecret:'660a1a721669c9daa0244faa45113b21',
-        callbackURL:'/auth/facebook/callback'
-    },
+passport.use(new fpass(facebookCredentials,
     function(accessToken, refreshToken, fbUserData, done){
         console.dir(fbUserData);
         userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
@@ -163,8 +172,9 @@ passport.deserializeUser(function (user, done) {//删除user对象
 });
 
 
+//User login, need to separate from recipient login
 function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && ('facebook'==req.user.provider || 'willgive'==req.user.provider)) {
         console.dir(req.user);
         return next();
     }
@@ -267,7 +277,9 @@ app.get('/users/paymentMethod', isLoggedIn, function(req,res){
 app.get('/users/contribution', isLoggedIn, function(req,res){
     res.render('login/userContribution', {user: req.user});
 })
-
+app.get('/users/collections', isLoggedIn, function(req,res){
+    res.render('login/userCollections', {user: req.user});
+})
 app.get('/login/resetPassword',function(req,res){
     var email = req.query.email;
     var randomString = req.query.randomString;
@@ -360,7 +372,7 @@ app.post('/services/login/resetPassword',function(req,res){
 app.post('/services/login/signup', function(req,res) {
     console.dir(req.body);
     var newAccountInfo = req.body.newAccountInfo;
-    newAccountInfo.imageIconUrl = constants.SITE_URL+"/images/blank_icon.jpg";
+    newAccountInfo.imageIconUrl = "/images/blank_icon.jpg";
     //newAccountInfo.provider=constants.login.LOGIN_PROVIDER.WILLGIVE;
     userLogin.addNewUserAccount(newAccountInfo, function(err,results){
         if(err) {
@@ -569,6 +581,13 @@ app.post('/services/login/forgotPassword',function(req,res){
     })
 });
 
+////////////////////////////////////
+//Recipient Pages / Services
+////////////////////////////////////
+app.get('/recipient/signup', function(req, res) {
+    res.render('recipient/recipientSignUp');
+})
+
 ///////////////////////////////////////////////////////////////////////////
 // Start Server
 ///////////////////////////////////////////////////////////////////////////
@@ -576,8 +595,8 @@ https.createServer(serverOptions,app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
 
-/*
-http.createServer(app).listen(80, function(){
+
+/*http.createServer(app).listen(80, function(){
     console.log('Express server listening on port 80');
 });*/
 

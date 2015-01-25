@@ -57,7 +57,6 @@
         </div>
         <div style="padding-bottom: 1%"> &nbsp</div>
         <button id="submitSignupFormButton" class="btn btn-lg btn-primary btn-block" type="submit" >SIGN UP</button>
-
     </form>
     <div class="col-xs-2 text-center">
         <h3>Or</h3>
@@ -71,10 +70,11 @@
             <li><span class="glyphicon glyphicon-home" aria-hidden="true"></span><span class="alt"> time:</span> Quick sign in, no passwords</li>
         </ul>
     </div>
-
 </div>
+
 <div class="container" style="padding-top: 2%">
     <div class="text-center" >
+        By clicking “Sign Up” , you agree to WillGive's Terms and Conditions and Privacy Policy.<br><br>
         Already have an account? <a href="/login/signin">Sign In</a>
     </div>
 </div>
@@ -113,26 +113,14 @@
             }
         },
         messages: {
-            signupFirstName: {
-                required: "Required."
-            },
-            signupLastName: {
-                required: "Required."
-            },
             signupPassword: {
-                required: "Required.",
-                minlength: "Password at least 8 chars.",
                 equalTo: "Password doesn't match."
-
             },
             signupPasswordConfirm: {
-                required: "Required.",
-                minlength: "password at least 8 chars.",
                 equalTo: "Password doesn't match."
             },
             signupEmail: {
-                required: "Required.",
-                email: "Please enter a validate email address.",
+
                 remote: "This email is already in use. Please use Forgot Password from the login page to retrieve account."
             },
             usage: "Please check my terms."
