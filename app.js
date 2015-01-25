@@ -531,7 +531,7 @@ app.post('/payment/stripePayment',function(req,res){
             if (err && err.type === 'StripeCardError') {
                 // The card has been declined
             }
-            exports.insertTransactionHistroy(amount,user_id,recipient_id,Date.now(),Date.now(),"Processing", function(err,results){
+            billingUntil.insertTransactionHistroy("Stripe_"+stripeToken,amount,user_id,recipient_id,Date.now(),Date.now(),"Processing", stripeToken, function(err,results){
                 if(err){
                     console.error(err);
                     res.send(constants.services.CALLBACK_FAILED);
