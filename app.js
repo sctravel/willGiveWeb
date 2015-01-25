@@ -321,9 +321,16 @@ app.get('/payment', function (req,res){
 });
 
 
-app.post('/services/charity/getFavoriteCharity', function(req,res){
-    console.log('calling /services/charity/getFavoriteCharity');
+app.get('/services/charity/getFavoriteCharity', function(req,res){
+    console.log('calling /services/charity/getFavoriteCharity ' + req.user.userId);
 	charityOps.getFavoriteCharity(req.user.userId, function(err, results){      
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
     })
 })
 
@@ -339,6 +346,33 @@ app.get('/services/charity/searchCharity', function(req,res){
         res.send(results);
     })
 })
+
+app.get('/services/charity/listCharity', function(req,res){
+    console.log('calling /services/charity/listCharity ' + req.query.category + req.query.state + req.query.city);
+	charityOps.searchCharity(req.query.category, req.query.state, req.query.city, function(err, results){      
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
+    })
+})
+
+app.get('/services/charity/classifyCharity', function(req,res){
+    console.log('calling /services/charity/classifyCharity ' + req.query.classification + req.query.condition);
+	charityOps.searchCharity(req.query.classification, req.query.condition, function(err, results){      
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
+    })
+})
+
 
 app.get('/services/getConfirmPic',  function(req,res){
     var conf = confirmPicGenerator.generateConfirmPic();
