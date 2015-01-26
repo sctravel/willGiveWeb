@@ -42,12 +42,14 @@
 
         <!-- main area -->		
         <div class="col-xs-14 col-sm-9" data-spy="scroll" style="padding-left: 3%" data-target="#sidebar-nav">
+            <form method="get" role="search">
             <div id="page" class="input-group" style="width:70%;" >
                     <input type="text" class="form-control" placeholder="Search" name="keyword" id="keyword" value="<%=keyword%>" required autofocus>
                     <div class="input-group-btn">
                         <button class="btn btn-default" id="Search" type="button" style="background-color:#ffb900;"><i class="glyphicon glyphicon-search"></i></button>
                     </div>
 			</div>
+			</form>
 			
             <div id="resultsContainer" class="">
                 <div class="table-responsive">
