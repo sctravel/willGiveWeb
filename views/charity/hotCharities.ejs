@@ -5,17 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>WillGive</title>
-    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
     <link rel="stylesheet" href="/assets/css/simplePagination.css" >
 
-
-    <%activeMenu = "SignUp"%>
+    <%activeMenu = "Charities"%>
     <%include ../layout/navbar.ejs%>
 </head>
 <body>
-<div class="container sidebar-content" style="height:auto; min-height: 90%;">
+<div class="container sidebar-content" style="height:auto; min-height: 90%; ">
     <div class="row row-offcanvas row-offcanvas-left">
 
         <!-- sidebar -->
@@ -23,59 +21,54 @@
             <div data-spy="affix" data-offset-top="15" data-offset-bottom="30">
                 <ul class="nav" style="color: #000000;" id="sidebar-nav">
                     <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" >
-                        <img src="<%=user.imageIconUrl%>" height="80" width="80"/> &nbsp;
-                        <strong> <%=user.firstName%></strong></li>
+                        <strong>Search Charities</strong></li>
                     <li>
-                        <a href="/users/account" style="color: #000000;">Edit Profile</a>
+                        <a href="/charity/charities" style="color: #000000;">My charities</a>
                     </li>
                     <li  >
-                        <a href="/users/settings" style="color: #000000;">Settings</a>
+                        <a href="/charity/searchCharities" style="color: #000000;">Search Charities</a>
                     </li>
                     <li>
-                        <a href="/users/paymentMethod" style="color: #000000;">Payment Method</a>
+                        <a href="/charity/listCharities" style="color: #000000;">List A-Z</a>
                     </li>
                     <li>
-                        <a href="/users/contribution" style="color: #000000;"><strong>My Contributions</strong></a>
-                    </li>
-                    <li>
-                        <a href="/users/collections" style="color: #000000;">My Collections</a>
+                        <a href="/charity/hotCharities" style="color: #000000;"><strong>Recommended</strong></a>
                     </li>
                 </ul>
             </div>
         </div>
 
         <!-- main area -->
-        <div class="col-xs-12 col-sm-9" data-spy="scroll" style="padding-left: 5%" data-target="#sidebar-nav">
-            <h2 class="sub-header">My Contributions</h2>
+        <div class="col-xs-12 col-sm-9" data-spy="scroll" style="padding-left: 3%" data-target="#sidebar-nav">
+            <h2 class="sub-header">Recommended charities</h2>
             <div id="page" ></div>
 
             <div id="resultsContainer" class="">
 
                 <div class="table-responsive">
-                    <table id="transactionHistoryTable" class="table table-striped">
+                    <table id="resultTable" class="table table-striped">
                         <thead>
                         <tr>
-                            <th>#ID</th>
-                            <th>Date</th>
-                            <th>Amount($)</th>
-                            <th>Contribute To</th>
-                            <th>Status</th>
+                            <th>name</th>
+                            <th>EIN</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Phone</th>
+                            <th>Website</th>
+                            <th>Mission</th>
                         </tr>
                         </thead>
-                        <tbody id="transactionHistoryTableBody">
-
-
+                        <tbody id="resultTableBody">
                         </tbody>
                     </table>
                 </div>
             </div>
             <div id="botPage" style="float: left"></div>
             <div id="noresult" style="display: none" >
-                <h3>Sorry, you have no contribution yet</h3>
+                <h3>No search result found.</h3>
             </div>
 
         </div><!-- /.col-xs-12 main -->
-
     </div><!--/.row-->
 </div><!--/.container-->
 <%include ../layout/footer.ejs%>
@@ -84,22 +77,29 @@
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
 <script src="/assets/js/jquery.simplePagination.js"></script>
 <script>
-    var transactionHistory=[];
+    var favoriteCharity=[];
 
     var defaultHTML =
-        '<tr> <td> {Id} </td> '+
-        ' <td> {Date} </td> ' +
-        ' <td class="text-center"> {Amount} </td> ' +
-        ' <td> {Recipient} </td> ' +
-        ' <td> {Status} </td> ' +
+        '<tr> <td> {name} </td> '+
+        ' <td> {EIN} </td> ' +
+        ' <td> {City} </td> ' +
+        ' <td> {State} </td> ' +
+        ' <td> {Phone} </td> ' +
+        ' <td> {Website} </td> ' +
+        ' <td> {Mission} </td> ' +
         ' </tr> ';
 
     function replaceHtml(transaction){
-        return defaultHTML.replace("{Id}",transaction.transaction_id)
-                .replace("{Date}",dateDisplayFormatter(transaction.datetime))
-                .replace("{Amount}",transaction.amount)
-                .replace("{Recipient}",'<a href="/charities/'+transaction.recipient_id+'" style="color:black">'+transaction.name+'</a>')
-                .replace("{Status}",transaction.status)
+	    var website = transaction.website;
+		if(website.indexOf("http:") == -1)
+			website = "http://" + website;
+        return defaultHTML.replace("{name}",transaction.name)
+                .replace("{EIN}",transaction.EIN)
+                .replace("{City}",transaction.city)
+		.replace("{State}",transaction.state)
+                .replace("{Phone}",transaction.phone)
+                .replace("{Website}","<a style=\"color: #000000;\" href='" + website + "' target='_blank'>" + transaction.website + "</a>")
+                .replace("{Mission}",transaction.mission)
                 ;
 
     }
@@ -108,49 +108,56 @@
         $('#botPage').empty();
 
         var itemsOnPage = 20;
-        var resultConainer = $('#transactionHistoryTableBody');
+        var resultConainer = $('#favoriteCharityTableBody');
 
-        $('#botPage').pagination({  //首先获取对应的ID，第二步已经定义了ID为page
-            items: transactionHistory.length,  //这里是项目的总数，假使有100个项目
-            itemsOnPage: itemsOnPage,  //这里是每页显示多少个项目
+        $('#botPage').pagination({  
+            items: favoriteCharity.length, 
+            itemsOnPage: itemsOnPage,  
             onInit: initPage,
             currentPage: 0,
             onPageClick: function(){
                 var page_index = $("#botPage").pagination('getCurrentPage') -1;
                 resultConainer.empty();
                 for(var i=page_index*itemsOnPage;i<(page_index+1)*itemsOnPage;++i) {
-                    resultConainer.append(replaceHtml(transactionHistory[i]));
+                    resultConainer.append(replaceHtml(favoriteCharity[i]));
                 }
                 //$("#page").pagination('drawPage',$("#botPage").pagination('getCurrentPage'));
 
             },
-            cssStyle: 'light-theme'  //这里就是css风格了，可设置light-theme,dark-theme,compact-theme,效果依次按文章开头的大图中展现
+            cssStyle: 'light-theme' 
         });
         function initPage() {
             resultConainer.empty();
-            for(var i=0;i<itemsOnPage && i< transactionHistory.length;++i) {
-                resultConainer.append(replaceHtml(transactionHistory[i]));
+            for(var i=0;i<itemsOnPage && i< favoriteCharity.length;++i) {
+                resultConainer.append(replaceHtml(favoriteCharity[i]));
             }
         }
     }
     function displayNoResults(){
         //resultConainer.empty();
         $('#botPage').empty();
-        $('#noresult').show(); //text("Sorry, you have no contribution yet.");//add keyword
+        $('#noresult').show(); //add keyword
+    }
+
+    function displayNotLoggedIn(){
+        //resultConainer.empty();
+        $('#botPage').empty();
+        $('#notLogin').show();
 
     }
+    
     function dateDisplayFormatter( cellvalue, options, rowObject ){
         return cellvalue.substr(0,10);
     }
-    function getUserTransactionHistory(){
-       $.get('/services/user/getTransactionHistory',function(data){
+    function getUserFavoriteCharity(){
+       $.get('/services/user/getFavoriteCharity',function(data){
            if(!data || data == "failed") {
-               //get history failed
+               //get  failed
                return;
            }
            if(data.length>0) {
                console.dir(data);
-               transactionHistory = data;
+               favoriteCharity = data;
                initResultPage(data);
            }
            else {
@@ -160,7 +167,11 @@
     }
 
    $( document).ready(function(){
-       getUserTransactionHistory();
+   	<% if ( 'undefined' == typeof user ) { %>
+       	getUserFavoriteCharity();
+       	<% } else { %>
+       	displayNotLoggedIn();
+		<%}%>
    })
 </script>
 </body>

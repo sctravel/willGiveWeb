@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>WillGive</title>
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+    <link rel="stylesheet" href="/assets/css/simplePagination.css" >
+
+    <%activeMenu = "Charities"%>
+    <%include ../layout/navbar.ejs%>
+</head>
+<body>
+<div class="container sidebar-content" style="height:auto; min-height: 90%; ">
+    <div class="row row-offcanvas row-offcanvas-left">
+
+        <!-- sidebar -->
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas"   id="sidebar" role="navigation"  >
+            <div data-spy="affix" data-offset-top="15" data-offset-bottom="30">
+                <ul class="nav" style="color: #000000;" id="sidebar-nav">
+                    <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" >
+                        <strong>Search Charities</strong></li>
+                    <li>
+                        <a href="/charity/charities" style="color: #000000;"><strong>My charities</strong></a>
+                    </li>
+                    <li  >
+                        <a href="/charity/searchCharities" style="color: #000000;">Search Charities</a>
+                    </li>
+                    <li>
+                        <a href="/charity/listCharities" style="color: #000000;">List A-Z</a>
+                    </li>
+                    <li>
+                        <a href="/charity/hotCharities" style="color: #000000;">Recommended</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- main area -->
+        <div class="col-xs-12 col-sm-9" data-spy="scroll" style="padding-left: 3%" data-target="#sidebar-nav">
+            <h2 class="sub-header">My charities</h2>
+            <div id="page" ></div>
+
+            <div id="resultsContainer" class="">
+
+                <div class="table-responsive">
+                    <table id="favoriteCharityTable" class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>name</th>
+                            <th>EIN</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Phone</th>
+                            <th>Website</th>
+                            <th>Mission</th>
+                        </tr>
+                        </thead>
+                        <tbody id="favoriteCharityTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="botPage" style="float: left"></div>
+            <div id="noresult" style="display: none" >
+                <h3>Sorry, you have no favorite charity yet</h3>
+            </div>
+            <div id="notLogin" style="display: none" >
+                <h3>Sorry, you have not logged in yet</h3>
+            </div>
+
+        </div><!-- /.col-xs-12 main -->
+    </div><!--/.row-->
+</div><!--/.container-->
+<%include ../layout/footer.ejs%>
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/jquery-validation/dist/jquery.validate.js"></script>
+<script src="/assets/js/jquery.simplePagination.js"></script>
+<script>
+    var favoriteCharity=[];		
+	var defaultHTML =
+        '<tr> <td> {name} </td> '+
+        ' <td> {EIN} </td> ' +
+        ' <td> {City} </td> ' +
+        ' <td> {State} </td> ' +
+        ' <td> {Phone} </td> ' +
+        ' <td> {Website} </td> ' +
+        ' <td> {Mission} </td> ' +
+        ' </tr> ';
+
+    function replaceHtml(transaction){
+        return defaultHTML.replace("{name}",transaction.name)
+                .replace("{EIN}",transaction.EIN)
+                .replace("{City}",transaction.city)
+                .replace("{Phone}",transaction.state)
+                .replace("{Website}",transaction.website)
+                .replace("{Mission}",transaction.mission)
+                ;
+
+    }
+    function initResultPage(favoriteCharity){
+        $('#botPage').empty();
+
+        var itemsOnPage = 20;
+        var resultConainer = $('#favoriteCharityTableBody');
+
+        $('#botPage').pagination({  
+            items: favoriteCharity.length, 
+            itemsOnPage: itemsOnPage,  
+            onInit: initPage,
+            currentPage: 0,
+            onPageClick: function(){
+                var page_index = $("#botPage").pagination('getCurrentPage') -1;
+                resultConainer.empty();
+                for(var i=page_index*itemsOnPage;i<(page_index+1)*itemsOnPage;++i) {
+                    resultConainer.append(replaceHtml(favoriteCharity[i]));
+                }
+                //$("#page").pagination('drawPage',$("#botPage").pagination('getCurrentPage'));
+
+            },
+            cssStyle: 'light-theme' 
+        });
+        function initPage() {
+            resultConainer.empty();
+            for(var i=0;i<itemsOnPage && i< favoriteCharity.length;++i) {
+                resultConainer.append(replaceHtml(favoriteCharity[i]));
+            }
+        }
+    }
+    function displayNoResults(){
+        //resultConainer.empty();
+        $('#botPage').empty();
+        $('#noresult').show(); 
+    }
+
+    function displayNotLoggedIn(){
+        $('#botPage').empty();
+        $('#notLogin').show();
+
+    }
+    
+    function dateDisplayFormatter( cellvalue, options, rowObject ){
+        return cellvalue.substr(0,10);
+    }
+    function getUserFavoriteCharity(){
+       $.get('/services/charity/getFavoriteCharity',function(data){
+           if(!data || data == "failed") {
+               //get  failed
+               return;
+           }
+           if(data.length>0) {
+               console.dir(data);
+               favoriteCharity = data;
+               initResultPage(data);
+           }
+           else {
+               displayNoResults();
+           }
+       })
+    }
+
+   $( document).ready(function(){
+   	<% if ( 'undefined' == typeof user ) { %>
+       	displayNotLoggedIn();
+       	<% } else { %>		
+		getUserFavoriteCharity();       	
+		<%}%>
+   })
+</script>
+</body>
+</html>
