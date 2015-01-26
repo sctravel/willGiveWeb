@@ -102,14 +102,13 @@
                 .replace("{Website}","<a style=\"color: #000000;\" href='" + website + "' target='_blank'>" + transaction.website + "</a>")
                 .replace("{Mission}",transaction.mission)
                 ;
-
     }
     function initResultPage(results){
         $('#botPage').empty();
 
         var itemsOnPage = 10;
         var resultConainer = $('#resultTableBody');
-
+        initPage();
         $('#botPage').pagination({  
             items: results.length, 
             itemsOnPage: itemsOnPage,  
@@ -148,6 +147,7 @@
 
 	
     function searchCharity(){
+       console.log('keyword-'+$('#keyword').val());
        $.get('/services/charity/searchCharity?keyword=' + $('#keyword').val(), function(data){
            if(!data || data == "failed") {
                return;

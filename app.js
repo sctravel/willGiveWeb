@@ -322,58 +322,6 @@ app.get('/payment', function (req,res){
 });
 
 
-app.get('/services/charity/getFavoriteCharity', isLoggedIn, function(req,res){
-    console.log('calling /services/charity/getFavoriteCharity ' + req.user.userId);
-	charityOps.getFavoriteCharity(req.user.userId, function(err, results){      
-        if(err){
-            console.error(err);
-            res.send(constants.services.CALLBACK_FAILED);
-            return;
-        }
-        console.dir(results);
-        res.send(results);
-    })
-})
-
-app.get('/services/charity/searchCharity', function(req,res){
-    console.log('calling /services/charity/searchCharity ' + req.query.keyword);
-	charityOps.searchCharity(req.query.keyword, function(err, results){      
-        if(err){
-            console.error(err);
-            res.send(constants.services.CALLBACK_FAILED);
-            return;
-        }
-        console.dir(results);
-        res.send(results);
-    })
-})
-
-app.get('/services/charity/classifyCharity', function(req,res){
-    console.log('calling /services/charity/classifyCharity ' + req.query.classification + " " + req.query.condition);	
-	charityOps.classifyCharity(req.query.classification, req.query.condition, function(err, results){
-        if(err){
-            console.error(err);
-            res.send(constants.services.CALLBACK_FAILED);
-            return;
-        }
-        console.dir(results);
-        res.send(results);
-    })
-})
-
-app.get('/services/charity/listCharity', function(req,res){
-    console.log('calling /services/charity/listCharity ' + req.query.category + " "+ req.query.state + " "+ req.query.city);
-	charityOps.listCharity(req.query.category, req.query.state, req.query.city, function(err, results){      
-        if(err){
-            console.error(err);
-            res.send(constants.services.CALLBACK_FAILED);
-            return;
-        }
-        console.dir(results);
-        res.send(results);
-    });
-})
-
 
 app.get('/services/getConfirmPic',  function(req,res){
     var conf = confirmPicGenerator.generateConfirmPic();
@@ -666,6 +614,59 @@ app.post('/services/recipient/signup', function(req, res) {
     console.dir(signUpFrom);
     recipient.createNewRecipient(signUpFrom, function(err, results) {
 
+    });
+})
+
+
+app.get('/services/charity/getFavoriteCharity', isLoggedIn, function(req,res){
+    console.log('calling /services/charity/getFavoriteCharity ' + req.user.userId);
+    charityOps.getFavoriteCharity(req.user.userId, function(err, results){
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
+    })
+})
+
+app.get('/services/charity/searchCharity', function(req,res){
+    console.log('calling /services/charity/searchCharity ' + req.query.keyword);
+    charityOps.searchCharity(req.query.keyword, function(err, results){
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
+    })
+})
+
+app.get('/services/charity/classifyCharity', function(req,res){
+    console.log('calling /services/charity/classifyCharity ' + req.query.classification + " " + req.query.condition);
+    charityOps.classifyCharity(req.query.classification, req.query.condition, function(err, results){
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
+    })
+})
+
+app.get('/services/charity/listCharity', function(req,res){
+    console.log('calling /services/charity/listCharity ' + req.query.category + " "+ req.query.state + " "+ req.query.city);
+    charityOps.listCharity(req.query.category, req.query.state, req.query.city, function(err, results){
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
     });
 })
 
