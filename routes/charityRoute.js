@@ -9,6 +9,10 @@ module.exports = function(app) {
     var isLoggedIn = require('../app').isLoggedIn;
 
 
+    app.get('/charity', function (req,res){
+        res.render('charity/charity',{user: req.user});
+    });
+
     app.get('/charity/charities', function (req,res){
         res.render('charity/charities', {user: req.user});
     });

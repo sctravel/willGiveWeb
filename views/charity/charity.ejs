@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8" />
+      <meta name="author" content="Script Tutorials" />
+      <title>WillGive</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <!-- attach CSS styles -->
+      <%activeMenu = "Charities"%>
+      <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link href="/assets/css/style.css" rel="stylesheet" />
+
+      <style>
+          body{
+              background-color: lightgray;
+          }
+          #main
+          {
+              margin-top:10px;
+              margin-left: 15%;
+              margin-right: 15%;
+              border: 10px;
+              border-color: black;
+          }
+
+          #main_left{
+              margin-top: 2%;
+          }
+
+          #main_right{
+              margin-top: 2%;
+          }
+
+          #wrapper{
+              background-color: white;
+          }
+
+
+      </style>
+      <%include ../layout/navbar.ejs%>
+
+  </head>
+
+  <body>
+      <!-- wrapper-->
+    <div id="main" class="container-fluid" >
+
+        <div class="row">
+
+          <div id="wrapper" class="container-fluid" >
+            <div id="main_left" class="col-lg-8">
+                <!--Gallery Slides-->
+                <div id="img_slides" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <img src="/images/logo.jpg"  alt="First slide">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- left text-->
+                <div id="introduction">
+                    <h2>
+                        Missions
+                    </h2>
+                    <hr/>
+                    <p>
+                        The International Committee of the Red Cross (ICRC) is a humanitarian institution based in Geneva, Switzerland and a three-time Nobel Prize Laureate. State parties (signatories) to the four Geneva Conventions of 1949 and their Additional Protocols of 1977 (Protocol I, Protocol II) and 2005 have given the ICRC a mandate to protect victims of international and internal armed conflicts. Such victims include war wounded, prisoners,refugees, civilians, and other non-combatants.[3]
+                    </p>
+                    <p>
+                        <a class="btn" href="#">MORE »</a>
+                    </p>
+                </div>
+            </div>
+
+            <div id="main_right" class="col-lg-4">
+              <!-- contribute button-->
+              <div id="contribute_button"  class="btn btn-block btn-lg btn-primary">
+                  Contribute
+              </div>
+              <!-- progress bar-->
+              <!--facebook of current login user -->
+              <!--recent donor -->
+                <div id="rec_don">
+                    <h3>Contributions</h3>
+                    <hr/>
+                    <img src="/images/launch_icon.png" width="30" height="25" style="float: left" />
+                    <table style="margin-left: 50px">
+                             <tr><td>UserName1</td></tr>
+                             <tr><td>some times ago</td></tr>
+                    </table>
+                    <hr/>
+                    <img src="/images/launch_icon.png" width="30" height="25" style="float: left" />
+                    <table style="margin-left: 50px">
+                        <tr><td>UserName2</td></tr>
+                        <tr><td>some times ago</td></tr>
+                    </table>
+                    <hr/>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <%include ../layout/footer.ejs%>
+
+    <script src="/jquery/dist/jquery.js"></script>
+    <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+  </body>
+
+</html>
