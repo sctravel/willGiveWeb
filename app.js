@@ -348,9 +348,9 @@ app.get('/services/charity/searchCharity', function(req,res){
     })
 })
 
-app.get('/services/charity/listCharity', function(req,res){
-    console.log('calling /services/charity/listCharity ' + req.query.category + req.query.state + req.query.city);
-	charityOps.searchCharity(req.query.category, req.query.state, req.query.city, function(err, results){      
+app.get('/services/charity/classifyCharity', function(req,res){
+    console.log('calling /services/charity/classifyCharity ' + req.query.classification + " " + req.query.condition);	
+	charityOps.classifyCharity(req.query.classification, req.query.condition, function(err, results){
         if(err){
             console.error(err);
             res.send(constants.services.CALLBACK_FAILED);
@@ -361,9 +361,9 @@ app.get('/services/charity/listCharity', function(req,res){
     })
 })
 
-app.get('/services/charity/classifyCharity', function(req,res){
-    console.log('calling /services/charity/classifyCharity ' + req.query.classification + req.query.condition);
-	charityOps.searchCharity(req.query.classification, req.query.condition, function(err, results){      
+app.get('/services/charity/listCharity', function(req,res){
+    console.log('calling /services/charity/listCharity ' + req.query.category + " "+ req.query.state + " "+ req.query.city);
+	charityOps.listCharity(req.query.category, req.query.state, req.query.city, function(err, results){      
         if(err){
             console.error(err);
             res.send(constants.services.CALLBACK_FAILED);
@@ -371,7 +371,7 @@ app.get('/services/charity/classifyCharity', function(req,res){
         }
         console.dir(results);
         res.send(results);
-    })
+    });
 })
 
 
