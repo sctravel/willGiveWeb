@@ -234,6 +234,15 @@ app.get('/', function (req,res){
 
 });
 
+
+app.get('/charity', function (req,res){
+    console.log(req.user);
+    res.render('charity',{user: req.user});
+
+    //}
+
+});
+
 app.get('/contactus', function (req,res){
     res.render('contactUs', {user: req.user});
 });
