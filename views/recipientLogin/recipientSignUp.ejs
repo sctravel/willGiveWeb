@@ -60,7 +60,7 @@
                 <label for="signupCategory" class="">Category
                     <span style="color:red;">*</span>
                 </label>
-                <select class="form-control" required="true">
+                <select id="signupCategory" class="form-control" required="true">
                     <option value="Education">Education</option>
                     <option value="Health">Health</option>
                     <option value="ReligiousParent">ReligiousParent</option>
@@ -224,7 +224,7 @@
 </div>
 <div class="container" style="padding-top: 2%">
     <div class="text-center" >
-        Already have an account? <a href="/login/signin">Sign In</a>
+        Already have an account? <a href="/recipient/signin">Sign In</a>
     </div>
 </div>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -253,9 +253,9 @@
         recipientSignUpForm.fax = $('#signupFax').val();
         recipientSignUpForm.mission = $('#signupMission').val();
         recipientSignUpForm.facebookPage = $('#signupFacebookPage').val();
-        recipientSignUpForm.videoUrl = $('#signupVideoUrl').val();
         recipientSignUpForm.contactPersonName= $('#signupContactPersonName').val();
         recipientSignUpForm.contactPersonTitle= $('#signupContactPersonTitle').val();
+        recipientSignUpForm.category = $('#signupCategory');
         //recipientSignUpForm.imageFile = $('#recipientProfileInput');
 
         console.dir(recipientSignUpForm);

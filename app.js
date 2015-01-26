@@ -64,20 +64,20 @@ log4js.configure({
                 "type": "pattern",
                 "pattern": "%m"
             },
-            "category": "app"
+            "category": "normal"
         }
     ],
     replaceConsole: true
 });
-var logger = log4js.getLogger('WillGive');
-logger.setLevel('INFO');
-app.use(log4js.connectLogger(logger, {level:log4js.levels.INFO}));
-
-exports.logger=function(name){
-    var logger = log4js.getLogger(name);
+var logger = log4js.getLogger('normal');
+if ('development' == app.get('env')) {
+    logger.setLevel('DEBUG');
+    app.use(log4js.connectLogger(logger, {level:log4js.levels.DEBUG, format:':method :url'}));
+} else {
     logger.setLevel('INFO');
-    return logger;
+    app.use(log4js.connectLogger(logger, {level:log4js.levels.INFO, format:':method :url'}));
 }
+exports.logger=logger;
 
 ///////////////////////////////////////////////////////////////////////////
 // Router / Middleware configuration
@@ -106,7 +106,7 @@ var serverOptions = {
 //User login, need to separate from recipient login
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated() && ( constants.login.LOGIN_PROVIDER.FACEBOOK=req.user.provider || constants.login.LOGIN_PROVIDER.WILLGIVE==req.user.provider)) {
-        console.dir(req.user);
+        logger.debug(req.user);
         return next();
     }
     res.redirect("/login/signin");
@@ -114,7 +114,7 @@ function isLoggedIn(req, res, next) {
 //User login, need to separate from recipient login
 function isLoggedInAsRecipient(req, res, next) {
     if (req.isAuthenticated() && constants.login.LOGIN_PROVIDER.RECIPIENT==req.user.provider) {
-        console.dir(req.user);
+        logger.debug(req.user);
         return next();
     }
     res.redirect("/recipient/login");
@@ -261,7 +261,7 @@ app.get('/recipient/designPage', function(req, res) {
 app.post('/services/recipient/signup', function(req, res) {
     //should auto login after signup
     var signUpFrom = req.body.recipientSignUpForm;
-    console.dir(signUpFrom);
+    logger.debug(signUpFrom);
     recipient.createNewRecipient(signUpFrom, function(err, results) {
 
     });
@@ -273,16 +273,16 @@ app.post('/services/recipient/signup', function(req, res) {
 if ('development' == app.get('env')) {
 	app.set('port', process.env.PORT || 3000);
 	https.createServer(serverOptions,app).listen(app.get('port'), function(){
-		console.log('Express server listening on port ' + app.get('port'));
+        logger.info('Express server listening on port ' + app.get('port'));
 	});
 }else
 {
 	app.set('port', process.env.PORT || 443);
 	https.createServer(serverOptions,app).listen(app.get('port'), function(){
-		console.log('Express server listening on port ' + app.get('port'));
+        logger.info('Express server listening on port ' + app.get('port'));
 	});
 	http.createServer(app).listen(80, function(){
-		console.log('Express server listening on port 80');
+		logger.info('Express server listening on port 80');
 	});
 }
 

@@ -4,10 +4,12 @@
 
 
 module.exports = function(app) {
+    this.name = 'charityRoute';
+
     var charityOps = require('../lib/db/charityOperation');
     var constants = require('../lib/common/constants');
     var isLoggedIn = require('../app').isLoggedIn;
-
+    var logger = require('../app').logger;
 
     app.get('/charity', function (req,res){
         res.render('charity/charity',{user: req.user});
@@ -33,53 +35,53 @@ module.exports = function(app) {
 
 
     app.get('/services/charity/getFavoriteCharity', isLoggedIn, function(req,res){
-        console.log('calling /services/charity/getFavoriteCharity ' + req.user.userId);
+        logger.info('calling /services/charity/getFavoriteCharity ' + req.user.userId);
         charityOps.getFavoriteCharity(req.user.userId, function(err, results){
             if(err){
-                console.error(err);
+                logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            console.dir(results);
+            logger.debug(results);
             res.send(results);
         })
     })
 
     app.get('/services/charity/searchCharity', function(req,res){
-        console.log('calling /services/charity/searchCharity ' + req.query.keyword);
+        logger.info('calling /services/charity/searchCharity ' + req.query.keyword);
         charityOps.searchCharity(req.query.keyword, function(err, results){
             if(err){
-                console.error(err);
+                logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            console.dir(results);
+            logger.debug(results);
             res.send(results);
         })
     })
 
     app.get('/services/charity/classifyCharity', function(req,res){
-        console.log('calling /services/charity/classifyCharity ' + req.query.classification + " " + req.query.condition);
+        logger.info('calling /services/charity/classifyCharity ' + req.query.classification + " " + req.query.condition);
         charityOps.classifyCharity(req.query.classification, req.query.condition, function(err, results){
             if(err){
-                console.error(err);
+                logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            console.dir(results);
+            logger.debug(results);
             res.send(results);
         })
     })
 
     app.get('/services/charity/listCharity', function(req,res){
-        console.log('calling /services/charity/listCharity ' + req.query.category + " "+ req.query.state + " "+ req.query.city);
+        logger.info('calling /services/charity/listCharity ' + req.query.category + " "+ req.query.state + " "+ req.query.city);
         charityOps.listCharity(req.query.category, req.query.state, req.query.city, function(err, results){
             if(err){
-                console.error(err);
+                logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            console.dir(results);
+            logger.debug(results);
             res.send(results);
         });
     })

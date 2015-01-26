@@ -4,6 +4,7 @@
 
 
 module.exports = function(app) {
+    this.name = 'userLoginRoute';
 
     var userLogin = require('../lib/db/userLogin');
     var forgotPassword = require('../lib/db/forgotPassword');
@@ -12,6 +13,7 @@ module.exports = function(app) {
     var passport = require('passport');
     var fpass = require('passport-facebook').Strategy;
     var LocalStrategy = require('passport-local').Strategy;
+    var logger = require('../app').logger;
 
 
     var facebookCredentials = {
@@ -27,8 +29,8 @@ module.exports = function(app) {
             callbackURL:'/auth/facebook/callback'
         }
     };
-    console.log("#########app env: "+app.get('env')+". ##############");
-    console.dir(facebookCredentials);
+    logger.info("#########app env: "+app.get('env')+". ##############");
+    logger.debug(facebookCredentials);
     ///////////////////////////////////////////////////////////////////////
     // Passport - Login methods setup
     ///////////////////////////////////////////////////////////////////////
@@ -36,12 +38,12 @@ module.exports = function(app) {
         function (username, password, done) {
 
             userLogin.manualLogin(username, password, function(error,results){
-                console.dir(results);
+                logger.debug(results);
                 if(error) {
                     return done(null, false, { message: 'Login Error. Please try again' });
                 }
                 if(results.isAuthenticated == true ) {
-                    console.dir(results);
+                    logger.debug(results);
                     return done(null, {provider : results.provider, email:results.email, userId : results.userId, sessionId: results.sessionId,
                         firstName: results.firstName, lastName: results.lastName, imageIconUrl: results.imageIconUrl} );
                 } else {
@@ -56,12 +58,12 @@ module.exports = function(app) {
         function(accessToken, refreshToken, fbUserData, done){
             console.dir(fbUserData);
             userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
-                console.dir(results);
+                logger.debug(results);
                 if(err) {
                     return done(null, false, { message: 'Facebook Login Error.' });
                 }
                 if(results.isAuthenticated == true ) {
-                    console.dir(results);
+                    logger.debug(results);
                     return done(null,{provider:results.provider, email: results.email, userId :results.userId, sessionId: results.sessionId,
                         firstName: results.firstName, lastName: results.lastName, imageIconUrl: results.imageIconUrl});
                 } else {
@@ -104,7 +106,7 @@ module.exports = function(app) {
             failureRedirect: '/login/signin' })
         ,
         function(req,res){
-            console.dir(req.session);
+            logger.debug(req.session);
             if(req.session.lastPage) {
                 res.redirect(req.session.lastPage);
             } else {
@@ -131,14 +133,14 @@ module.exports = function(app) {
         var email = req.query.email;
         var randomString = req.query.randomString;
 
-        console.warn("email:"+email+"; randomString:"+randomString);
+        logger.warn("Reset Password for email:"+email+"; randomString:"+randomString);
         res.render('login/resetPassword', {email:email,randomString:randomString});
     })
 
     app.get('/login/logout', isLoggedIn, function (req, res) {
-        console.log(req.user.userId + " logged out.");
         userLogin.logoutUserLoginHistory(req.user.userId, req.user.sessionId, function(err, results){
-            console.info("");//write logout history success
+            logger.info(req.user.userId + " logged out.");
+            ;//write logout history success
         })
         req.flash('success','Logged out!');
         req.logout();
@@ -153,12 +155,8 @@ module.exports = function(app) {
             { failureRedirect: '/login/signin', failureFlash: true }
         ),
         function(req,res){
-            console.dir(req.body);
-
-            //req.session.cookie.maxAge = 1*24*60*60*1000;
-            console.log("set cookie maxAge to 1 day");
-
-            console.dir(req.session);
+            logger.debug(req.body);
+            logger.debug(req.session);
             if(req.session.lastPage) {
                 res.redirect(req.session.lastPage);
             } else {
@@ -175,7 +173,7 @@ module.exports = function(app) {
 
         forgotPassword.updatePasswordByEmail(email,randomString,password,function(err,results){
             if(err) {
-                console.error(err);
+                logger.error(err);
                 res.send(err.toString());
                 return;
             }
@@ -187,16 +185,15 @@ module.exports = function(app) {
 
     //Data Services for account
     app.post('/services/login/signup', function(req,res) {
-        console.dir(req.body);
         var newAccountInfo = req.body.newAccountInfo;
         newAccountInfo.imageIconUrl = constants.paths.BLANK_ICON_PATH;
 
         userLogin.addNewUserAccount(newAccountInfo, function(err,results){
             if(err) {
-                console.error(err);
+                logger.error(err);
                 res.send(err.toString());
             } else {
-                console.info(results);
+                logger.debug(results);
                 res.send(constants.services.CALLBACK_SUCCESS);
             }
         });
@@ -209,13 +206,13 @@ module.exports = function(app) {
 
         forgotPassword.forgotPassword(email,function(err,results){
             if(err) {
-                console.error(err);
-                console.info("Email exists? Error!");
+                logger.error(err);
+                logger.info("Email exists? Error!");
 
                 res.send(err.toString());
                 return;
             }
-            console.info("Email exists? "+results);
+            logger.info("Email exists? "+results);
             res.send(results);
         })
     });
@@ -227,7 +224,7 @@ module.exports = function(app) {
 
         forgotPassword.validateEmailLink(email,randomString,function(err,results){
             if(err){
-                console.error(err);
+                logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
