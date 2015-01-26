@@ -15,6 +15,7 @@ var qr = require('qr-image');
 
 //User's code in lib folder
 var userLogin = require('./lib/db/userLogin');
+var recipient = require('./lib/db/recipientOperation')
 var forgotPassword = require('./lib/db/forgotPassword');
 var constants = require('./lib/common/constants');
 global.activeMenu = "Home";
@@ -238,7 +239,7 @@ app.get('/auth/facebook/callback',
 ///////////////////////////////////////////////////////////////////////////
 app.get('/', function (req,res){
      console.log(req.user);
-     res.render('indexUber',{user: req.user});
+     res.render('index',{user: req.user});
 
     //}
 
@@ -571,6 +572,18 @@ app.post('/services/login/forgotPassword',function(req,res){
 ////////////////////////////////////
 app.get('/recipient/signup', function(req, res) {
     res.render('recipient/recipientSignUp');
+})
+app.get('/recipient/designPage', function(req, res) {
+    res.render('recipient/recipientSignUp2_upload');
+})
+
+app.post('/services/recipient/signup', function(req, res) {
+    //should auto login after signup
+    var signUpFrom = req.body.recipientSignUpForm;
+    console.dir(signUpFrom);
+    recipient.createNewRecipient(signUpFrom, function(err, results) {
+
+    });
 })
 
 ///////////////////////////////////////////////////////////////////////////

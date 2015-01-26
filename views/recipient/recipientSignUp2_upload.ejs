@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" ng-app="willGiveApp" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>WillGive</title>
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
+
+    <%activeMenu = "SignUp"%>
+    <%include ../layout/navbar.ejs%>
+</head>
+<body>
+
+<div class="container" style="min-height: 70%; width:40%">
+    <div class="row">
+        <h2 class="form-signin-heading text-center">Charity SignUp - Deisgn Your Page</h2>
+    </div>
+
+    <form action="/services/recipient/profilePictureUpload" id="profileIconUploadForm" method="post" enctype="multipart/form-data" onsubmit="return checkImageSize(200)">
+        <label for="recipientProfileInput" class="">Profile Picture</label>
+        <input type="hidden" name="MAX_FILE_SIZE" value="1024" />
+        <input type="file" id="recipientProfileInput" name="recipientProfile" accept="image/*" >
+        <div style="float: left">File size max 1M</div><br>
+        <button id="submitProfileIconUploadFormButton" class="btn btn-lg btn-primary btn-block" type="submit" >Upload</button>
+    </form>
+    <div style="padding-bottom: 1%"> &nbsp</div>
+    <form action="/services/recipient/profileVideoUrlUpload" id="profileVideoUrlUploadFrom" method="post" enctype="multipart/form-data" onsubmit="">
+        <label for="signupVideoUrl" class="">Or paste a YouTube link here</label>
+        <input type="text" id="signupVideoUrl" name="signupVideoUrl" class="form-control" placeholder="http://">
+        <button id="submitVideoUrlUploadFormButton" class="btn btn-lg btn-primary btn-block" type="submit" >Upload</button>
+
+    </form>
+</div>
+<%include ../layout/footer.ejs%>
+
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/angular/angular.min.js"></script>
+<script src="/jquery-validation/dist/jquery.validate.js"></script>
+<script src="/angularJs/willGiveApp.js"></script>
+<script src="/assets/js/messageReporter.js"></script>
+</body>
+</html>

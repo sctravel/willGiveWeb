@@ -20,9 +20,9 @@
             <span style="color:red; ">* </span>Required
         </div>
     </div>
-    <form id="userSignupForm" class="col-xs-12"  method="post" style="padding-top: 2%">
-        <div id="signUpReporter" style="padding-bottom: 2%"></div>
-        <h3 class="form-signin-heading">1. Account</h3>
+    <form id="recipientSignupForm" class="col-xs-12"  method="post" style="padding-top: 2%">
+        <div id="recipientSignUpReporter" style="padding-bottom: 2%"></div>
+        <h3 class="form-signin-heading" style="padding-top: 1%">1. Account</h3>
 
         <div class="row form-group-lg">
             <label for="signupEmail" class="">Email address
@@ -42,7 +42,7 @@
             </label>
             <input type="password" id="signupPasswordConfirm" name="signupPasswordConfirm" class="form-control" placeholder="Confirm Password" equalTo="#signupPassword" minlength="8" required>
         </div>
-        <h3 class="form-signin-heading">2. Basic Information</h3>
+        <h3 class="form-signin-heading" style="padding-top: 1%">2. Basic Information</h3>
 
             <div class="row form-group-lg">
                     <label for="signupOrganizationName" class="">Organization Name
@@ -56,6 +56,21 @@
                 </label>
                 <input type="text" id="signupEIN" name="signupEIN" class="form-control" placeholder="EIN" required>
             </div>
+            <div class="row form-group-lg">
+                <label for="signupCategory" class="">Category
+                    <span style="color:red;">*</span>
+                </label>
+                <select class="form-control" required="true">
+                    <option value="Education">Education</option>
+                    <option value="Health">Health</option>
+                    <option value="ReligiousParent">ReligiousParent</option>
+                    <option value="Arts & Culture">Arts & Culture</option>
+                    <option value="Human Services">Human Services</option>
+                    <option value="Civic">Civic</option>
+                    <option value="Environment">Environment</option>
+                </select>
+            </div>
+
             <div class="row form-group-lg">
                 <label for="signupAddress" class="">Address
                     <span style="color:red;">*</span>
@@ -161,6 +176,10 @@
                 <input type="text" id="signupWebsite" name="signupWebsite" class="form-control" placeholder="Website" >
             </div>
             <div class="row form-group-lg">
+                <label for="signupFacebookPage" class="">Facebook Page</label>
+                <input type="text" id="signupFacebookPage" name="signupFacebookPage" class="form-control" placeholder="Facebook Page">
+            </div>
+            <div class="row form-group-lg">
                 <div class=" col-xs-6" style="padding-left: 0px" >
                     <label for="signupPhone" class="">Phone
                         <span style="color:red;">*</span>
@@ -172,18 +191,20 @@
                     <input type="tel" id="signupFax" name="signupFax" class="form-control" placeholder="Fax" >
                 </div>
             </div>
-
-            <h3 class="form-signin-heading">3. Profile</h3>
-
             <div class="row form-group-lg">
-                <label for="recipientProfileInput" class="">Profile Picture</label>
-                <input type="hidden" name="MAX_FILE_SIZE" value="1024" />
-                <input type="file" id="recipientProfileInput" name="recipientProfile" accept="image/*" >
-                <div style="float: left">File size max 1M</div><br>
-                <label for="signupVideoUrl" class="">Or paste a YouTube link here</label>
-                <input type="text" id="signupVideoUrl" name="signupVideoUrl" class="form-control" placeholder="http://">
+                <div class=" col-xs-6" style="padding-left: 0px" >
+                    <label for="signupContactPersonName" class="">Contact Person Name
+                        <span style="color:red;">*</span>
+                    </label>
+                    <input type="text" id="signupContactPersonName" name="signupContactPersonName" class="form-control" placeholder="Contact Person Name" required>
+                </div>
+                <div class="col-xs-6" style="padding-right: 0px" >
+                    <label for="signupContactPersonTitle" class="">Contact Person Title
+                        <span style="color:red;">*</span>
+                    </label>
+                    <input type="text" id="signupContactPersonTitle" name="signupContactPersonTitle" class="form-control" placeholder="Contact Person Title" required>
+                </div>
             </div>
-            <div style="padding-bottom: 1%"> &nbsp</div>
 
             <div class="row form-group-lg">
                 <label for="signupMission" class="">Mission
@@ -193,14 +214,10 @@
 
                 </textarea>
             </div>
-            <div style="padding-bottom: 1%"> &nbsp</div>
-            <div class="row form-group-lg">
-                <label for="signupFBPage" class="">Facebook Page</label>
-                <input type="text" id="signupFBPage" name="signupFBPage" class="form-control" placeholder="Facebook Page">
-            </div>
+
             <div style="padding-bottom: 1%"> &nbsp</div>
 
-            <button id="recipientSignupFormButton" class="btn btn-lg btn-primary btn-block"  type="submit" >SIGN UP</button>
+            <button id="recipientSignupFormButton" class="btn btn-lg btn-primary btn-block"  type="submit" >Save And Next</button>
     </form>
 
 
@@ -211,11 +228,45 @@
     </div>
 </div>
 <%include ../layout/footer.ejs%>
-<script src="/jquery/dist/jquery.min.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
+<script src="/assets/js/messageReporter.js"></script>
+<script src="/jquery/dist/jquery.js"></script>
+
 <script>
-    $('.selectpicker').selectpicker();
+    var reporter = new MessageReporter("recipientSignUpReporter");
+    reporter.clear();
+
+    $('#recipientSignupForm').submit(function(event){
+        event.preventDefault();
+        var recipientSignUpForm = {};
+        recipientSignUpForm.email = $('#signupEmail').val();
+        recipientSignUpForm.password = $('#signupPassword').val();
+        recipientSignUpForm.organizationName = $('#signupOrganizationName').val();
+        recipientSignUpForm.EIN = $('#signupEIN').val();
+        recipientSignUpForm.address = $('#signupAddress').val();
+        recipientSignUpForm.city = $('#signupCity').val();
+        recipientSignUpForm.state = $('#signupState').val();
+        recipientSignUpForm.country = $('#signupCountry').val();
+        recipientSignUpForm.zipCode = $('#signupZipCode').val();
+        recipientSignUpForm.websit = $('#signupWebsite').val();
+        recipientSignUpForm.phone = $('#signupPhone').val();
+        recipientSignUpForm.fax = $('#signupFax').val();
+        recipientSignUpForm.mission = $('#signupMission').val();
+        recipientSignUpForm.facebookPage = $('#signupFacebookPage').val();
+        recipientSignUpForm.videoUrl = $('#signupVideoUrl').val();
+        //recipientSignUpForm.imageFile = $('#recipientProfileInput')[0].files[0];
+
+        console.dir(recipientSignUpForm);
+        $.post("/services/recipient/signup",{recipientSignUpForm: recipientSignUpForm}, function(data){
+
+            if(data == "success") {
+
+            }
+        });
+
+
+    });
 </script>
 </body>
 
