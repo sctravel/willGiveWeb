@@ -42,9 +42,11 @@
 
         <!-- main area -->		
         <div class="col-xs-14 col-sm-9" data-spy="scroll" style="padding-left: 3%" data-target="#sidebar-nav">
-            <div id="page" >
-			    <input type="text" id="keyword" style="width: 70%" name="keyword" class="form-control" value="<%=keyword%>" required autofocus>
-                <input type="button" id="Search" name="Search" value="Search">
+            <div id="page" class="input-group" style="width:70%;" >
+                    <input type="text" class="form-control" placeholder="Search" name="keyword" id="keyword" value="<%=keyword%>" required autofocus>
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="Search" type="button" style="background-color:#ffb900;"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
 			</div>
 			
             <div id="resultsContainer" class="">
@@ -94,7 +96,7 @@
 	    var website = transaction.website;
 		if(website.indexOf("http:") == -1)
 			website = "http://" + website;
-        return defaultHTML.replace("{name}",transaction.name)
+        return defaultHTML.replace("{name}","<a style=\"color: #902070;\" href='/charity?id=" + transaction.recipient_id + "'>" + transaction.name + "</a>")
                 .replace("{EIN}",transaction.EIN)
                 .replace("{City}",transaction.city)
 				.replace("{State}",transaction.state)
@@ -147,7 +149,7 @@
 
 	
     function searchCharity(){
-       console.log('keyword-'+$('#keyword').val());
+	   if ($('#keyword').val() == "") return;
        $.get('/services/charity/searchCharity?keyword=' + $('#keyword').val(), function(data){
            if(!data || data == "failed") {
                return;

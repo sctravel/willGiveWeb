@@ -95,7 +95,7 @@
 	    var website = transaction.website;
 		if(website.indexOf("http:") == -1)
 			website = "http://" + website;
-        return defaultHTML.replace("{name}",transaction.name)
+        return defaultHTML.replace("{name}","<a style=\"color: #902070;\" href='/charity?id=" + transaction.recipient_id + "'>" + transaction.name + "</a>")
                 .replace("{EIN}",transaction.EIN)
                 .replace("{City}",transaction.city)
 		.replace("{State}",transaction.state)
