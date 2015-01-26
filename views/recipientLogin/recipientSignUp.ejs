@@ -255,7 +255,9 @@
         recipientSignUpForm.mission = $('#signupMission').val();
         recipientSignUpForm.facebookPage = $('#signupFacebookPage').val();
         recipientSignUpForm.videoUrl = $('#signupVideoUrl').val();
-        //recipientSignUpForm.imageFile = $('#recipientProfileInput')[0].files[0];
+        recipientSignUpForm.contactPersonName= $('#signupContactPersonName').val();
+        recipientSignUpForm.contactPersonTitle= $('#signupContactPersonTitle').val();
+        //recipientSignUpForm.imageFile = $('#recipientProfileInput');
 
         console.dir(recipientSignUpForm);
         $.post("/services/recipient/signup",{recipientSignUpForm: recipientSignUpForm}, function(data){

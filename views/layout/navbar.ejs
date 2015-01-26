@@ -26,6 +26,14 @@
                 <li class="<%=menuClass[1]%>"><a href="/aboutus">About Us</a></li>
                 <li class="<%=menuClass[2]%>"><a href="/contactus">Contact Us</a></li>
             </ul>
+            <form class="nav navbar-nav navbar-form" action="/charity/searchCharities" method="get" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search Charities" name="keyword" id="keyword">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
             <% if ( 'undefined' == typeof user ) { %>
             <ul class="nav navbar-nav navbar-right">
                 <li class="<%=menuClass[3]%>"><a href="/login/signin">SignIn</a></li>

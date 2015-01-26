@@ -7,11 +7,14 @@
     <title>WillGive</title>
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+    <link rel="stylesheet" href="/assets/css/simplePagination.css" >
 
     <%activeMenu = "Charities"%>
-    <%include layout/navbar.ejs%>
+    <%include ../layout/navbar.ejs%>
 </head>
 <body>
+<% if(undefined == typeof keyword || !keyword) {keyword=""}%>
+
 <div class="container sidebar-content" style="height:auto; min-height: 90%; ">
     <div class="row row-offcanvas row-offcanvas-left">
 
@@ -40,7 +43,8 @@
         <!-- main area -->		
         <div class="col-xs-14 col-sm-9" data-spy="scroll" style="padding-left: 3%" data-target="#sidebar-nav">
             <div id="page" >
-			<input type="text" id="keyword" style="width: 70%" name="keyword" class="form-control" required autofocus><input type="button" id="Search" name="Search" value="Search">
+			    <input type="text" id="keyword" style="width: 70%" name="keyword" class="form-control" value="<%=keyword%>" required autofocus>
+                <input type="button" id="Search" name="Search" value="Search">
 			</div>
 			
             <div id="resultsContainer" class="">
@@ -70,7 +74,7 @@
 		
     </div><!--/.row-->
 </div><!--/.container-->
-<%include layout/footer.ejs%>
+<%include ../layout/footer.ejs%>
 <script src="/jquery/dist/jquery.min.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
@@ -103,7 +107,7 @@
     function initResultPage(results){
         $('#botPage').empty();
 
-        var itemsOnPage = 20;
+        var itemsOnPage = 10;
         var resultConainer = $('#resultTableBody');
 
         $('#botPage').pagination({  
@@ -159,6 +163,7 @@
     }
 
    $( document).ready(function(){
+       searchCharity();
    })
 </script>
 </body>

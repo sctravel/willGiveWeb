@@ -254,20 +254,20 @@ app.get('/aboutus', function (req,res){
     res.render('aboutUs', {user: req.user});
 });
 
-app.get('/charities', function (req,res){
-    res.render('charities', {user: req.user});
+app.get('/charity/charities', function (req,res){
+    res.render('charity/charities', {user: req.user});
 });
 
-app.get('/searchCharities', function (req,res){
-    res.render('searchCharities', {user: req.user});
+app.get('/charity/searchCharities', function (req,res){
+    res.render('charity/searchCharities', {user: req.user, keyword: req.query.keyword});
 });
 
-app.get('/listCharities', function (req,res){
-    res.render('listCharities', {user: req.user});
+app.get('/charity/listCharities', function (req,res){
+    res.render('charity/listCharities', {user: req.user});
 });
 
-app.get('/hotCharities', function (req,res){
-    res.render('hotCharities', {user: req.user});
+app.get('/charity/hotCharities', function (req,res){
+    res.render('charity/hotCharities', {user: req.user});
 });
 
 app.get('/login/signin', function (req,res){
@@ -322,7 +322,7 @@ app.get('/payment', function (req,res){
 });
 
 
-app.get('/services/charity/getFavoriteCharity', function(req,res){
+app.get('/services/charity/getFavoriteCharity', isLoggedIn, function(req,res){
     console.log('calling /services/charity/getFavoriteCharity ' + req.user.userId);
 	charityOps.getFavoriteCharity(req.user.userId, function(err, results){      
         if(err){
@@ -654,10 +654,10 @@ app.post('/services/login/forgotPassword',function(req,res){
 //Recipient Pages / Services
 ////////////////////////////////////
 app.get('/recipient/signup', function(req, res) {
-    res.render('recipient/recipientSignUp');
+    res.render('recipientLogin/recipientSignUp');
 })
 app.get('/recipient/designPage', function(req, res) {
-    res.render('recipient/recipientSignUp2_upload');
+    res.render('recipientLogin/recipientSignUp2_upload');
 })
 
 app.post('/services/recipient/signup', function(req, res) {
