@@ -45,7 +45,7 @@
             <div id="resultsContainer" class="">
 
                 <div class="table-responsive">
-                    <table id="favoriteCharityTable" class="table table-striped">
+                    <table id="resultTable" class="table table-striped">
                         <thead>
                         <tr>
                             <th>name</th>
@@ -57,17 +57,14 @@
                             <th>Mission</th>
                         </tr>
                         </thead>
-                        <tbody id="favoriteCharityTableBody">
+                        <tbody id="resultTableBody">
                         </tbody>
                     </table>
                 </div>
             </div>
             <div id="botPage" style="float: left"></div>
             <div id="noresult" style="display: none" >
-                <h3>Sorry, you have no favorite charity yet</h3>
-            </div>
-            <div id="notLogin" style="display: none" >
-                <h3>Sorry, you have not logged in yet</h3>
+                <h3>No search result found.</h3>
             </div>
 
         </div><!-- /.col-xs-12 main -->
@@ -92,11 +89,15 @@
         ' </tr> ';
 
     function replaceHtml(transaction){
+	    var website = transaction.website;
+		if(website.indexOf("http:") == -1)
+			website = "http://" + website;
         return defaultHTML.replace("{name}",transaction.name)
                 .replace("{EIN}",transaction.EIN)
                 .replace("{City}",transaction.city)
-                .replace("{Phone}",transaction.state)
-                .replace("{Website}",transaction.website)
+		.replace("{State}",transaction.state)
+                .replace("{Phone}",transaction.phone)
+                .replace("{Website}","<a style=\"color: #000000;\" href='" + website + "' target='_blank'>" + transaction.website + "</a>")
                 .replace("{Mission}",transaction.mission)
                 ;
 

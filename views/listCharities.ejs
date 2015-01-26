@@ -66,10 +66,7 @@
             </div>
             <div id="botPage" style="float: left"></div>
             <div id="noresult" style="display: none" >
-                <h3>Sorry, you have no favorite charity yet</h3>
-            </div>
-            <div id="notLogin" style="display: none" >
-                <h3>Sorry, you have not logged in yet</h3>
+                <h3>No search result found.</h3>
             </div>
 
         </div><!-- /.col-xs-12 main -->
@@ -93,11 +90,15 @@
 		
     var resultConainer = $('#resultTableBody');
     function replaceHtml(transaction){
+	    var website = transaction.website;
+		if(website.indexOf("http:") == -1)
+			website = "http://" + website;
         return defaultHTML.replace("{name}",transaction.name)
                 .replace("{EIN}",transaction.EIN)
                 .replace("{City}",transaction.city)
-                .replace("{Phone}",transaction.state)
-                .replace("{Website}",transaction.website)
+		.replace("{State}",transaction.state)
+                .replace("{Phone}",transaction.phone)
+                .replace("{Website}","<a style=\"color: #000000;\" href='" + website + "' target='_blank'>" + transaction.website + "</a>")
                 .replace("{Mission}",transaction.mission)
                 ;
 
@@ -136,24 +137,19 @@
         $('#botPage').empty();
         $('#noresult').show(); 
     }
-
-    function displayNotLoggedIn(){
-        resultConainer.empty();
-        $('#botPage').empty();
-        $('#notLogin').show();
-    }
     
     function dateDisplayFormatter( cellvalue, options, rowObject ){
         return cellvalue.substr(0,10);
     }
     function listCharity(){
-       $.get('/services/charity/listCharity?category=' + $('#category').val() + '&state=' + $('#state').val() + '&city=' + $('#city').val(),function(data){
+       $.get('/services/charity/listCharity?category=' + $('#category').val().replace("&","%26") + '&state=' + $('#state').val() + '&city=' + $('#city').val(),function(data){
            if(!data || data == "failed") {
                //get  failed
                return;
            }
            if(data.length>0) {
                console.dir(data);
+			   $('#noresult').hide(); 
                initResultPage(data);
            }
            else {
@@ -161,9 +157,30 @@
            }
        })
     }
+    $('#category').change(function() {
+		listCharity();
+    });
+	
+    $('#state').change(function() {
+	   $('#city').empty();
+	   $('#city').append("<option value='All'>All</option>")
+       $.get('/services/charity/classifyCharity?classification=city&condition=' + $('#state').val(),function(data){
+           if(!data || data == "failed") {
+               return;
+           }		   
+            for(var i=0; i< data.length;++i) {
+                $('#city').append("<option value='" + data[i].city + "'>" + data[i].city + "</option>");
+            }
+       })
+		listCharity();
+    });
+	
+    $('#city').change(function() {
+		listCharity();
+    });
 
    $( document).ready(function(){
-       $('#category').append("<option value=''>All</option>")
+       $('#category').append("<option value='All'>All</option>")
        $.get('/services/charity/classifyCharity?classification=category',function(data){
            if(!data || data == "failed") {
                return;
@@ -173,16 +190,16 @@
             }
        })
 
-       $('#state').append("<option value=''>All</option>")
+       $('#state').append("<option value='All'>All</option>")
        $.get('/services/charity/classifyCharity?classification=state',function(data){
            if(!data || data == "failed") {
                return;
            }		   
             for(var i=0; i< data.length;++i) {
-                $('#category').append("<option value='" + data[i].state + "'>" + data[i].state + "</option>");
+                $('#state').append("<option value='" + data[i].state + "'>" + data[i].state + "</option>");
             }
        })
-	   $('#city').append("<option value=''>All</option>")
+	   $('#city').append("<option value='All'>All</option>")
 	   listCharity();
    })
 </script>
