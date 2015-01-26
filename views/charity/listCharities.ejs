@@ -7,9 +7,11 @@
     <title>WillGive</title>
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+    <link rel="stylesheet" href="/assets/css/simplePagination.css" >
+
 
     <%activeMenu = "Charities"%>
-    <%include layout/navbar.ejs%>
+    <%include ../layout/navbar.ejs%>
 </head>
 <body>
 <div class="container sidebar-content" style="height:auto; min-height: 90%; ">
@@ -22,16 +24,16 @@
                     <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" >
                         <strong>Search Charities</strong></li>
                     <li>
-                        <a href="/charities" style="color: #000000;">My charities</a>
+                        <a href="/charity/charities" style="color: #000000;">My charities</a>
                     </li>
                     <li  >
-                        <a href="/searchCharities" style="color: #000000;">Search Charities</a>
+                        <a href="/charity/searchCharities" style="color: #000000;">Search Charities</a>
                     </li>
                     <li>
-                        <a href="/listCharities" style="color: #000000;"><strong>List A-Z</strong></a>
+                        <a href="/charity/listCharities" style="color: #000000;"><strong>List A-Z</strong></a>
                     </li>
                     <li>
-                        <a href="/hotCharities" style="color: #000000;">Recommended</a>
+                        <a href="/charity/hotCharities" style="color: #000000;">Recommended</a>
                     </li>
                 </ul>
             </div>
@@ -72,7 +74,7 @@
         </div><!-- /.col-xs-12 main -->
     </div><!--/.row-->
 </div><!--/.container-->
-<%include layout/footer.ejs%>
+<%include ../layout/footer.ejs%>
 <script src="/jquery/dist/jquery.min.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
