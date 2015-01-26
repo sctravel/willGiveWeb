@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>WillGive</title>
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+
+    <%activeMenu = "Charities"%>
+    <%include layout/navbar.ejs%>
+</head>
+<body>
+<div class="container sidebar-content" style="height:auto; min-height: 90%; ">
+    <div class="row row-offcanvas row-offcanvas-left">
+
+        <!-- sidebar -->
+        <div class="col-xs-5 col-sm-3 sidebar-offcanvas"   id="sidebar" role="navigation"  >
+            <div data-spy="affix" data-offset-top="15" data-offset-bottom="30">
+                <ul class="nav" style="color: #000000;" id="sidebar-nav">
+                    <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" >
+                        <strong>Search Charities</strong></li>
+                    <li>
+                        <a href="/charities" style="color: #000000;">My charities</a>
+                    </li>
+                    <li  >
+                        <a href="/searchCharities" style="color: #000000;"><strong>Search Charities</strong></a>
+                    </li>
+                    <li>
+                        <a href="/listCharities" style="color: #000000;">List A-Z</a>
+                    </li>
+                    <li>
+                        <a href="/hotCharities" style="color: #000000;">Recommended</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- main area -->		
+        <div class="col-xs-14 col-sm-9" data-spy="scroll" style="padding-left: 3%" data-target="#sidebar-nav">
+            <div id="page" >
+			<input type="text" id="keyword" style="width: 70%" name="keyword" class="form-control" required autofocus><input type="button" id="Search" name="Search" value="Search">
+			</div>
+			
+            <div id="resultsContainer" class="">
+                <div class="table-responsive">
+                    <table id="resultTable" class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>name</th>
+                            <th>EIN</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Phone</th>
+                            <th>Website</th>
+                            <th>Mission</th>
+                        </tr>
+                        </thead>
+                        <tbody id="resultTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="botPage" style="float: left"></div>
+            <div id="noresult" style="display: none" >
+                <h3>No search result found.</h3>
+            </div>
+        </div><!-- /.col-xs-12 main -->
+		
+    </div><!--/.row-->
+</div><!--/.container-->
+<%include layout/footer.ejs%>
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/jquery-validation/dist/jquery.validate.js"></script>
+<script src="/assets/js/jquery.simplePagination.js"></script>
+<script>
+    var defaultHTML =
+        '<tr> <td> {name} </td> '+
+        ' <td> {EIN} </td> ' +
+        ' <td> {City} </td> ' +
+        ' <td> {State} </td> ' +
+        ' <td> {Phone} </td> ' +
+        ' <td> {Website} </td> ' +
+        ' <td> {Mission} </td> ' +
+        ' </tr> ';
+
+    function replaceHtml(transaction){
+	    var website = transaction.website;
+		if(website.indexOf("http:") == -1)
+			website = "http://" + website;
+        return defaultHTML.replace("{name}",transaction.name)
+                .replace("{EIN}",transaction.EIN)
+                .replace("{City}",transaction.city)
+				.replace("{State}",transaction.state)
+                .replace("{Phone}",transaction.phone)
+                .replace("{Website}","<a style=\"color: #000000;\" href='" + website + "' target='_blank'>" + transaction.website + "</a>")
+                .replace("{Mission}",transaction.mission)
+                ;
+
+    }
+    function initResultPage(results){
+        $('#botPage').empty();
+
+        var itemsOnPage = 20;
+        var resultConainer = $('#resultTableBody');
+
+        $('#botPage').pagination({  
+            items: results.length, 
+            itemsOnPage: itemsOnPage,  
+            onInit: initPage,
+            currentPage: 0,
+            onPageClick: function(){
+                var page_index = $("#botPage").pagination('getCurrentPage') -1;
+                resultConainer.empty();
+                for(var i=page_index*itemsOnPage;i<(page_index+1)*itemsOnPage;++i) {
+                    resultConainer.append(replaceHtml(results[i]));
+                }
+                $("#page").pagination('drawPage',$("#botPage").pagination('getCurrentPage'));
+            },
+            cssStyle: 'light-theme' 
+        });
+        function initPage() {
+            resultConainer.empty();
+            for(var i=0;i<itemsOnPage && i< results.length;++i) {
+                resultConainer.append(replaceHtml(results[i]));
+            }
+        }
+    }
+    function displayNoResults(){
+        //resultConainer.empty();
+        $('#botPage').empty();
+        $('#noresult').show(); 
+    }
+
+    function dateDisplayFormatter( cellvalue, options, rowObject ){
+        return cellvalue.substr(0,10);
+    }
+	
+    $('#Search').click(function() {
+		searchCharity ();
+    });
+
+	
+    function searchCharity(){
+       $.get('/services/charity/searchCharity?keyword=' + $('#keyword').val(), function(data){
+           if(!data || data == "failed") {
+               return;
+           }
+           if(data.length>0) {
+			   $('#noresult').hide();
+               initResultPage(data);
+           }
+           else {
+               displayNoResults();
+           }
+       })
+    }
+
+   $( document).ready(function(){
+   })
+</script>
+</body>
+</html>

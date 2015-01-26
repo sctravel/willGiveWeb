@@ -16,9 +16,12 @@ var qr = require('qr-image');
 //User's code in lib folder
 var userLogin = require('./lib/db/userLogin');
 var recipient = require('./lib/db/recipientOperation')
+var charityOps = require('./lib/db/charityOperation');
 var forgotPassword = require('./lib/db/forgotPassword');
 var constants = require('./lib/common/constants');
 global.activeMenu = "Home";
+
+var billingUntil = require('./lib/db/BillingUtil');
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -26,7 +29,6 @@ global.activeMenu = "Home";
 ///////////////////////////////////////////////////////////////////////////
 var app = express();
 // all environments
-app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.favicon());
@@ -139,7 +141,7 @@ passport.use('local', new LocalStrategy(
     }
 ));
 
-//WillGive app under XiTu's FB account
+
 passport.use(new fpass(facebookCredentials,
     function(accessToken, refreshToken, fbUserData, done){
         console.dir(fbUserData);
@@ -252,12 +254,29 @@ app.get('/aboutus', function (req,res){
     res.render('aboutUs', {user: req.user});
 });
 
+app.get('/charities', function (req,res){
+    res.render('charities', {user: req.user});
+});
+
+app.get('/searchCharities', function (req,res){
+    res.render('searchCharities', {user: req.user});
+});
+
+app.get('/listCharities', function (req,res){
+    res.render('listCharities', {user: req.user});
+});
+
+app.get('/hotCharities', function (req,res){
+    res.render('hotCharities', {user: req.user});
+});
+
 app.get('/login/signin', function (req,res){
     res.render('login/signin',{error: req.flash('error'), success: req.flash('success'), message:req.flash('message') });
 });
 app.get('/login/signup', function (req,res){
     res.render('login/signup', {user: req.user});
 });
+
 app.get('/login/forgotPassword', function (req,res){
     res.render('login/forgotPassword', {user: req.user});
 });
@@ -303,6 +322,57 @@ app.get('/payment', function (req,res){
 });
 
 
+app.get('/services/charity/getFavoriteCharity', function(req,res){
+    console.log('calling /services/charity/getFavoriteCharity ' + req.user.userId);
+	charityOps.getFavoriteCharity(req.user.userId, function(err, results){      
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
+    })
+})
+
+app.get('/services/charity/searchCharity', function(req,res){
+    console.log('calling /services/charity/searchCharity ' + req.query.keyword);
+	charityOps.searchCharity(req.query.keyword, function(err, results){      
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
+    })
+})
+
+app.get('/services/charity/listCharity', function(req,res){
+    console.log('calling /services/charity/listCharity ' + req.query.category + req.query.state + req.query.city);
+	charityOps.searchCharity(req.query.category, req.query.state, req.query.city, function(err, results){      
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
+    })
+})
+
+app.get('/services/charity/classifyCharity', function(req,res){
+    console.log('calling /services/charity/classifyCharity ' + req.query.classification + req.query.condition);
+	charityOps.searchCharity(req.query.classification, req.query.condition, function(err, results){      
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+        console.dir(results);
+        res.send(results);
+    })
+})
 
 
 app.get('/services/getConfirmPic',  function(req,res){
@@ -480,6 +550,10 @@ app.get('/services/user/settings', isLoggedIn, function(req,res) {
     })
 });
 
+//known customer
+app.post('/payment/stripePayment/customerId',function(req,res) {
+
+});
 
 //https://stripe.com/docs/tutorials/forms
 
@@ -498,17 +572,10 @@ app.post('/payment/stripePayment',function(req,res){
 // Get the credit card details submitted by the form
     var stripeToken = req.body.stripeToken;
 
+    var amount = req.body.amount;
 
-    var charge = stripe.charges.create({
-        amount: 100, // amount in cents, again
-        currency: "usd",
-        card: stripeToken,
-        description: "payinguser@example.com"
-    }, function(err, charge) {
-        if (err && err.type === 'StripeCardError') {
-            // The card has been declined
-        }
-    });
+    console.dir("amount:"+amount);
+    //save transaction history into database
 
     var savedId;
 
@@ -520,35 +587,51 @@ app.post('/payment/stripePayment',function(req,res){
 
         console.dir("using customerId:"+ customer.id);
         console.dir("creating customers");
-        return stripe.charges.create({
-            amount: 1000, // amount in cents, again
-            currency: "usd",
-            customer: customer.id
+
+        //update customerId into for payment method table
+        var user_id=1;
+        var recipient_id=2;
+        billingUntil.updatePaymentMethodStripeId(user_id,customer.id,function(err,results){
+            if(err){
+                console.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            res.send(results);
         });
 
-        console.dir("savedId= "+ savedId);
-    }).then(function(charge) {
-    });
+        console.dir("end saving customers");
 
-    console.dir("end saving customers");
+        var charge = stripe.charges.create({
+            amount: amount, // amount in cents, again
+            currency: "usd",
+            card: stripeToken,
+            description: "payinguser@example.com",
+            //customer: customer.id
+        }, function(err, charge) {
+            if (err && err.type === 'StripeCardError') {
+                // The card has been declined
+            }
+            billingUntil.insertTransactionHistroy("Stripe_"+stripeToken,amount,user_id,recipient_id,Date.now(),Date.now(),"Processing", stripeToken, function(err,results){
+                if(err){
+                    console.error(err);
+                    res.send(constants.services.CALLBACK_FAILED);
+                    return;
+                }
+                res.send(results);
+            });
+
+        });
+
+        console.dir("end saving charges");
 
 
+           console.warn("end payment process");
 
-// Later...
-   // var customerId = getStripeCustomerId(user);
+        })
 
-    //need to update transaction tabele;
 
-    /*
-    stripe.charges.create({
-       amount: 1500, // amount in cents, again
-        currency: "usd",
-        customer: 12345//customerId
-    });*/
-
-    console.warn("end payment process");
-
-})
+});
 
 app.post('/services/login/forgotPassword',function(req,res){
     console.log("post to forgot password");
@@ -565,7 +648,7 @@ app.post('/services/login/forgotPassword',function(req,res){
         console.info("Email exists? "+results);
         res.send(results);
     })
-})
+});
 
 ////////////////////////////////////
 //Recipient Pages / Services
@@ -589,14 +672,22 @@ app.post('/services/recipient/signup', function(req, res) {
 ///////////////////////////////////////////////////////////////////////////
 // Start Server
 ///////////////////////////////////////////////////////////////////////////
-https.createServer(serverOptions,app).listen(app.get('port'), function(){
-    console.log('Express server listening on port ' + app.get('port'));
-});
+if ('development' == app.get('env')) {
+	app.set('port', process.env.PORT || 3000);
+	https.createServer(serverOptions,app).listen(app.get('port'), function(){
+		console.log('Express server listening on port ' + app.get('port'));
+	});
+}else
+{
+	app.set('port', process.env.PORT || 443);
+	https.createServer(serverOptions,app).listen(app.get('port'), function(){
+		console.log('Express server listening on port ' + app.get('port'));
+	});
+	http.createServer(app).listen(80, function(){
+		console.log('Express server listening on port 80');
+	});
+}
 
-
-/*http.createServer(app).listen(80, function(){
-    console.log('Express server listening on port 80');
-});*/
 
 
 

@@ -96,7 +96,43 @@
 </head>
 <body>
 
-<h1>Will Give payment Form</h1>
+<h1>Will Give payment Portal</h1>
+
+
+<form action="/" method="post" id="example-form" style="display: none;">
+
+
+    <div class="form-row">
+        <label>Amount</label>
+        <input id="paymentAmount" type="text" maxlength="20" autocomplete="off" class="required" />
+    </div>
+
+    <button type="submit" name="submit-button" onClick="enableCheckout()">Submit</button>
+
+
+</form>
+
+
+<script>
+
+function enableCheckout() {
+
+   document.getElementById("paymentButton").style.display="block";
+
+   alert("Please confirm you will pay the following amount: "+ document.getElementById("paymentAmount").value);
+   document.getElementById("amount").value = document.getElementById("paymentAmount").value;
+
+}
+
+function getValue() {
+
+
+}
+
+</script>
+
+
+<!--
 
 <form action="/" method="post" id="example-form" style="display: none;">
 
@@ -149,6 +185,8 @@
     <span class="payment-errors"></span>
 </form>
 
+-->
+
 <!--
     The easiest way to indicate that the form requires JavaScript is to show
     the form with JavaScript (otherwise it will not render). You can add a
@@ -156,8 +194,8 @@
 -->
 <script>if (window.Stripe) $("#example-form").show()</script>
 <noscript><p>JavaScript is required for the registration form.</p></noscript>
-<form action="/payment/stripePayment" method="POST">
-    <input type="hidden" autocomplete="off" name="amount" value="100"></input>
+<form id="paymentButton" action="/payment/stripePayment" method="POST" style="display:none;">
+    <input id="amount" type="hidden" autocomplete="off" name="amount" value="200"></input>
     <input type="hidden" autocomplete="off" name="currency" value="usd"></input>
     <input type="hidden" autocomplete="off" name="orderId" value="aaaaaaaa"></input>
 
@@ -166,8 +204,8 @@
             class="stripe-button"
             data-key="pk_test_iJPmMQMGarAHRE7oUcM5iBxO"
             data-image="/square-image.png"
-            data-name="Demo Site"
-            data-description="2 widgets ($20.00)"
+            data-name="Payment Widget"
+            data-description="Pay the following amount"
             data-amount="2000">
     </script>
 </form>
