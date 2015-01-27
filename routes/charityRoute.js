@@ -31,9 +31,6 @@ module.exports = function(app) {
         res.render('charity/hotCharities', {user: req.user});
     });
 
-
-
-
     app.get('/services/charity/getFavoriteCharity', isLoggedIn, function(req,res){
         logger.info('calling /services/charity/getFavoriteCharity ' + req.user.userId);
         charityOps.getFavoriteCharity(req.user.userId, function(err, results){
@@ -47,9 +44,23 @@ module.exports = function(app) {
         })
     })
 
+    app.get('/services/charity/setFavoriteCharity', isLoggedIn, function(req,res){
+        logger.info('calling /services/charity/setFavoriteCharity ' + req.user.userId + " " + req.query.rid + " " + req.query.value);
+        charityOps.setFavoriteCharity(req.user.userId, req.query.rid, req.query.value, function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            res.send(results);
+        })
+    })
+	
     app.get('/services/charity/searchCharity', function(req,res){
         logger.info('calling /services/charity/searchCharity ' + req.query.keyword);
-        charityOps.searchCharity(req.query.keyword, function(err, results){
+		userId = null;
+		if (req.user!= null) userId = req.user.userId;
+        charityOps.searchCharity(userId, req.query.keyword, function(err, results){
             if(err){
                 logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
@@ -75,7 +86,9 @@ module.exports = function(app) {
 
     app.get('/services/charity/listCharity', function(req,res){
         logger.info('calling /services/charity/listCharity ' + req.query.category + " "+ req.query.state + " "+ req.query.city);
-        charityOps.listCharity(req.query.category, req.query.state, req.query.city, function(err, results){
+		userId = null;
+		if (req.user!= null) userId = req.user.userId;
+        charityOps.listCharity(userId, req.query.category, req.query.state, req.query.city, function(err, results){
             if(err){
                 logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
