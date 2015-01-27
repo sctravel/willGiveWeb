@@ -559,6 +559,7 @@ app.post('/payment/stripePayment/customerId',function(req,res) {
 
 app.post('/payment/stripePayment',function(req,res){
 
+    console.dir("UserId in passport: "+req.user.userId);
     console.warn("start payment process");
 
     //'stripeToken
@@ -589,8 +590,10 @@ app.post('/payment/stripePayment',function(req,res){
         console.dir("creating customers");
 
         //update customerId into for payment method table
-        var user_id=1;
-        var recipient_id=2;
+
+        console.dir("UserId in passport: "+req.user.userId);
+        user_id=req.user.userId;
+        var recipient_id=900000007;
         billingUntil.updatePaymentMethodStripeId(user_id,customer.id,function(err,results){
             if(err){
                 console.error(err);
