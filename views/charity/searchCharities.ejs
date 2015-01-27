@@ -7,11 +7,14 @@
     <title>WillGive</title>
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+    <link rel="stylesheet" href="/assets/css/simplePagination.css" >
 
     <%activeMenu = "Charities"%>
-    <%include layout/navbar.ejs%>
+    <%include ../layout/navbar.ejs%>
 </head>
 <body>
+<% if(undefined == typeof keyword || !keyword) {keyword=""}%>
+
 <div class="container sidebar-content" style="height:auto; min-height: 90%; ">
     <div class="row row-offcanvas row-offcanvas-left">
 
@@ -22,16 +25,16 @@
                     <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" >
                         <strong>Search Charities</strong></li>
                     <li>
-                        <a href="/charities" style="color: #000000;">My charities</a>
+                        <a href="/charity/charities" style="color: #000000;">My charities</a>
                     </li>
                     <li  >
-                        <a href="/searchCharities" style="color: #000000;"><strong>Search Charities</strong></a>
+                        <a href="/charity/searchCharities" style="color: #000000;"><strong>Search Charities</strong></a>
                     </li>
                     <li>
-                        <a href="/listCharities" style="color: #000000;">List A-Z</a>
+                        <a href="/charity/listCharities" style="color: #000000;">List A-Z</a>
                     </li>
                     <li>
-                        <a href="/hotCharities" style="color: #000000;">Recommended</a>
+                        <a href="/charity/hotCharities" style="color: #000000;">Recommended</a>
                     </li>
                 </ul>
             </div>
@@ -39,21 +42,26 @@
 
         <!-- main area -->		
         <div class="col-xs-14 col-sm-9" data-spy="scroll" style="padding-left: 3%" data-target="#sidebar-nav">
-            <div id="page" >
-			<input type="text" id="keyword" style="width: 70%" name="keyword" class="form-control" required autofocus><input type="button" id="Search" name="Search" value="Search">
+            <form method="get" role="search">
+            <div id="page" class="input-group" style="width:70%;" >
+                    <input type="text" class="form-control" placeholder="Search" name="keyword" id="keyword" value="<%=keyword%>" required autofocus>
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="Search" type="button" style="background-color:#ffb900;"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
 			</div>
+			</form>
 			
             <div id="resultsContainer" class="">
                 <div class="table-responsive">
                     <table id="resultTable" class="table table-striped">
                         <thead>
                         <tr>
-                            <th>name</th>
+                            <th>Organization</th>
+			    <th>&nbsp;</th>
                             <th>EIN</th>
                             <th>City</th>
                             <th>State</th>
                             <th>Phone</th>
-                            <th>Website</th>
                             <th>Mission</th>
                         </tr>
                         </thead>
@@ -70,7 +78,7 @@
 		
     </div><!--/.row-->
 </div><!--/.container-->
-<%include layout/footer.ejs%>
+<%include ../layout/footer.ejs%>
 <script src="/jquery/dist/jquery.min.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
@@ -78,34 +86,49 @@
 <script>
     var defaultHTML =
         '<tr> <td> {name} </td> '+
+        ' <td> {ICONS} </td> ' +
         ' <td> {EIN} </td> ' +
         ' <td> {City} </td> ' +
         ' <td> {State} </td> ' +
         ' <td> {Phone} </td> ' +
-        ' <td> {Website} </td> ' +
         ' <td> {Mission} </td> ' +
         ' </tr> ';
+    var moreCount = 0;
+    function unHide(c)
+    {
+     document.getElementById("s" + c).style.display = "none";
+     document.getElementById("h" + c).style.display = "block";
+    }
+
+    function addMore(text)
+    {
+        var cut = 80;
+        if (text.length < cut) return text;
+	    moreCount ++;
+        text = "<span id=s" + moreCount + ">" + text.substring(0, cut-7) + " <a style=\"color: #202090;cursor:hand; cursor:pointer\" onClick=\"unHide('" + moreCount + "')\">...(more)</a></span>"
+		+ "<span id=h"+moreCount + " style=\"display:none\">" + text + "</span>";
+        return text;
+    }		
 
     function replaceHtml(transaction){
 	    var website = transaction.website;
 		if(website.indexOf("http:") == -1)
 			website = "http://" + website;
-        return defaultHTML.replace("{name}",transaction.name)
+        return defaultHTML.replace("{name}","<a style=\"color: #202090;\" href='/charity?id=" + transaction.recipient_id + "'>" + transaction.name + "</a>")
+		.replace("{ICONS}","<a style=\"color: #202090;\" href='" + website + "' target='_blank'><img src='/images/web.png' border=0 width=20 height=20></a>")
                 .replace("{EIN}",transaction.EIN)
                 .replace("{City}",transaction.city)
-				.replace("{State}",transaction.state)
+		.replace("{State}",transaction.state)
                 .replace("{Phone}",transaction.phone)
-                .replace("{Website}","<a style=\"color: #000000;\" href='" + website + "' target='_blank'>" + transaction.website + "</a>")
-                .replace("{Mission}",transaction.mission)
+                .replace("{Mission}",addMore(transaction.mission))
                 ;
-
     }
     function initResultPage(results){
         $('#botPage').empty();
 
-        var itemsOnPage = 20;
+        var itemsOnPage = 10;
         var resultConainer = $('#resultTableBody');
-
+        initPage();
         $('#botPage').pagination({  
             items: results.length, 
             itemsOnPage: itemsOnPage,  
@@ -129,7 +152,7 @@
         }
     }
     function displayNoResults(){
-        //resultConainer.empty();
+        $('#resultTableBody').empty();
         $('#botPage').empty();
         $('#noresult').show(); 
     }
@@ -144,6 +167,7 @@
 
 	
     function searchCharity(){
+	   if ($('#keyword').val() == "") return;
        $.get('/services/charity/searchCharity?keyword=' + $('#keyword').val(), function(data){
            if(!data || data == "failed") {
                return;
@@ -159,6 +183,7 @@
     }
 
    $( document).ready(function(){
+       searchCharity();
    })
 </script>
 </body>
