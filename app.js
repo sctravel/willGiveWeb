@@ -9,7 +9,6 @@ var path = require('path');
 var passport = require('passport');
 
 var flash = require('connect-flash');
-var qr = require('qr-image');
 
 //User's code in lib folder
 var recipient = require('./lib/db/recipientOperation')
@@ -21,6 +20,7 @@ var billingUntil = require('./lib/db/BillingUtil');
 var configUserLoginRoute = require('./routes/userLoginRoute');
 var configUserProfileRoute = require('./routes/userProfileRoute');
 var configCharityRoute = require('./routes/charityRoute');
+var configRecipientLoginRoute = require('./routes/recipientLoginRoute');
 
 ///////////////////////////////////////////////////////////////////////////
 // Environments Settings
@@ -64,12 +64,12 @@ log4js.configure({
                 "type": "pattern",
                 "pattern": "%m"
             },
-            "category": "normal"
+            "category": "WillGive"
         }
     ],
     replaceConsole: true
 });
-var logger = log4js.getLogger('normal');
+var logger = log4js.getLogger('WillGive');
 if ('development' == app.get('env')) {
     logger.setLevel('DEBUG');
     app.use(log4js.connectLogger(logger, {level:log4js.levels.DEBUG, format:':method :url'}));
@@ -105,9 +105,13 @@ var serverOptions = {
 
 //User login, need to separate from recipient login
 function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated() && ( constants.login.LOGIN_PROVIDER.FACEBOOK=req.user.provider || constants.login.LOGIN_PROVIDER.WILLGIVE==req.user.provider)) {
+    console.warn('isLoggedIn ---')
+    if (req.isAuthenticated() && ( constants.login.LOGIN_PROVIDER.FACEBOOK==req.user.provider || constants.login.LOGIN_PROVIDER.WILLGIVE==req.user.provider)) {
         logger.debug(req.user);
         return next();
+    } else if( req.isAuthenticated() && constants.login.LOGIN_PROVIDER.RECIPIENT==req.user.provider){
+        req.flash('error','You are logged in as a Charity. Please use your user account to login.');
+        req.logout();
     }
     res.redirect("/login/signin");
 }
@@ -116,6 +120,9 @@ function isLoggedInAsRecipient(req, res, next) {
     if (req.isAuthenticated() && constants.login.LOGIN_PROVIDER.RECIPIENT==req.user.provider) {
         logger.debug(req.user);
         return next();
+    } else if( req.isAuthenticated() && constants.login.LOGIN_PROVIDER.RECIPIENT!=req.user.provider){
+        req.flash('error','You are logged in as a user. Please use your Charity account to login.');
+        req.logout();
     }
     res.redirect("/recipient/login");
 }
@@ -128,6 +135,7 @@ exports.isLoggedInAsRecipient = isLoggedInAsRecipient;
 configUserLoginRoute(app);
 configUserProfileRoute(app);
 configCharityRoute(app);
+configRecipientLoginRoute(app);
 
 ///////////////////////////////////////////////////////////////////////////
 // Page Routing
@@ -219,7 +227,7 @@ app.post('/payment/stripePayment',function(req,res){
             amount: amount, // amount in cents, again
             currency: "usd",
             card: stripeToken,
-            description: "payinguser@example.com",
+            description: "payinguser@example.com"
             //customer: customer.id
         }, function(err, charge) {
             if (err && err.type === 'StripeCardError') {
@@ -251,24 +259,7 @@ app.post('/payment/stripePayment',function(req,res){
 ////////////////////////////////////
 //Recipient Pages / Services
 ////////////////////////////////////
-app.get('/recipient/signup', function(req, res) {
-    res.render('recipientLogin/recipientSignUp');
-})
-app.get('/recipient/login', function(req, res) {
-    res.render('recipientLogin/recipientLogin');
-})
-app.get('/recipient/designPage', function(req, res) {
-    res.render('recipientLogin/recipientSignUp2_upload');
-})
 
-app.post('/services/recipient/signup', function(req, res) {
-    //should auto login after signup
-    var signUpFrom = req.body.recipientSignUpForm;
-    logger.debug(signUpFrom);
-    recipient.createNewRecipient(signUpFrom, function(err, results) {
-
-    });
-})
 
 ///////////////////////////////////////////////////////////////////////////
 // Start Server

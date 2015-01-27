@@ -4,15 +4,19 @@
 
 module.exports = function(app) {
 
+    var fs = require('fs');
+
     var userLogin = require('../lib/db/userLogin');
     var constants = require('../lib/common/constants');
+
     var isLoggedIn = require('../app').isLoggedIn;
+    var logger = require('../app').logger;
 
 
 
     app.get('/users/account', isLoggedIn, function(req,res){
-        console.log('in /user/account');
-        console.dir(req.user);
+        logger.debug('in /user/account');
+        logger.debug(req.user);
         res.render('login/userProfile', {user: req.user});
     })
     app.get('/users/settings', isLoggedIn, function(req,res){
@@ -34,7 +38,7 @@ module.exports = function(app) {
         var updatedData = req.body.updatedData;
         userLogin.updatePasswordForUserAccount(updatedData, req.user.userId,function(err,results){
             if(err){
-                console.error(err);
+                logger.error(err);
                 res.send(err.toString());
                 return;
             }
@@ -45,7 +49,7 @@ module.exports = function(app) {
 
     app.post('/services/user/updateBasicInfo', isLoggedIn, function(req,res){
         var basicInfo = req.body.updatedData;
-        console.log('calling /services/user/updateBasicInfo');
+        logger.info('calling /services/user/updateBasicInfo');
         userLogin.updateBasicInfoForUserAccount(basicInfo, req.user.userId,function(err,results){
             if(err){
                 res.send(constants.services.CALLBACK_FAILED);
@@ -57,7 +61,7 @@ module.exports = function(app) {
 
                 req.logIn(user, function(error) {
                     if (error) {
-                        console.warn('after updating basic info login failed');
+                        logger.warn('after updating basic info login failed');
                         res.send(constants.services.CALLBACK_FAILED);
                     }
                 });
@@ -71,11 +75,11 @@ module.exports = function(app) {
     app.get('/services/user/getTransactionHistory', isLoggedIn, function(req, res){
         userLogin.getUserTransactionHistory(req.user.userId, function(err, results){
             if(err){
-                console.error(err);
+                logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            console.dir(results);
+            logger.debug(results);
             res.send(results);
         })
     })
@@ -84,7 +88,7 @@ module.exports = function(app) {
 
         userLogin.updateAccountSettingsForUser(userSettings, req.user.userId, function(err,results){
             if(err){
-                console.error(err);
+                logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
@@ -95,7 +99,7 @@ module.exports = function(app) {
     app.get('/services/user/settings', isLoggedIn, function(req,res) {
         userLogin.getAccountSettingInfoForUser(req.user.userId, function(err, userSettings){
             if(err){
-                console.error(err);
+                logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
@@ -116,7 +120,7 @@ module.exports = function(app) {
             fstream = fs.createWriteStream(__dirname + '/public/resources/profileIcons/' + fieldname +'.'+suffix);
             file.pipe(fstream);
             fstream.on('close', function () {
-                console.log("Upload Finished of " + fieldname);
+                logger.info("Upload Finished of " + fieldname);
                 var iconUrl = '/resources/profileIcons/' + fieldname +'.'+suffix;
                 userLogin.updateUserProfileImageUrl( iconUrl, req.user.userId,function(err, results){
                     if(!err) {
@@ -124,7 +128,7 @@ module.exports = function(app) {
                         user.imageIconUrl = iconUrl;
                         req.logIn(user, function(error) {
                             if (error) {
-                                console.warn('after updating basic info login failed');
+                                logger.warn('after updating basic info login failed');
                                 res.send(constants.services.CALLBACK_FAILED);
                             }
                             res.redirect('/users/account');

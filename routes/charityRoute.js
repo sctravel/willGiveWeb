@@ -10,12 +10,13 @@ module.exports = function(app) {
     var constants = require('../lib/common/constants');
     var isLoggedIn = require('../app').isLoggedIn;
     var logger = require('../app').logger;
+    var isLoggedInAsRecipient = require('../app').isLoggedInAsRecipient;
 
     app.get('/charity', function (req,res){
         res.render('charity/charity',{user: req.user});
     });
 
-    app.get('/charity/charities', function (req,res){
+    app.get('/charity/charities',  function (req,res){
         res.render('charity/charities', {user: req.user});
     });
 
@@ -31,7 +32,7 @@ module.exports = function(app) {
         res.render('charity/hotCharities', {user: req.user});
     });
 
-    app.get('/services/charity/getFavoriteCharity', isLoggedIn, function(req,res){
+    app.get('/services/charity/getFavoriteCharity', function(req,res){
         logger.info('calling /services/charity/getFavoriteCharity ' + req.user.userId);
         charityOps.getFavoriteCharity(req.user.userId, function(err, results){
             if(err){

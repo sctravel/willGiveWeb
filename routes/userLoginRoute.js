@@ -14,7 +14,7 @@ module.exports = function(app) {
     var fpass = require('passport-facebook').Strategy;
     var LocalStrategy = require('passport-local').Strategy;
     var logger = require('../app').logger;
-
+    var recipient = require('../lib/db/recipientOperation');
 
     var facebookCredentials = {
         clientID:'420297851460293',
@@ -34,24 +34,27 @@ module.exports = function(app) {
     ///////////////////////////////////////////////////////////////////////
     // Passport - Login methods setup
     ///////////////////////////////////////////////////////////////////////
-    passport.use('local', new LocalStrategy(
-        function (username, password, done) {
+    passport.use('user', new LocalStrategy(
+        function ( username, password, done) {
 
-            userLogin.manualLogin(username, password, function(error,results){
-                logger.debug(results);
-                if(error) {
-                    return done(null, false, { message: 'Login Error. Please try again' });
-                }
-                if(results.isAuthenticated == true ) {
+                userLogin.manualLogin(username, password, function(error,results){
                     logger.debug(results);
-                    return done(null, {provider : results.provider, email:results.email, userId : results.userId, sessionId: results.sessionId,
-                        firstName: results.firstName, lastName: results.lastName, imageIconUrl: results.imageIconUrl} );
-                } else {
-                    return done(null, false, { message: results.errorMessage });
-                }
-            });
+                    if(error) {
+                        return done(null, false, { message: 'Login Error. Please try again' });
+                    }
+                    if(results.isAuthenticated == true ) {
+                        logger.debug(results);
+                        return done(null, {provider : results.provider, email:results.email, userId : results.userId, sessionId: results.sessionId,
+                            firstName: results.firstName, lastName: results.lastName, imageIconUrl: results.imageIconUrl} );
+                    } else {
+                        return done(null, false, { message: results.errorMessage });
+                    }
+                });
+
         }
     ));
+
+
 
 
     passport.use(new fpass(facebookCredentials,
@@ -115,6 +118,9 @@ module.exports = function(app) {
 
         }
     );
+
+
+
     ///////////////////////////////////////////////////////////////////////
     // User Login - Login Page Rendering
     ///////////////////////////////////////////////////////////////////////
@@ -135,7 +141,7 @@ module.exports = function(app) {
 
         logger.warn("Reset Password for email:"+email+"; randomString:"+randomString);
         res.render('login/resetPassword', {email:email,randomString:randomString});
-    })
+    });
 
     app.get('/login/logout', isLoggedIn, function (req, res) {
         userLogin.logoutUserLoginHistory(req.user.userId, req.user.sessionId, function(err, results){
@@ -151,7 +157,7 @@ module.exports = function(app) {
     //find back password
     //////////////////////////////////////////////////////////
     app.post('/services/login/signin',
-        passport.authenticate('local',
+        passport.authenticate('user',
             { failureRedirect: '/login/signin', failureFlash: true }
         ),
         function(req,res){
@@ -181,7 +187,7 @@ module.exports = function(app) {
 
         })
 
-    })
+    });
 
     //Data Services for account
     app.post('/services/login/signup', function(req,res) {

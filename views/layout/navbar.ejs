@@ -34,12 +34,12 @@
                     </div>
                 </div>
             </form>
-            <% if ( 'undefined' == typeof user ) { %>
+            <% if ( 'undefined' == typeof user || user == null ) { %>
             <ul class="nav navbar-nav navbar-right">
                 <li class="<%=menuClass[3]%>"><a href="/login/signin">SignIn</a></li>
                 <li class="<%=menuClass[4]%>"><a href="/login/signup">SignUp</a></li>
             </ul>
-            <% } else { %>
+            <% } else if( 'recipient' != user.provider ){ %>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
                     <a href="" data-toggle="dropdown" class="dropdown-toggle">
@@ -57,7 +57,21 @@
                     </ul>
                 </li>
             </ul>
-            <% }%>
+            <% } else {%>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="" data-toggle="dropdown" class="dropdown-toggle">
+                        <%=user.firstName%> (Chairty)
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/charity?id=<%=user.userId%>">My Page</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/recipient/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <% } %>
         </div>
 
     </div>
