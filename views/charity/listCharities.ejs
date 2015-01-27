@@ -52,12 +52,12 @@
                     <table id="resultTable" class="table table-striped">
                         <thead>
                         <tr>
-                            <th>name</th>
+                            <th>Organization</th>
+			    <th>&nbsp;</th>
                             <th>EIN</th>
                             <th>City</th>
                             <th>State</th>
                             <th>Phone</th>
-                            <th>Website</th>
                             <th>Mission</th>
                         </tr>
                         </thead>
@@ -82,34 +82,48 @@
 <script>
     var defaultHTML =
         '<tr> <td> {name} </td> '+
+        ' <td> {ICONS} </td> ' +
         ' <td> {EIN} </td> ' +
         ' <td> {City} </td> ' +
         ' <td> {State} </td> ' +
         ' <td> {Phone} </td> ' +
-        ' <td> {Website} </td> ' +
         ' <td> {Mission} </td> ' +
         ' </tr> ';
-		
+    var moreCount = 0;
+    function unHide(c)
+    {
+     document.getElementById("s" + c).style.display = "none";
+     document.getElementById("h" + c).style.display = "block";
+    }
+
+    function addMore(text)
+    {
+        var cut = 80;
+        if (text.length < cut) return text;
+	moreCount ++;
+        text = "<span id=s" + moreCount + ">" + text.substring(0, cut-7) + " <a style=\"color: #202090;cursor:hand; cursor:pointer\" onClick=\"unHide('" + moreCount + "')\">...(more)</a></span>"
+		+ "<span id=h"+moreCount + " style=\"display:none\">" + text + "</span>";
+        return text;
+    }		
     var resultConainer = $('#resultTableBody');
     function replaceHtml(transaction){
 	    var website = transaction.website;
 		if(website.indexOf("http:") == -1)
 			website = "http://" + website;
-        return defaultHTML.replace("{name}","<a style=\"color: #902070;\" href='/charity?id=" + transaction.recipient_id + "'>" + transaction.name + "</a>")
+        return defaultHTML.replace("{name}","<a style=\"color: #202090;\" href='/charity?id=" + transaction.recipient_id + "'>" + transaction.name + "</a>")
+		.replace("{ICONS}","<a style=\"color: #202090;\" href='" + website + "' target='_blank'><img src='/images/web.png' border=0 width=20 height=20></a>")
                 .replace("{EIN}",transaction.EIN)
                 .replace("{City}",transaction.city)
 		.replace("{State}",transaction.state)
                 .replace("{Phone}",transaction.phone)
-                .replace("{Website}","<a style=\"color: #000000;\" href='" + website + "' target='_blank'>" + transaction.website + "</a>")
-                .replace("{Mission}",transaction.mission)
+                .replace("{Mission}",addMore(transaction.mission))
                 ;
-
     }
         // function initResultPage(searchResults){
     function initResultPage(results){
         $('#botPage').empty();
 
-        var itemsOnPage = 20;
+        var itemsOnPage = 10;
 
         $('#botPage').pagination({  
             items: results.length, 
