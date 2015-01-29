@@ -1,8 +1,8 @@
 <script>
     var defaultHTML =
-        ' <div  class="col-xs-11" style="border: 2px solid; border-radius: 10px; margin-top: 2%; margin-bottom: 2%"> ' +
+        ' <div  class="col-xs-11" style="border: 2px solid; border-radius: 10px; margin-top: 1%; margin-bottom: 1%"> ' +
         '   <div class="col-xs-4"> ' +
-        '      <img src="/resources/recipients/profilePicture/pp_{RecipientId}" height="175px" width="175px%"> ' +
+        '      <img src="/resources/recipients/profilePicture/pp_{RecipientId}" height="150px" width="150px"> ' +
         '   </div> ' +
         '   <div class="col-xs-7"> '+
         '      <div class=""> ' +
@@ -68,7 +68,7 @@
         return defaultHTML.replace("{name}","<a style=\"color: #202090;\" href='/charity?id=" + transaction.recipient_id + "'>" + transaction.name + "</a>" )
 		.replace("{ICONS}",favIcon + "<a style=\"color: #202090;\" href='" + website + "' target='_blank'><img src='/images/web.png' border=0 width=20 height=20></a>"  )
                 .replace("{EIN}",transaction.EIN)
-                .replace("{Address}",transaction.city)
+                .replace("{Address}",transaction.address+', '+transaction.city+', '+transaction.state+', '+transaction.zipcode)
                 .replace("{RecipientId}", transaction.recipient_id)
 		.replace("{State}",transaction.state)
                 .replace("{Phone}",transaction.phone)
@@ -78,7 +78,7 @@
     function initResultPage(results){
         $('#botPage').empty();
 
-        var itemsOnPage = 5;
+        var itemsOnPage = 10;
 
         $('#botPage').pagination({  
             items: results.length, 

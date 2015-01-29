@@ -45,23 +45,7 @@
 			</div>
             <div id="resultsContainer" class="">
 
-                <div class="table-responsive">
-                    <table id="resultTable" class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Organization</th>
-							<th>&nbsp;</th>
-                            <th>EIN</th>
-                            <th>City</th>
-                            <th>State</th>
-                            <th>Phone</th>
-                            <th>Mission</th>
-                        </tr>
-                        </thead>
-                        <tbody id="resultTableBody">
-                        </tbody>
-                    </table>
-                </div>
+
             </div>
             <div id="botPage" style="float: left"></div>
             <div id="noresult" style="display: none" >
@@ -76,7 +60,7 @@
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
 <script src="/assets/js/jquery.simplePagination.js"></script>
-<%include charityList.ejs%>
+<%include charityListTemplate.ejs%>
 <script>
     function listCharity(){
        $.get('/services/charity/listCharity?category=' + $('#category').val().replace("&","%26") + '&state=' + $('#state').val() + '&city=' + $('#city').val(),function(data){
