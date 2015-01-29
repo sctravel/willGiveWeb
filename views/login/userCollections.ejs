@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+    <link rel="stylesheet" href="/assets/css/simplePagination.css" >
 
     <%activeMenu = "SignUp"%>
     <%include ../layout/navbar.ejs%>
@@ -36,15 +37,44 @@
                         <a href="/users/contribution" style="color: #000000;">My Contributions</a>
                     </li>
                     <li>
-                        <a href="/users/collections" style="color: #000000;"><strong>My Collections</strong></a>
+                        <a href="/users/collections" style="color: #000000;"><strong>My Favorites</strong></a>
                     </li>
                 </ul>
             </div>
         </div>
 
         <!-- main area -->
-        <div class="col-xs-12 col-sm-9" data-spy="scroll" style="padding-left: 5%" data-target="#sidebar-nav">
-            <h1 id="section1">Comming Soon</h1>
+        <!-- main area -->
+        <div class="col-xs-12 col-sm-9" data-spy="scroll" style="padding-left: 3%" data-target="#sidebar-nav">
+            <h2 class="sub-header">My Charities</h2>
+            <div id="page" ></div>
+
+            <div id="resultsContainer" class="">
+                <div class="table-responsive">
+                    <table id="resultTable" class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Organization</th>
+                            <th>&nbsp;</th>
+                            <th>EIN</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Phone</th>
+                            <th>Mission</th>
+                        </tr>
+                        </thead>
+                        <tbody id="resultTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="botPage" style="float: left"></div>
+            <div id="noresult" style="display: none" >
+                <h3>Sorry, you have no favorite charity yet</h3>
+            </div>
+            <div id="notLogin" style="display: none" >
+                <h3>Sorry, you have not logged in yet</h3>
+            </div>
 
         </div><!-- /.col-xs-12 main -->
     </div><!--/.row-->
@@ -53,5 +83,38 @@
 <script src="/jquery/dist/jquery.min.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
+<script src="/assets/js/jquery.simplePagination.js"></script>
+
+<%include ../charity/charityList.ejs%>
+<script>
+    function displayNotLoggedIn(){
+        $('#botPage').empty();
+        $('#notLogin').show();
+
+    }
+    function getUserFavoriteCharity(){
+        $.get('/services/user/getFavoriteCharity',function(data){
+            if(!data || data == "failed") {
+                //get  failed
+                return;
+            }
+            if(data.length>0) {
+                console.dir(data);
+                initResultPage(data);
+            }
+            else {
+                displayNoResults();
+            }
+        })
+    }
+
+    $( document).ready(function(){
+        <% if ( 'undefined' == typeof user || user.provider=='recipient' ) { %>
+        displayNotLoggedIn();
+        <% } else { %>
+        getUserFavoriteCharity();
+        <%}%>
+    })
+</script>
 </body>
 </html>

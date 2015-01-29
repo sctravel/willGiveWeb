@@ -38,6 +38,7 @@
             <ul class="nav navbar-nav navbar-right">
                 <li class="<%=menuClass[3]%>"><a href="/login/signin">SignIn</a></li>
                 <li class="<%=menuClass[4]%>"><a href="/login/signup">SignUp</a></li>
+                <li><a href="/recipient/login">Chairty SignIn</a></li>
             </ul>
             <% } else if( 'recipient' != user.provider ){ %>
             <ul class="nav navbar-nav navbar-right">
@@ -52,6 +53,7 @@
                         <li><a href="/users/settings">Settings</a></li>
                         <li><a href="/users/paymentMethod">Payment Method</a></li>
                         <li><a href="/users/contribution">My Contributions</a></li>
+                        <li><a href="/users/collections">My Favorites</a></li>
                         <li class="divider"></li>
                         <li><a href="/login/logout">Logout</a></li>
                     </ul>

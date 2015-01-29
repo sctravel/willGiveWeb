@@ -32,31 +32,7 @@ module.exports = function(app) {
         res.render('charity/hotCharities', {user: req.user});
     });
 
-    app.get('/services/charity/getFavoriteCharity', function(req,res){
-        logger.info('calling /services/charity/getFavoriteCharity ' + req.user.userId);
-        charityOps.getFavoriteCharity(req.user.userId, function(err, results){
-            if(err){
-                logger.error(err);
-                res.send(constants.services.CALLBACK_FAILED);
-                return;
-            }
-            logger.debug(results);
-            res.send(results);
-        })
-    })
 
-    app.get('/services/charity/setFavoriteCharity', isLoggedIn, function(req,res){
-        logger.info('calling /services/charity/setFavoriteCharity ' + req.user.userId + " " + req.query.rid + " " + req.query.value);
-        charityOps.setFavoriteCharity(req.user.userId, req.query.rid, req.query.value, function(err, results){
-            if(err){
-                logger.error(err);
-                res.send(constants.services.CALLBACK_FAILED);
-                return;
-            }
-            res.send(results);
-        })
-    })
-	
     app.get('/services/charity/searchCharity', function(req,res){
         logger.info('calling /services/charity/searchCharity ' + req.query.keyword);
 		userId = null;

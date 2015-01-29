@@ -107,11 +107,11 @@ module.exports = function(app) {
         req.busboy.on('file', function (fieldname, file, filename) {
 
             //Path where image will be uploaded
-            fstream = fs.createWriteStream(__dirname + '/../public/resources/recipients/' + recipientId+'/profilePicture' );
+            fstream = fs.createWriteStream(__dirname + '/../public/resources/recipients/profilePicture/pp_'+recipientId );
             file.pipe(fstream);
             fstream.on('close', function () {
                 logger.info("Upload Finished of " + fieldname);
-                var imageUrl = '/resources/recipient/' + recipientId+'/profilePicture';
+                var imageUrl = '/resources/recipients/profilePicture/pp_' + recipientId;
                 //we don't need the imageUrl actually, we are using convention to find the profile picture
                 res.redirect('/charity?id='+recipientId);
 

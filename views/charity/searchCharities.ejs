@@ -24,9 +24,7 @@
                 <ul class="nav" style="color: #000000;" id="sidebar-nav">
                     <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" >
                         <strong>Search Charities</strong></li>
-                    <li>
-                        <a href="/charity/charities" style="color: #000000;">My charities</a>
-                    </li>
+
                     <li  >
                         <a href="/charity/searchCharities" style="color: #000000;"><strong>Search Charities</strong></a>
                     </li>
@@ -41,7 +39,7 @@
         </div>
 
         <!-- main area -->		
-        <div class="col-xs-14 col-sm-9" data-spy="scroll" style="padding-left: 3%" data-target="#sidebar-nav">
+        <div class="col-xs-14 col-sm-9" data-spy="scroll" style="padding-left: 3%;" data-target="#sidebar-nav">
             <form method="get" role="search">
             <div id="page" class="input-group" style="width:70%;" >
                     <input type="text" class="form-control" placeholder="Search" name="keyword" id="keyword" value="<%=keyword%>" required autofocus>
@@ -50,24 +48,11 @@
                     </div>
 			</div>
 			</form>
-			
+
+
             <div id="resultsContainer" class="">
                 <div class="table-responsive">
-                    <table id="resultTable" class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Organization</th>
-							<th>&nbsp;</th>
-                            <th>EIN</th>
-                            <th>City</th>
-                            <th>State</th>
-                            <th>Phone</th>
-                            <th>Mission</th>
-                        </tr>
-                        </thead>
-                        <tbody id="resultTableBody">
-                        </tbody>
-                    </table>
+
                 </div>
             </div>
             <div id="botPage" style="float: left"></div>
@@ -83,7 +68,7 @@
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
 <script src="/assets/js/jquery.simplePagination.js"></script>
-<%include charityList.ejs%>
+<%include charityListTemplate.ejs%>
 <script>
     $('#Search').click(function() {
 		searchCharity ();

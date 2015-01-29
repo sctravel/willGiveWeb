@@ -310,7 +310,7 @@
         $.post("/services/recipient/signup",{recipientSignUpForm: recipientSignUpForm}, function(data){
             reporter.clear();
             if(data == "success") {
-                windows.href('/recipient/designPage');
+                windows.location.href='/recipient/designPage';
             } else {
                 reporter.error(data);
                 reporter.render();

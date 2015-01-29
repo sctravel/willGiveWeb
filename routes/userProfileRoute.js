@@ -8,6 +8,7 @@ module.exports = function(app) {
 
     var userLogin = require('../lib/db/userLogin');
     var constants = require('../lib/common/constants');
+    var charityOps = require('../lib/db/charityOperation');
 
     var isLoggedIn = require('../app').isLoggedIn;
     var logger = require('../app').logger;
@@ -141,7 +142,30 @@ module.exports = function(app) {
 
     });
 
+    app.get('/services/user/getFavoriteCharity', isLoggedIn, function(req,res){
+        logger.info('calling /user/charity/getFavoriteCharity ' + req.user.userId);
+        charityOps.getFavoriteCharity(req.user.userId, function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            logger.debug(results);
+            res.send(results);
+        })
+    })
 
+    app.get('/services/user/setFavoriteCharity', isLoggedIn, function(req,res){
+        logger.info('calling /services/user/setFavoriteCharity ' + req.user.userId + " " + req.query.rid + " " + req.query.value);
+        charityOps.setFavoriteCharity(req.user.userId, req.query.rid, req.query.value, function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            res.send(results);
+        })
+    })
 
 
 }

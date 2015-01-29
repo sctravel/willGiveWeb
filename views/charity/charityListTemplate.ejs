@@ -1,13 +1,22 @@
 <script>
     var defaultHTML =
-        '<tr> <td> {name} </td> '+
-        ' <td align=middle> {ICONS} </td> ' +
-        ' <td> {EIN} </td> ' +
-        ' <td> {City} </td> ' +
-        ' <td> {State} </td> ' +
-        ' <td> {Phone} </td> ' +
-        ' <td> {Mission} </td> ' +
-        ' </tr> ';
+        ' <div  class="col-xs-11" style="border: 2px solid; border-radius: 10px; margin-top: 2%; margin-bottom: 2%"> ' +
+        '   <div class="col-xs-4"> ' +
+        '      <img src="/resources/recipients/profilePicture/pp_{RecipientId}" height="175px" width="175px%"> ' +
+        '   </div> ' +
+        '   <div class="col-xs-7"> '+
+        '      <div class=""> ' +
+        '          <h4>{name}</a> '+
+        '           {ICONS} ' +
+        '          </h4> '+
+        '      </div> ' +
+        '      <strong>EIN:</strong> {EIN} <br> '+
+        '      <strong>Address:</strong> {Address} <br> '+
+        '      <strong>Phone:</strong> {Phone} <br> '+
+        '      <strong>Mission:</strong> {Mission} ' +
+        '   </div> '+
+        ' </div> '
+        ;
     var moreCount = 0;
     function unHide(c)
     {
@@ -41,13 +50,13 @@
 		lock = false;
 	}	
 	
-    var resultConainer = $('#resultTableBody');
+    var resultConainer = $('#resultsContainer');
     function replaceHtml(transaction){
-	    var website = transaction.website;
+	    var website = transaction.website.trim();
 		if(website.indexOf("http:") == -1)
 			 website = "http://" + website;
 	    var favIcon = "";
-   	    <% if ( 'undefined' == typeof user ) { %>
+   	    <% if ( 'undefined' == typeof user || user.provider=='recipient') { %>
        	;
        	<% } else { %>		
 		  if(transaction.isFavored == 'Y')
@@ -57,9 +66,10 @@
 		<%}%>
 			
         return defaultHTML.replace("{name}","<a style=\"color: #202090;\" href='/charity?id=" + transaction.recipient_id + "'>" + transaction.name + "</a>" )
-		.replace("{ICONS}","<a style=\"color: #202090;\" href='" + website + "' target='_blank'><img src='/images/web.png' border=0 width=20 height=20></a>"  + favIcon)
+		.replace("{ICONS}",favIcon + "<a style=\"color: #202090;\" href='" + website + "' target='_blank'><img src='/images/web.png' border=0 width=20 height=20></a>"  )
                 .replace("{EIN}",transaction.EIN)
-                .replace("{City}",transaction.city)
+                .replace("{Address}",transaction.city)
+                .replace("{RecipientId}", transaction.recipient_id)
 		.replace("{State}",transaction.state)
                 .replace("{Phone}",transaction.phone)
                 .replace("{Mission}",addMore(transaction.mission))
@@ -68,7 +78,7 @@
     function initResultPage(results){
         $('#botPage').empty();
 
-        var itemsOnPage = 10;
+        var itemsOnPage = 5;
 
         $('#botPage').pagination({  
             items: results.length, 
