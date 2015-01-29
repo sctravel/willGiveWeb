@@ -145,7 +145,6 @@ module.exports = function(app) {
 
     app.get('/login/logout', isLoggedIn, function (req, res) {
         userLogin.logoutUserLoginHistory(req.user.userId, req.user.sessionId, function(err, results){
-            logger.info(req.user.userId + " logged out.");
             ;//write logout history success
         })
         req.flash('success','Logged out!');
