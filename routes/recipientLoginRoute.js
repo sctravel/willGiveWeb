@@ -55,7 +55,7 @@ module.exports = function(app) {
         function(req,res){
             logger.debug(req.body);
             logger.debug(req.session);
-            var profilePicturePath = __dirname+'/../public/resources/recipients/'+req.user.userId+'/profilePicture'
+            var profilePicturePath = __dirname+'/../public/resources/recipients/profilePicture/pp_'+req.user.userId;
 
             fs.exists(profilePicturePath, function(exists) {
                 if (exists) {

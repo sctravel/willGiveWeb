@@ -16,6 +16,14 @@ module.exports = function(app) {
         res.render('charity/charity',{user: req.user});
     });
 
+    app.get('/charity', function (req,res){
+        res.render('charity/charity',{user: req.user});
+    });
+
+    app.get('/charity/myPage/edit', isLoggedInAsRecipient, function (req,res){
+        res.render('charity/charityEdit',{user: req.user});
+    });
+
     app.get('/charity/charities',  function (req,res){
         res.render('charity/charities', {user: req.user});
     });
