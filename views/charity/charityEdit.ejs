@@ -9,6 +9,7 @@
     <%activeMenu = "Charities"%>
     <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
 
     <style>
         body{
@@ -47,11 +48,17 @@
 
 <div id="main" class="container-fluid" >
 <h2 class="text-center">Edit My Page</h2>
+    <div id="userId" style="display: none"><%=user.userId%></div>
     <div class="row">
         <h3>Account</h3>
         </hr>
         <div id="wrapper" class="container-fluid" style="padding-top: 2%">
-
+            <div id="updateAccountSuccessMessage" class="form-group" style="padding-bottom: 1%; display : none">
+                <p style="margin-top: 0px; float: left;color: green;font-style:italic">You've sucessfully updated your Account Information.</p><br>
+            </div>
+            <div id="updateAccountFailMessage" class="form-group" style="padding-bottom: 1%; display : none">
+                <p style="margin-top: 0px; float: left;color: red; font-style: italic">Update Account Information failed. Please try it again.</p><br>
+            </div>
             <div class="form-group" style="padding-bottom: 1%">
                 <label class="control-label col-xs-4" for="email">Email</label>
                 <div class="input-group col-xs-7"  >
@@ -64,15 +71,15 @@
             </div>
             <form id="recipientUpdateAccountInfoForm" class="" method="post" style="padding-top: 2%">
                 <div class="form-group" style="padding-bottom: 1%">
-                    <label class="control-label col-xs-4" for="orgName">Organization Name</label>
+                    <label class="control-label col-xs-4" for="name">Organization Name</label>
                     <div class="input-group col-xs-7"  >
-                        <input type="text" id="orgName" name="orgName" class="form-control" value="<%=user.firstName%>" required>
+                        <input type="text" id="name" name="name" class="form-control" value="<%=user.firstName%>" required>
                     </div>
                 </div>
                 <div class="form-group" style="padding-bottom: 1%">
                     <label class="control-label col-xs-4" for="EIN">EIN</label>
                     <div class="input-group col-xs-7"  >
-                        <input type="text" id="EIN" name="EIN" class="form-control" placeholder="<%=user.firstName%>" required>
+                        <input type="text" id="EIN" name="EIN" class="form-control"  required>
                     </div>
                 </div>
                 <div class="form-group" style="padding-bottom: 1%">
@@ -91,34 +98,34 @@
                     </div>
                 </div>
                 <div class="form-group" style="padding-bottom: 1%">
-                    <label for="signupWebsite" class="control-label col-xs-4">Website</label>
+                    <label for="website" class="control-label col-xs-4">Website (Optional)</label>
                     <div class="input-group col-xs-7">
-                        <input type="text" id="signupWebsite" name="signupWebsite" class="form-control" placeholder="Website" >
+                        <input type="text" id="website" name="website" class="form-control" placeholder="Website" >
                     </div>
                 </div>
                 <div class=" form-group" style="padding-bottom: 1%">
-                    <label for="signupFacebookPage" class="control-label col-xs-4">Facebook Page</label>
+                    <label for="facebookPage" class="control-label col-xs-4">Facebook Page (Optional)</label>
                     <div class="input-group col-xs-7">
-                        <input type="text" id="signupFacebookPage" name="signupFacebookPage" class="form-control" placeholder="Facebook Page">
+                        <input type="text" id="facebookPage" name="facebookPage" class="form-control" placeholder="Facebook Page">
                     </div>
                 </div>
                 <div class="form-group" >
-                    <label class="control-label col-xs-4" for="signupAddress" >Address
+                    <label class="control-label col-xs-4" for="address" >Address
                     </label>
                     <div class="input-group col-xs-7"  >
-                        <input type="text" id="signupAddress" name="signupAddress" class="form-control" placeholder="Address" required>
+                        <input type="text" id="address" name="address" class="form-control" placeholder="Address" required>
                     </div>
                 </div>
 
                 <div class="form-group" style="padding-bottom: 1%">
                     <div class="col-xs-8"  >
-                        <label for="signupCity" class="control-label">City</label>
-                        <input type="text" id="signupCity" name="signupCity" class="form-control" placeholder="City" required>
+                        <label for="city" class="control-label">City</label>
+                        <input type="text" id="city" name="city" class="form-control" placeholder="City" required>
                     </div>
                     <div class="col-xs-4" >
-                        <label for="signupState" class="control-label">State
+                        <label for="state" class="control-label">State
                         </label>
-                            <select id='signupState' class="selectpicker form-control" required="true">
+                            <select id='state' class="selectpicker form-control" required="true">
                                 <option value="AL">Alabama</option>
                                 <option value="AK">Alaska</option>
                                 <option value="AZ">Arizona</option>
@@ -189,12 +196,12 @@
                     <div class="col-xs-6" >
                         <label for="signupZipCode" class="control-label">ZipCode
                         </label>
-                        <input type="text" id="signupZipCode" name="signupZipCode" class="form-control" placeholder="ZipCode" required>
+                        <input type="text" id="zipCode" name="zipCode" class="form-control" placeholder="ZipCode" required>
                     </div>
                     <div class="col-xs-6" >
-                        <label for="signupCountry" class="control-label">Country
+                        <label for="country" class="control-label">Country
                         </label>
-                        <select id="signupCountry" class="form-control" required="true">
+                        <select id="country" class="form-control" required="true">
                             <option value="United States">United States</option>
                         </select>
                     </div>
@@ -202,31 +209,31 @@
 
                 <div class="form-group">
                     <div class=" col-xs-6" >
-                        <label for="signupPhone" class="control-label">Phone</label>
-                        <input type="tel" id="signupPhone" name="signupPhone" class="form-control" placeholder="Phone" required>
+                        <label for="phone" class="control-label">Phone</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="Phone" required>
                     </div>
                     <div class="col-xs-6" >
-                        <label for="signupFax" class="control-label">Fax</label>
-                        <input type="tel" id="signupFax" name="signupFax" class="form-control" placeholder="Fax" >
+                        <label for="fax" class="control-label">Fax (Optional)</label>
+                        <input type="tel" id="fax" name="fax" class="form-control" placeholder="Fax" >
                     </div>
                 </div>
                 <div class="form-group">
                     <div class=" col-xs-6"  >
-                        <label for="signupContactPersonName" class="control-label">Contact Person Name
+                        <label for="contactPersonName" class="control-label">Contact Person Name
                         </label>
-                        <input type="text" id="signupContactPersonName" name="signupContactPersonName" class="form-control" placeholder="Contact Person Name" required>
+                        <input type="text" id="contactPersonName" name="contactPersonName" class="form-control" placeholder="Contact Person Name" required>
                     </div>
                     <div class="col-xs-6"  >
-                        <label for="signupContactPersonTitle" class="control-label">Contact Person Title
+                        <label for="contactPersonTitle" class="control-label">Contact Person Title
                         </label>
-                        <input type="text" id="signupContactPersonTitle" name="signupContactPersonTitle" class="form-control" placeholder="Contact Person Title" required>
+                        <input type="text" id="contactPersonTitle" name="contactPersonTitle" class="form-control" placeholder="Contact Person Title" required>
                     </div>
                 </div>
                 <div style="padding-bottom: 1%">&nbsp;</div>
                 <div class="form-group">
-                    <label for="signupMission" class="control-label">Mission
+                    <label for="mission" class="control-label">Mission
                     </label>
-                    <textarea id="signupMission" name="signupMission" class="form-control" maxlength="3000" rows="8" placeholder="Mission" style="height:auto; resize:none">
+                    <textarea id="mission" name="mission" class="form-control" maxlength="3000" rows="8" placeholder="Mission" style="height:auto; resize:none">
 
                     </textarea>
                 </div>
@@ -243,6 +250,12 @@
         <h3>Profile Picture</h3>
         </hr>
         <div id="wrapper" class="container-fluid" style="padding-top: 2%">
+            <div id="updatePictureSuccessMessage" class="form-group" style="padding-bottom: 1%; display : none">
+                <p style="margin-top: 0px; float: left;color: green;font-style:italic">You've successfully updated your profile picture.</p><br>
+            </div>
+            <div id="updatePictureFailMessage" class="form-group" style="padding-bottom: 1%; display : none">
+                <p style="margin-top: 0px; float: left;color: red; font-style: italic">Update profile picture failed. Please try it again.</p><br>
+            </div>
             <form action="/services/recipient/profilePictureUpload" id="profileIconUploadForm" method="post" enctype="multipart/form-data" onsubmit="return checkImageSize(1024)">
                 <div class="col-xs-8 col-xs-push-2">
                     <img id="previewProfilePicture" src="/resources/recipients/profilePicture/pp_<%=user.userId%>" class="text-center" alt="" width="100%" height="20%"/>
@@ -259,7 +272,7 @@
         <div id="wrapper" class="container-fluid" style="padding-top: 2%">
 
             <div id="updatePasswordSuccessMessage" class="form-group" style="padding-bottom: 1%; display : none">
-                <p style="margin-top: 0px; float: left;color: green;font-style:italic">You've sucessfully updated your password.</p><br>
+                <p style="margin-top: 0px; float: left;color: green;font-style:italic">You've successfully updated your password.</p><br>
             </div>
             <div id="updatePasswordFailMessage" class="form-group" style="padding-bottom: 1%; display : none">
                 <p style="margin-top: 0px; float: left;color: red; font-style: italic">Update password failed. Please try it again.</p><br>
@@ -308,6 +321,8 @@
 
 <script src="/jquery/dist/jquery.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/jquery-validation/dist/jquery.validate.js"></script>
+
 <script>
     //show the images immediately after choosing it, before upload
     function readURL(input) {
@@ -323,8 +338,168 @@
         }
     }
 
+
+    var formValidateParams = {
+        errorClass: "my-error-class",
+        //validClass: "my-valid-class",
+        rules: {
+            name: "required",
+            EIN: "required",
+            category: "required",
+            address: "required",
+            city: "required",
+            state: "required",
+            zipCode: "required",
+            country: "required",
+            phone: {
+                required: true,
+                digits: true
+            },
+            fax: {
+                digits:true
+            },
+
+            contactPersonName: "required",
+            contactPersonTitle: "required",
+            mission: "required",
+
+            email: {
+                required : true,
+                email : true
+            }
+        }
+
+    };
+    $("#recipientUpdateAccountInfoForm").validate(
+            formValidateParams
+    );
+    $('#recipientUpdateAccountInfoForm').submit(function(event){
+        event.preventDefault();
+        if (!$("#recipientUpdateAccountInfoForm").valid()) {
+            console.log("Recipient sign Up form is not valid!");
+            return;
+        }
+
+        var recipientUpdateForm = {};
+        recipientUpdateForm.email = $('#email').val();
+        recipientUpdateForm.name = $('#name').val();
+        recipientUpdateForm.EIN = $('#EIN').val();
+        recipientUpdateForm.address = $('#address').val();
+        recipientUpdateForm.city = $('#city').val();
+        recipientUpdateForm.state = $('#state').val();
+        recipientUpdateForm.country = $('#country').val();
+        recipientUpdateForm.zipCode = $('#zipCode').val();
+        recipientUpdateForm.website = $('#website').val();
+        recipientUpdateForm.phone = $('#phone').val();
+        recipientUpdateForm.fax = $('#fax').val();
+        recipientUpdateForm.mission = $('#mission').val();
+        recipientUpdateForm.facebookPage = $('#facebookPage').val();
+        recipientUpdateForm.contactPersonName= $('#contactPersonName').val();
+        recipientUpdateForm.contactPersonTitle= $('#contactPersonTitle').val();
+        recipientUpdateForm.category = $('#category').val();
+        //recipientSignUpForm.imageFile = $('#recipientProfileInput');
+
+        console.dir(recipientUpdateForm);
+        $.post("/services/charity/updateAccountInfo",{updatedData: recipientUpdateForm}, function(data){
+            if(data == "success") {
+                $('#updateAccountSuccessMessage').show();
+                $('#updateAccountFailMessage').hide();
+            } else {
+                $('#updateAccountSuccessMessage').hide();
+                $('#updateAccountFailMessage').show();
+            }
+        });
+
+    });
+
     $("#recipientProfileInput").change(function(){
         readURL(this);
+    });
+
+    var updatePasswordFormValidateParams = {
+        errorClass: "my-error-class",
+        rules: {
+            oldPassword: {
+                required: true,
+                minlength: 8
+            },
+            newPassword: {
+                required: true,
+                minlength: 8
+            },
+            confirmPassword: {
+                required: true,
+                minlength: 8,
+                equalTo : newPassword
+            }
+        },
+        messages: {
+            oldPassword: {
+                required: "Required.",
+                minlength: "Password at least 8 chars."
+            },
+            newPassword: {
+                required: "Required.",
+                minlength: "Password at least 8 chars."
+            },
+            confirmPassword: {
+                required: "Required.",
+                minlength: "Password at least 8 chars.",
+                equalTo: "Password doesn't match."
+            }
+        }
+    };
+    $("#recipientUpdatePasswordForm").validate(
+            updatePasswordFormValidateParams
+    );
+    //Update Password
+    $('#recipientUpdatePasswordForm').submit(function( event ) {
+        event.preventDefault();
+        $('#updatePasswordSuccessMessage').hide();
+        $('#updatePasswordFailMessage').hide();
+        if (!$("#recipientUpdatePasswordForm").valid()) {
+            console.log("recipientUpdatePasswordForm is not valid!");
+            return;
+        }
+        var updatedData={};
+        updatedData.oldPassword = $('#oldPassword').val();
+        updatedData.newPassword = $('#newPassword').val();
+        updatedData.confirmPassword = $('#confirmPassword').val();
+        $.post('/services/charity/updatePassword', {updatedData: updatedData}, function(data) {
+            if(data=='success') {
+                $('#updatePasswordSuccessMessage').show();
+                $('#updatePasswordFailMessage').hide();
+            } else {
+                $('#updatePasswordSuccessMessage').hide();
+                $('#updatePasswordFailMessage').html(data).css({'color': 'red', 'font-style' : 'italic'}).show();
+            }
+            $('input[type="password"]').val('');
+        });
+    });
+
+    var charity = {};
+    $( document ).ready( function(){
+        var userId = $('#userId').html().trim();
+        console.log('userId-'+userId);
+        $.get('/services/charity/'+userId, function(data){
+            charity = data;
+            console.dir(data);
+            $('#EIN').val(charity.EIN);
+            $('#category').val(charity.category);
+            $('#website').val(charity.website);
+            $('#facebookPage').val(charity.facebookUrl);
+            $('#address').val(charity.address);
+            $('#city').val(charity.city);
+            $('#state').val(charity.state);
+            $('#country').val(charity.country);
+            $('#zipCode').val(charity.zipcode);
+            $('#phone').val(charity.phone);
+            $('#fax').val(charity.fax);
+            $('#contactPersonName').val(charity.contactPersonName);
+            $('#contactPersonTitle').val(charity.contactPersonTitle);
+            $('#mission').val(charity.mission);
+
+        })
     });
 
 </script>

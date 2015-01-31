@@ -76,8 +76,8 @@
 
 	
     function searchCharity(){
-	   if ($('#keyword').val() == "") return;
-       $.get('/services/charity/searchCharity?keyword=' + $('#keyword').val(), function(data){
+	   if ($('#keyword').val().trim() == "") return;
+       $.get('/services/charities/searchCharity?keyword=' + $('#keyword').val(), function(data){
            if(!data || data == "failed") {
                return;
            }

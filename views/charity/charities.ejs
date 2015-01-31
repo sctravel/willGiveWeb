@@ -86,7 +86,7 @@
 
     }
     function getUserFavoriteCharity(){	    
-       $.get('/services/charity/getFavoriteCharity',function(data){
+       $.get('/services/user/getFavoriteCharity',function(data){
            if(!data || data == "failed") {
                //get  failed
                return;

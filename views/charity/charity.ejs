@@ -43,8 +43,17 @@
 
   <body>
       <!-- wrapper-->
-    <div id="main" class="container-fluid" >
 
+    <div id="main" class="container-fluid" >
+        <% console.dir(user); console.log('pageId-'+pageId);%>
+        <% if( undefined == typeof user || user == null || undefined == typeof pageId ) {}
+        else{
+                if( pageId == user.userId) {%>
+        <div class="row ">
+            <a href="/charity/<%=pageId%>/edit">Edit My Page</a>
+        </div>
+        <% }%>
+        <% }%>
         <div class="row">
 
           <div id="wrapper" class="container-fluid" >

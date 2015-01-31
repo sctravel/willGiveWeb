@@ -63,7 +63,7 @@
 <%include charityListTemplate.ejs%>
 <script>
     function listCharity(){
-       $.get('/services/charity/listCharity?category=' + $('#category').val().replace("&","%26") + '&state=' + $('#state').val() + '&city=' + $('#city').val(),function(data){
+       $.get('/services/charities/listCharity?category=' + $('#category').val().replace("&","%26") + '&state=' + $('#state').val() + '&city=' + $('#city').val(),function(data){
            if(!data || data == "failed") {
                //get  failed
                return;
@@ -85,7 +85,7 @@
     $('#state').change(function() {
 	   $('#city').empty();
 	   $('#city').append("<option value='All'>All</option>")
-       $.get('/services/charity/classifyCharity?classification=city&condition=' + $('#state').val(),function(data){
+       $.get('/services/charities/classifyCharity?classification=city&condition=' + $('#state').val(),function(data){
            if(!data || data == "failed") {
                return;
            }		   
@@ -102,7 +102,7 @@
 
    $( document).ready(function(){
        $('#category').append("<option value='All'>All</option>")
-       $.get('/services/charity/classifyCharity?classification=category',function(data){
+       $.get('/services/charities/classifyCharity?classification=category',function(data){
            if(!data || data == "failed") {
                return;
            }		   
@@ -112,7 +112,7 @@
        })
 
        $('#state').append("<option value='All'>All</option>")
-       $.get('/services/charity/classifyCharity?classification=state',function(data){
+       $.get('/services/charities/classifyCharity?classification=state',function(data){
            if(!data || data == "failed") {
                return;
            }		   

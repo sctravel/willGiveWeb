@@ -141,15 +141,18 @@ configRecipientLoginRoute(app);
 // Page Routing
 ///////////////////////////////////////////////////////////////////////////
 app.get('/', function (req,res){
-     console.log(req.user);
-     res.render('index',{user: req.user});
+    console.log(req.user);
+    req.session.lastPage = '/';
+    res.render('index',{user: req.user});
 });
 
 
 app.get('/contactus', function (req,res){
+    req.session.lastPage = '/contactus';
     res.render('contactUs', {user: req.user});
 });
 app.get('/aboutus', function (req,res){
+    req.session.lastPage = '/aboutus';
     res.render('aboutUs', {user: req.user});
 });
 

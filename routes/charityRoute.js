@@ -7,41 +7,66 @@ module.exports = function(app) {
     this.name = 'charityRoute';
 
     var charityOps = require('../lib/db/charityOperation');
+    var recipientOps = require('../lib/db/recipientOperation');
     var constants = require('../lib/common/constants');
     var isLoggedIn = require('../app').isLoggedIn;
     var logger = require('../app').logger;
     var isLoggedInAsRecipient = require('../app').isLoggedInAsRecipient;
 
     app.get('/charity', function (req,res){
+        req.session.lastPage = '/charity/';
         res.render('charity/charity',{user: req.user});
     });
 
-    app.get('/charity', function (req,res){
-        res.render('charity/charity',{user: req.user});
+    app.get('/charity/:id', function (req,res){
+        var id = req.params.id;
+        req.session.lastPage = '/charity/'+id;
+        res.render('charity/charity',{user: req.user, pageId: id});
     });
 
-    app.get('/charity/myPage/edit', isLoggedInAsRecipient, function (req,res){
-        res.render('charity/charityEdit',{user: req.user});
+    app.get('/charity/:id/edit', isLoggedInAsRecipient, function (req,res){
+        var id = req.params.id;
+        console.log('trying to edit charity id: '+id);
+        if(id == req.user.userId) {
+            res.render('charity/charityEdit',{user: req.user, pageId: id});
+        } else {
+            res.redirect('/');
+        }
     });
 
     app.get('/charity/charities',  function (req,res){
+        req.session.lastPage = '/charity/charities';
         res.render('charity/charities', {user: req.user});
     });
 
     app.get('/charity/searchCharities', function (req,res){
+        req.session.lastPage = '/charity/searchCharities';
         res.render('charity/searchCharities', {user: req.user, keyword: req.query.keyword});
     });
 
     app.get('/charity/listCharities', function (req,res){
+        req.session.lastPage = '/charity/listCharities';
         res.render('charity/listCharities', {user: req.user});
     });
 
     app.get('/charity/hotCharities', function (req,res){
+        req.session.lastPage = '/charity/hotCharities';
         res.render('charity/hotCharities', {user: req.user});
     });
 
+    app.get('/services/charity/:id', function(req, res) {
+        var recipientId = req.params.id;
+        recipientOps.getRecipientAccountInfo(recipientId, function(err, results){
+            if(err) {
+                logger.error(err);
+                res.send(err.toString());
+                return;
+            }
 
-    app.get('/services/charity/searchCharity', function(req,res){
+            res.json(results);
+        })
+    });
+    app.get('/services/charities/searchCharity', function(req,res){
         logger.info('calling /services/charity/searchCharity ' + req.query.keyword);
 		userId = null;
 		if (req.user!= null) userId = req.user.userId;
@@ -52,11 +77,11 @@ module.exports = function(app) {
                 return;
             }
             logger.debug(results);
-            res.send(results);
+            res.json(results);
         })
     })
 
-    app.get('/services/charity/classifyCharity', function(req,res){
+    app.get('/services/charities/classifyCharity', function(req,res){
         logger.info('calling /services/charity/classifyCharity ' + req.query.classification + " " + req.query.condition);
         charityOps.classifyCharity(req.query.classification, req.query.condition, function(err, results){
             if(err){
@@ -69,10 +94,10 @@ module.exports = function(app) {
         })
     })
 
-    app.get('/services/charity/listCharity', function(req,res){
+    app.get('/services/charities/listCharity', function(req,res){
         logger.info('calling /services/charity/listCharity ' + req.query.category + " "+ req.query.state + " "+ req.query.city);
 		userId = null;
-		if (req.user!= null) userId = req.user.userId;
+		if (req.user != null) userId = req.user.userId;
         charityOps.listCharity(userId, req.query.category, req.query.state, req.query.city, function(err, results){
             if(err){
                 logger.error(err);
@@ -83,5 +108,35 @@ module.exports = function(app) {
             res.send(results);
         });
     })
+
+    app.post('/services/charity/updatePassword', isLoggedInAsRecipient, function(req, res){
+
+        var updatedData = req.body.updatedData;
+        charityOps.updatePasswordForRecipientAccount(updatedData, req.user.userId,function(err,results){
+            if(err){
+                logger.error(err);
+                res.send(err.toString());
+                return;
+            }
+            res.send(results);
+        })
+
+    })
+
+    app.post('/services/charity/updateAccountInfo', isLoggedInAsRecipient, function(req, res){
+
+        var updatedData = req.body.updatedData;
+        charityOps.updateAccountInfoForRecipientAccount(updatedData, req.user.userId, function(err,results){
+            if(err){
+                logger.error(err);
+                res.send(err.toString());
+                return;
+            }
+            res.send(results);
+        })
+
+    })
+
+
 
 }
