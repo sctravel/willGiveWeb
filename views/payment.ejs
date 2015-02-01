@@ -59,14 +59,14 @@ function enableCheckout() {
             var $input = $('<input type=hidden name=stripeToken />').val(res.id);
             $('form').append($input).submit();
         };
-
+        var payAmount=  jQuery('#amount').val();
         StripeCheckout.open({
             key:         'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
             address:     true,
-            amount:      5000,
+            amount:      payAmount,
             currency:    'usd',
-            name:        'Joes Pistachios',
-            description: 'A bag of Pistachios',
+            name:        'User',
+            description: 'Will Give Checkout Widget',
             panelLabel:  'Checkout',
             token:       token
         });
@@ -77,7 +77,7 @@ function enableCheckout() {
 
 
 <!--
-
+    // v1 style widget
     jQuery('#customButton').on('click', function (e) {
         // Open Checkout with further options
 
@@ -91,14 +91,7 @@ function enableCheckout() {
         });
         e.preventDefault();
     });
-
-
-
 -->
-
-
-
-
 
 </body>
 <%include layout/footer.ejs%>

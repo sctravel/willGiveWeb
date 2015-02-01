@@ -39,6 +39,12 @@
       </style>
       <%include ../layout/navbar.ejs%>
 
+      <script src="/jquery/dist/jquery.min.js"></script>
+      <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+      <script src="/jquery-validation/dist/jquery.validate.js"></script>
+      <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
+      <script src="https://checkout.stripe.com/v2/checkout.js"></script>
+
   </head>
 
   <body>
@@ -83,10 +89,27 @@
             </div>
 
             <div id="main_right" class="col-lg-4">
+
+                <form action="javascript:void(0);" method="post" id="example-form" style="display: block;">
+
+
+                    <div class="form-row">
+                        <label>Amount</label>
+                        <input id="paymentAmount" type="text" maxlength="20" autocomplete="off" class="required" />
+                        <button type="submit" name="submit-button" onClick="enableCheckout()">Confirm</button>
+                    </div>
+
+                    <input id="amount" type="hidden" autocomplete="off" name="amount" value="300" >
+
+
+
+                </form>
               <!-- contribute button-->
-              <div id="contribute_button"  class="btn btn-block btn-lg btn-primary">
+              <div id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:none;">
                   Contribute
               </div>
+
+
               <!-- progress bar-->
               <!--facebook of current login user -->
               <!--recent donor -->
@@ -110,6 +133,50 @@
           </div>
         </div>
     </div>
+
+
+      <script>
+          function enableCheckout() {
+
+              document.getElementById("contribute_button").style.display="block";
+              alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
+              jQuery('#amount').val(jQuery("#paymentAmount").val());
+              alert("Set amount: "+ jQuery("#amount").val());
+          }
+
+      </script>
+
+      <script src="https://checkout.stripe.com/v2/checkout.js"></script>
+
+
+      <form id="form" action="/payment/stripePayment" method="POST" style="display:none;">
+          <input id="amount" type="hidden" autocomplete="off" name="amount" value="200">
+
+      </form>
+
+      <script>
+
+          $('#contribute_button').click(function(){
+              var token = function(res){
+                  var $input = $('<input type=hidden name=stripeToken />').val(res.id);
+                  $('form').append($input).submit();
+              };
+              var payAmount=  jQuery('#amount').val();
+              StripeCheckout.open({
+                  key:         'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
+                  address:     true,
+                  amount:      payAmount,
+                  currency:    'usd',
+                  name:        'User',
+                  description: 'Will Give Checkout Widget',
+                  panelLabel:  'Checkout',
+                  token:       token
+              });
+
+              return false;
+          });
+      </script>
+
     <%include ../layout/footer.ejs%>
 
     <script src="/jquery/dist/jquery.js"></script>
