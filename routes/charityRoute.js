@@ -34,22 +34,22 @@ module.exports = function(app) {
         }
     });
 
-    app.get('/charity/charities',  function (req,res){
+    app.get('/charities/charities',  function (req,res){
         req.session.lastPage = '/charity/charities';
         res.render('charity/charities', {user: req.user});
     });
 
-    app.get('/charity/searchCharities', function (req,res){
+    app.get('/charities/searchCharities', function (req,res){
         req.session.lastPage = '/charity/searchCharities';
         res.render('charity/searchCharities', {user: req.user, keyword: req.query.keyword});
     });
 
-    app.get('/charity/listCharities', function (req,res){
+    app.get('/charities/listCharities', function (req,res){
         req.session.lastPage = '/charity/listCharities';
         res.render('charity/listCharities', {user: req.user});
     });
 
-    app.get('/charity/hotCharities', function (req,res){
+    app.get('/charities/hotCharities', function (req,res){
         req.session.lastPage = '/charity/hotCharities';
         res.render('charity/hotCharities', {user: req.user});
     });
