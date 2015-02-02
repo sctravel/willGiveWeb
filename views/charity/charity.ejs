@@ -51,15 +51,10 @@
       <!-- wrapper-->
 
     <div id="main" class="container-fluid" >
-        <% console.dir(user); console.log('pageId-'+pageId);%>
-        <% if( undefined == typeof user || user == null || undefined == typeof pageId ) {}
-        else{
-                if( pageId == user.userId) {%>
-        <div class="row ">
-            <a href="/charity/<%=pageId%>/edit">Edit My Page</a>
-        </div>
-        <% }%>
-        <% }%>
+
+
+
+
         <div class="row">
 
           <div id="wrapper" class="container-fluid" >
@@ -79,7 +74,7 @@
                         Missions
                     </h2>
                     <hr/>
-                    <p id="mission_content"> sdfsdfs </p>
+                    <p id="mission_content">  </p>
                     <p>
                         <a class="btn" href="#">MORE »</a>
                     </p>
@@ -88,6 +83,11 @@
 
             <div id="main_right" class="col-lg-4">
 
+
+                <!-- contribute button-->
+                <div id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:none;">
+                    Contribute
+                </div>
                 <form action="javascript:void(0);" method="post" id="example-form" style="display: block;">
 
 
@@ -102,10 +102,7 @@
 
 
                 </form>
-              <!-- contribute button-->
-              <div id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:none;">
-                  Contribute
-              </div>
+
 
 
               <!-- progress bar-->
