@@ -32,6 +32,23 @@ module.exports = function(app) {
         res.render('charity/hotCharities', {user: req.user});
     });
 
+    app.get('/services/charityById', function(req,res){
+
+        charityId= req.query.id;
+
+        charityOps.charityById(charityId, function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            logger.debug(results);
+            res.send(results);
+        })
+
+
+
+    })
 
     app.get('/services/charity/searchCharity', function(req,res){
         logger.info('calling /services/charity/searchCharity ' + req.query.keyword);

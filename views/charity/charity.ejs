@@ -9,7 +9,7 @@
       <%activeMenu = "Charities"%>
       <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
       <link href="/assets/css/style.css" rel="stylesheet" />
-
+      <script src="/jquery/dist/jquery.js"></script>
       <style>
           body{
               background-color: lightgray;
@@ -53,7 +53,7 @@
                 <div id="img_slides" class="carousel slide">
                     <div class="carousel-inner">
                         <div class="item active">
-                            <img src="/images/logo.jpg"  alt="First slide">
+                            <img id ="charity_logo" src=""  alt="First slide">
                         </div>
                     </div>
                 </div>
@@ -64,9 +64,7 @@
                         Missions
                     </h2>
                     <hr/>
-                    <p>
-                        The International Committee of the Red Cross (ICRC) is a humanitarian institution based in Geneva, Switzerland and a three-time Nobel Prize Laureate. State parties (signatories) to the four Geneva Conventions of 1949 and their Additional Protocols of 1977 (Protocol I, Protocol II) and 2005 have given the ICRC a mandate to protect victims of international and internal armed conflicts. Such victims include war wounded, prisoners,refugees, civilians, and other non-combatants.[3]
-                    </p>
+                    <p id="mission_content"> sdfsdfs </p>
                     <p>
                         <a class="btn" href="#">MORE »</a>
                     </p>
@@ -103,9 +101,60 @@
         </div>
     </div>
     <%include ../layout/footer.ejs%>
+    <script language="JavaScript">
 
-    <script src="/jquery/dist/jquery.js"></script>
+        (function($){
+            $.getUrlParam
+                    = function(name)
+            {
+                var reg
+                        = new RegExp("(^|&)"+
+                        name +"=([^&]*)(&|$)");
+                var r
+                        = window.location.search.substr(1).match(reg);
+                if (r!=null) return unescape(r[2]); return null;
+            }
+        })(jQuery);
+
+        $(document).ready(function(){
+
+
+          serviceCharityById = '/services/charityById?id=' + $.getUrlParam('id');
+
+            function getCharityById(){
+
+                $.get(serviceCharityById,function(data) {
+
+                    if(!data || data == "failed") {
+                        //get  failed
+
+                        return;
+                    }
+
+                    if(data.length>0) {
+                        console.dir(data);
+                        charity = data[0];
+                        $('#mission_content')[0].innerHTML=charity.MISSION;
+                        $('#charity_logo')[0].setAttribute('src', charity.Image_URL);
+
+
+                    }
+                    else {
+                        displayNoResults();
+                    }
+                })
+            }
+
+            getCharityById();
+        })
+
+
+
+
+    </script>
+
     <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+
   </body>
 
 </html>
