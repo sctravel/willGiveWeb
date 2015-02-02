@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app="willGiveApp" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html lang="en" ng-app="willGiveApp">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,7 +20,7 @@
             <span style="color:red; ">* </span>Required
         </div>
     </div>
-    <form id="recipientSignupForm" class="col-xs-12"  method="post" style="padding-top: 2%">
+    <form id="recipientSignupFormV1" class="col-xs-12" method="post" style="padding-top: 2%">
         <div id="recipientSignUpReporter" style="padding-bottom: 2%"></div>
         <h3 class="form-signin-heading" style="padding-top: 1%">1. Account</h3>
 
@@ -226,10 +226,10 @@
         Already have an account? <a href="/recipient/login">Sign In</a>
     </div>
 </div>
+<script src="/jquery/dist/jquery.min.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
 <script src="/assets/js/messageReporter.js"></script>
-<script src="/jquery/dist/jquery.js"></script>
 
 <script>
     var reporter = new MessageReporter("recipientSignUpReporter");
@@ -276,12 +276,13 @@
         }
 
     };
-    $("#recipientSignupForm").validate(
+    $("#recipientSignupFormV1").validate(
             formValidateParams
     );
-    $('#recipientSignupForm').submit(function(event){
+    $('#recipientSignupFormV1').submit(function(event){
+        console.log('In Submit!!!!')
         event.preventDefault();
-        if (!$("#recipientSignupForm").valid()) {
+        if (!$("#recipientSignupFormV1").valid()) {
             console.log("Recipient sign Up form is not valid!");
             return;
         }
@@ -310,13 +311,12 @@
         $.post("/services/recipient/signup",{recipientSignUpForm: recipientSignUpForm}, function(data){
             reporter.clear();
             if(data == "success") {
-                windows.location.href='/recipient/designPage';
+                window.location.href='/recipient/designPage';
             } else {
                 reporter.error(data);
                 reporter.render();
             }
         });
-
 
     });
 </script>

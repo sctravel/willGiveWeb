@@ -26,13 +26,13 @@
                         <strong>Search Charities</strong></li>
 
                     <li  >
-                        <a href="/charity/searchCharities" style="color: #000000;"><strong>Search Charities</strong></a>
+                        <a href="/charities/searchCharities" style="color: #000000;"><strong>Search Charities</strong></a>
                     </li>
                     <li>
-                        <a href="/charity/listCharities" style="color: #000000;">List A-Z</a>
+                        <a href="/charities/listCharities" style="color: #000000;">List A-Z</a>
                     </li>
                     <li>
-                        <a href="/charity/hotCharities" style="color: #000000;">Recommended</a>
+                        <a href="/charities/hotCharities" style="color: #000000;">Recommended</a>
                     </li>
                 </ul>
             </div>
@@ -76,8 +76,8 @@
 
 	
     function searchCharity(){
-	   if ($('#keyword').val() == "") return;
-       $.get('/services/charity/searchCharity?keyword=' + $('#keyword').val(), function(data){
+	   if ($('#keyword').val().trim() == "") return;
+       $.get('/services/charities/searchCharity?keyword=' + $('#keyword').val(), function(data){
            if(!data || data == "failed") {
                return;
            }
