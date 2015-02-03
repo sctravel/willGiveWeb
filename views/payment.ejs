@@ -59,6 +59,8 @@ function enableCheckout() {
             var $input = $('<input type=hidden name=stripeToken />').val(res.id);
             $('form').append($input).submit();
         };
+
+        <!--
         var payAmount=  jQuery('#amount').val();
         StripeCheckout.open({
             key:         'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
@@ -70,7 +72,7 @@ function enableCheckout() {
             panelLabel:  'Checkout',
             token:       token
         });
-
+         -->
         return false;
     });
 </script>

@@ -172,9 +172,11 @@ app.get('/services/getConfirmPic',  function(req,res){
 })
 
 //query if it's known customer
-app.get('/payment/stripePayment/customerId',function(req,res) {
+app.get('/payment/stripePayment/queryUser/',function(req,res) {
 
-    var user_id = req.params.userId;
+    var user_id = req.query.userId;
+
+    console.dir("app userId:"+ user_id);
 
     billingUntil.queryExistingStripCustomers(user_id,function(err,results){
         if(err){

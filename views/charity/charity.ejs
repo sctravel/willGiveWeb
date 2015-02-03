@@ -160,11 +160,11 @@
 
 
             //jQuery.get( url [, data ] [, success ] [, dataType ] )
-              existingUserById = '/payment/stripePayment/customerId/' +  <%=user.userId%>;
+              existingUserById = '/payment/stripePayment/queryUser/';
 
               var stripId;
               //Inside a function a special variable "arguments" is always available. It's similar to an array in that it has a length property, but it lacks the built-in methods of an array.
-              $.get(existingUserById,function(results) {
+              $.get(existingUserById,{"userId" : <%=user.userId%>},function(results) {
                   if(!results || results == "failed") {
                       return;
                   }
