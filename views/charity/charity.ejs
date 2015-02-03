@@ -85,9 +85,7 @@
 
 
                 <!-- contribute button-->
-                <div id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:none;">
-                    Contribute
-                </div>
+
                 <form action="javascript:void(0);" method="post" id="example-form" style="display: block;">
 
 
@@ -102,6 +100,10 @@
 
 
                 </form>
+
+                <div id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:none;">
+                    Contribute
+                </div>
 
 
 
@@ -132,11 +134,10 @@
 
       <script>
           function enableCheckout() {
-
               document.getElementById("contribute_button").style.display="block";
-              alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
+             // alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
               jQuery('#amount').val(jQuery("#paymentAmount").val());
-              alert("Set amount: "+ jQuery("#amount").val());
+              //alert("Set amount: "+ jQuery("#amount").val());
           }
 
       </script>
@@ -152,6 +153,33 @@
       <script>
 
           $('#contribute_button').click(function(){
+
+              //get userId from session
+             alert("userId:"+ <%=user.userId%>);
+              //query DB to find strip ID
+
+
+            //jQuery.get( url [, data ] [, success ] [, dataType ] )
+              existingUserById = '/payment/stripePayment/customerId/' +  <%=user.userId%>;
+
+              var stripId;
+              //Inside a function a special variable "arguments" is always available. It's similar to an array in that it has a length property, but it lacks the built-in methods of an array.
+              $.get(existingUserById,function(results) {
+                  if(!results || results == "failed") {
+                      return;
+                  }
+
+                  if(results.length>0) {
+
+                      stripId=results[0].stripe_customerId;
+                      console.dir(data);
+                  }
+
+              })
+
+              alert("currentUserStripId:"+ stripId);
+              //direct charge on the account without pop up payment checkout wizard
+
               var token = function(res){
                   var $input = $('<input type=hidden name=stripeToken />').val(res.id);
                   $('form').append($input).submit();
@@ -199,7 +227,6 @@
 
                     if(!data || data == "failed") {
                         //get  failed
-
                         return;
                     }
 
@@ -212,7 +239,7 @@
 
                     }
                     else {
-                        displayNoResults();
+                        //displayNoResults();
                     }
                 })
             }

@@ -171,8 +171,29 @@ app.get('/services/getConfirmPic',  function(req,res){
     res.end(conf[1]);
 })
 
-//known customer
-app.post('/payment/stripePayment/customerId',function(req,res) {
+//query if it's known customer
+app.get('/payment/stripePayment/customerId',function(req,res) {
+
+    var user_id = req.params.userId;
+
+    billingUntil.queryExistingStripCustomers(user_id,function(err,results){
+        if(err){
+            console.error(err);
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
+
+    });
+
+});
+
+
+//charge known customer
+app.post('/payment/stripePaymentWithStripeId/',function(req,res) {
+
+
+
+
 
 });
 
