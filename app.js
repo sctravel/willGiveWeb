@@ -178,13 +178,14 @@ app.get('/payment/stripePayment/queryUser/',function(req,res) {
 
     console.dir("app userId:"+ user_id);
 
-    billingUntil.queryExistingStripCustomers(user_id,function(err,results){
+    billingUntil.queryExistingStripCustomers(user_id,function(err,customerToken){
         if(err){
             console.error(err);
             res.send(constants.services.CALLBACK_FAILED);
             return;
         }
-
+        console.dir("query results: "+ customerToken);
+        res.send(customerToken);
     });
 
 });

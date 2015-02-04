@@ -220,38 +220,42 @@
               var stripId;
               //Inside a function a special variable "arguments" is always available. It's similar to an array in that it has a length property, but it lacks the built-in methods of an array.
               $.get(existingUserById, function(results) {
-                  if(!results || results == "failed") {
-                      return;
-                  }
 
-                  if(results.length>0) {
-                      stripId=results[0].stripe_customerId;
-                      console.dir(data);
-                  }
+                      if(!result || result == "failed") {
+                          alert("failed to get results");
+                          return;
+                      }
+
+                      alert("currentResults:"+ result);
+                        stripId = result;
+                        console.dir(stripId);
+                      alert("current stripId:"+ stripId);
+
+                      var token = function(res){
+                          var $input = $('<input type=hidden name=stripeToken />').val(res.id);
+                          $('form').append($input).submit();
+                      };
+                      var payAmount=  jQuery('#amount').val();
+                      StripeCheckout.open({
+                          key:         'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
+                          address:     true,
+                          amount:      payAmount*100,//scale in cents instead of dollar
+                          currency:    'usd',
+                          name:        'User:' + <%=user.firstName%>,
+                          description: 'Will Give Checkout Widget',
+                          panelLabel:  'Checkout',
+                          token:       token
+                      });
+
+                      return false;
+                  });
 
               })
 
-              alert("currentUserStripId:"+ stripId);
+
               //direct charge on the account without pop up payment checkout wizard
 
-              var token = function(res){
-                  var $input = $('<input type=hidden name=stripeToken />').val(res.id);
-                  $('form').append($input).submit();
-              };
-              var payAmount=  jQuery('#amount').val();
-              StripeCheckout.open({
-                  key:         'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
-                  address:     true,
-                  amount:      payAmount,
-                  currency:    'usd',
-                  name:        'User',
-                  description: 'Will Give Checkout Widget',
-                  panelLabel:  'Checkout',
-                  token:       token
-              });
 
-              return false;
-          });
       </script>
 
     <%include ../layout/footer.ejs%>
