@@ -22,7 +22,7 @@
         <div class="collapse navbar-collapse" id="exampleNavbarCollapse">
             <ul class="nav navbar-nav">
                 <li class="<%=menuClass[0]%>"><a href="/">Home</a></li>
-                <li class="<%=menuClass[5]%>"><a href="/charity/charities">Charities</a></li>
+                <li class="<%=menuClass[5]%>"><a href="/charities/listCharities">Charities</a></li>
                 <li class="<%=menuClass[1]%>"><a href="/aboutus">About Us</a></li>
                 <li class="<%=menuClass[2]%>"><a href="/contactus">Contact Us</a></li>
             </ul>
@@ -67,7 +67,7 @@
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="/charity?id=<%=user.userId%>">My Page</a></li>
+                        <li><a href="/charity/<%=user.userId%>">My Page</a></li>
                         <li class="divider"></li>
                         <li><a href="/recipient/logout">Logout</a></li>
                     </ul>
@@ -78,7 +78,8 @@
 
     </div>
 </nav>
-<script src="bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/jquery/dist/jquery.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 
 <div style="padding-bottom: 30px">
     &nbsp;

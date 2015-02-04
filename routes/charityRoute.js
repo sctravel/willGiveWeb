@@ -55,20 +55,18 @@ module.exports = function(app) {
     });
 
 
-    app.get('/services/charityById', function(req,res){
+    app.get('/services/charityById/:id', function(req,res){
 
-        charityId= req.query.id;
-
-        charityOps.charityById(charityId, function(err, results){
-            if(err){
+        var recipientId = req.params.id;
+        recipientOps.getRecipientAccountInfo(recipientId, function(err, results){
+            if(err) {
                 logger.error(err);
-                res.send(constants.services.CALLBACK_FAILED);
+                res.send(err.toString());
                 return;
             }
-            logger.debug(results);
-            res.send(results);
-        })
 
+            res.json(results);
+        })
 
 
     })

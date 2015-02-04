@@ -50,6 +50,9 @@
 <h2 class="text-center">Edit My Page</h2>
     <div id="userId" style="display: none"><%=user.userId%></div>
     <div class="row">
+        <div id="myPageDiv" class="row" >
+            <a href="/charity/<%=user.userId%>" id="myPageLink" style="float: right; padding-right: 5%">Back to My Page</a>
+        </div>
         <h3>Account</h3>
         </hr>
         <div id="wrapper" class="container-fluid" style="padding-top: 2%">
@@ -480,8 +483,9 @@
     var charity = {};
     $( document ).ready( function(){
         var userId = $('#userId').html().trim();
+
         console.log('userId-'+userId);
-        $.get('/services/charity/'+userId, function(data){
+        $.get('/services/charityById/'+userId, function(data){
             charity = data;
             console.dir(data);
             $('#EIN').val(charity.EIN);

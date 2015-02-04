@@ -9,7 +9,6 @@
       <%activeMenu = "Charities"%>
       <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
       <link href="/assets/css/style.css" rel="stylesheet" />
-      <script src="/jquery/dist/jquery.js"></script>
       <style>
           body{
               background-color: lightgray;
@@ -44,6 +43,7 @@
       <script src="/jquery-validation/dist/jquery.validate.js"></script>
       <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
       <script src="https://checkout.stripe.com/v2/checkout.js"></script>
+      <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places,geometry"></script>
 
   </head>
 
@@ -52,36 +52,99 @@
 
     <div id="main" class="container-fluid" >
 
-
+        <%if( undefined != typeof user ) {%>
+            <div id="userId" style="display: none"><%=user.userId%></div>
+        <%}%>
 
 
         <div class="row">
+          <h2 id="orgName" class="text-center" style="padding-bottom: 1%; padding-top: 2%"></h2>
+            <div id="editMyPageDiv" class="row" style="display: none">
+                <a href="#" id="editMyPageLink" style="float: right; padding-right: 5%">Edit My Page</a>
+            </div>
 
-          <div id="wrapper" class="container-fluid" >
+            <div id="wrapper" class="container-fluid" >
             <div id="main_left" class="col-lg-8">
                 <!--Gallery Slides-->
                 <div id="img_slides" class="carousel slide">
                     <div class="carousel-inner">
                         <div class="item active">
-                            <img id ="charity_logo" src=""  alt="First slide">
+                            <img id ="charity_logo" src="" alt="First slide">
                         </div>
                     </div>
                 </div>
 
                 <!-- left text-->
                 <div id="introduction">
-                    <h2>
-                        Missions
-                    </h2>
+
                     <hr/>
+                    <h3>
+                        Missions
+                    </h3>
+
                     <p id="mission_content">  </p>
-                    <p>
-                        <a class="btn" href="#">MORE »</a>
-                    </p>
+
+                    <hr/>
+
+                    <h3>
+                        Information
+                    </h3>
+
+                    <div id="infoDiv" >
+                        <div class="row" style="padding-top: 2%">
+                            <div class="col-xs-4"><strong>Organization Name:</strong> </div>
+                            <div class="col-xs-8" id="nameInfo" style="float: left"></div>
+
+                        </div>
+                        <div class="row" style="padding-top: 2%">
+                            <div class="col-xs-4"><strong>EIN:</strong> </div>
+                            <div class="col-xs-8" id="EINInfo"></div>
+
+                        </div>
+
+                        <div class="row" style="padding-top: 2%">
+                            <div class="col-xs-4"><strong>Website: </strong></div>
+                            <a href='' class="col-xs-8" id="websiteInfo"></a>
+
+                        </div>
+                        <div class="row" style="padding-top: 2%">
+                            <div class="col-xs-4"><strong>Facebook: </strong></div>
+                            <a href='' class="col-xs-8" id="facebookPageInfo"></a>
+                        </div>
+                        <div class="row" style="padding-top: 2%">
+                            <div class="col-xs-2"><strong>Phone: </strong></div>
+                            <div class="col-xs-4"  id="phoneInfo"></div>
+                            <div class="col-xs-2"><strong>Fax: </strong></div>
+                            <div class="col-xs-4" id="faxInfo"></div>
+                        </div>
+                    </div>
+                    <hr/>
+
+                    <h3>
+                        Map and Reviews
+                    </h3>
+
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" id="maptab" href="#mapSection" ><h5>Map</h5></a></li>
+                        <li><a data-toggle="tab" href="#reviewSection"><h5>Reviews</h5></a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="mapSection" class="tab-pane fade in active" style="padding-bottom: 3%">
+                            <p>
+                                <a href="" data-toggle="modal" data-target="#myModal" style="color: #202090"> <iframe id="map" src="" width="500" height="400" frameborder="0" style="border:0"></iframe><br />
+                                </a>
+                            </p>
+                        </div>
+                        <div id="reviewSection" class="tab-pane fade" style="padding-bottom: 3%">
+                            <h3> Coming Soon </h3>
+                        </div>
+                     </div>
                 </div>
             </div>
 
             <div id="main_right" class="col-lg-4">
+
+
 
 
                 <!-- contribute button-->
@@ -96,15 +159,10 @@
                     </div>
 
                     <input id="amount" type="hidden" autocomplete="off" name="amount" value="300" >
-
-
-
+                    <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:none;">
+                        Contribute
+                    </button>
                 </form>
-
-                <div id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:none;">
-                    Contribute
-                </div>
-
 
 
               <!-- progress bar-->
@@ -155,22 +213,18 @@
           $('#contribute_button').click(function(){
 
               //get userId from session
-             alert("userId:"+ <%=user.userId%>);
               //query DB to find strip ID
-
-
             //jQuery.get( url [, data ] [, success ] [, dataType ] )
               existingUserById = '/payment/stripePayment/queryUser/';
 
               var stripId;
               //Inside a function a special variable "arguments" is always available. It's similar to an array in that it has a length property, but it lacks the built-in methods of an array.
-              $.get(existingUserById,{"userId" : <%=user.userId%>},function(results) {
+              $.get(existingUserById, function(results) {
                   if(!results || results == "failed") {
                       return;
                   }
 
                   if(results.length>0) {
-
                       stripId=results[0].stripe_customerId;
                       console.dir(data);
                   }
@@ -203,52 +257,46 @@
     <%include ../layout/footer.ejs%>
     <script language="JavaScript">
 
-        (function($){
-            $.getUrlParam
-                    = function(name)
-            {
-                var reg
-                        = new RegExp("(^|&)"+
-                        name +"=([^&]*)(&|$)");
-                var r
-                        = window.location.search.substr(1).match(reg);
-                if (r!=null) return unescape(r[2]); return null;
-            }
-        })(jQuery);
-
+        var recipientId = document.URL.split('/').slice(-1)[0];
+        var mapPrefix = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD3J5wXDD6SbCrUPZoYHYwOjV3RJE7OaZU&q=';
+        var charity = {};
+        function getCharityById(){
+            $.get('/services/charityById/' + recipientId,function(data) {
+                if(!data || data == "failed") {
+                    //TODO display failure message
+                    return;
+                }
+                console.dir(data);
+                charity = data;
+                var entireAddress = (charity.address+', '+charity.city+', '+charity.state+', '+charity.zipcode);
+                $('#mission_content').html(charity.mission);
+                $('#charity_logo').attr('src', '/resources/recipients/profilePicture/pp_'+recipientId);
+                $('#orgName').html(charity.name);
+                $('#editMyPageLink').attr('href', '/charity/'+recipientId+'/edit');
+                $('#map').attr('src', mapPrefix+entireAddress.replace(/ /g,'+'));
+                $('#nameInfo').html(charity.name);
+                $('#EINInfo').html(charity.EIN);
+                $('#phoneInfo').html(charity.phone);
+                if(charity.website) {
+                    $('#websiteInfo').html(charity.website.trim());
+                    $('#websiteInfo').attr('href','http://'+charity.website.trim());
+                }
+                if(charity.facebookUrl) {
+                    $('#facebookPageInfo').html(charity.facebookUrl.trim());
+                    $('#facebookPageInfo').attr('href',charity.facebookUrl.trim());
+                }
+            })
+        }
         $(document).ready(function(){
-
-
-          serviceCharityById = '/services/charityById?id=' + $.getUrlParam('id');
-
-            function getCharityById(){
-
-                $.get(serviceCharityById,function(data) {
-
-                    if(!data || data == "failed") {
-                        //get  failed
-                        return;
-                    }
-
-                    if(data.length>0) {
-                        console.dir(data);
-                        charity = data[0];
-                        $('#mission_content')[0].innerHTML=charity.MISSION;
-                        $('#charity_logo')[0].setAttribute('src', charity.Image_URL);
-
-
-                    }
-                    else {
-                        //displayNoResults();
-                    }
-                })
-            }
-
             getCharityById();
+            if(recipientId == $('#userId').html()) {
+                $('#editMyPageDiv').show();
+            }
+            $('#maptab').bind('onClick', function() {
+                google.maps.event.trigger($('#map'), 'resize');
+            });
+
         })
-
-
-
 
     </script>
 
