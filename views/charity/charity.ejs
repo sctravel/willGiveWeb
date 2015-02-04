@@ -52,8 +52,10 @@
 
     <div id="main" class="container-fluid" >
 
-        <%if( undefined != typeof user ) {%>
-            <div id="userId" style="display: none"><%=user.userId%></div>
+        <%if( undefined == typeof user || user == null) {%>
+            <div id="userId" style="display: none"></div>
+        <%} else {%>
+            <div id="userId" style="display: none"><%=user.userId%></div
         <%}%>
 
 
@@ -241,7 +243,7 @@
                           address:     true,
                           amount:      payAmount*100,//scale in cents instead of dollar
                           currency:    'usd',
-                          name:        'User:' + <%=user.firstName%>,
+                          name:        'User:', 
                           description: 'Will Give Checkout Widget',
                           panelLabel:  'Checkout',
                           token:       token
