@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
-    <script src="/jquery/dist/jquery.min.js"></script>
-    <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="/jquery-validation/dist/jquery.validate.js"></script>
     <%activeMenu = "SignUp"%>
     <%include ../layout/navbar.ejs%>
 </head>
@@ -190,6 +187,10 @@
     </div><!--/.row-->
 </div><!--/.container-->
 <%include ../layout/footer.ejs%>
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/jquery-validation/dist/jquery.validate.js"></script>
+
     <%if( user.provider=='facebook') { %>
         <script>
             $( document ).ready(function() {

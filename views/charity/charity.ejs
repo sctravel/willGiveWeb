@@ -133,7 +133,8 @@
                     <div class="tab-content">
                         <div id="mapSection" class="tab-pane fade in active" style="padding-bottom: 3%">
                             <p>
-                                <a href="" data-toggle="modal" data-target="#myModal" style="color: #202090"> <iframe id="map" src="" width="500" height="400" frameborder="0" style="border:0"></iframe><br />
+                                <a href="" data-toggle="modal" data-target="#myModal" style="color: #202090">
+                                    <iframe id="map" src="" width="100%" height="400px" frameborder="0" style="border:0"></iframe><br />
                                 </a>
                             </p>
                         </div>
@@ -209,7 +210,7 @@
 
       </script>
 
-      <script src="https://checkout.stripe.com/v2/checkout.js"></script>
+
 
 
       <form id="form" action="/payment/stripePayment" method="POST" style="display:none;">
@@ -270,7 +271,7 @@
     <%include ../layout/footer.ejs%>
     <script language="JavaScript">
 
-        var recipientId = document.URL.split('/').slice(-1)[0];
+        var recipientId = document.URL.split('/').slice(-1)[0].replace(/\D/g,'');
         var mapPrefix = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD3J5wXDD6SbCrUPZoYHYwOjV3RJE7OaZU&q=';
         var charity = {};
         function getCharityById(){
@@ -315,7 +316,6 @@
 
     </script>
 
-    <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 
   </body>
 
