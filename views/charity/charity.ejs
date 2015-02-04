@@ -148,7 +148,6 @@
 
 
 
-
                 <!-- contribute button-->
 
                 <form action="javascript:void(0);" method="post" id="example-form" style="display: block;">
@@ -165,8 +164,16 @@
                         Contribute
                     </button>
                 </form>
-
-
+                <hr/>
+                <h4 class="text-center">QR Code</h4>
+                <div id="img_slides" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <img id ="qrCode" src="" width="100%" alt="">
+                        </div>
+                    </div>
+                </div>
+                <hr/>
               <!-- progress bar-->
               <!--facebook of current login user -->
               <!--recent donor -->
@@ -291,6 +298,8 @@
                     $('#facebookPageInfo').html(charity.facebookUrl.trim());
                     $('#facebookPageInfo').attr('href',charity.facebookUrl.trim());
                 }
+
+                $('#qrCode').attr('src','/resources/recipients/qrCode/QR_'+recipientId+'.png');
             })
         }
         $(document).ready(function(){
