@@ -1,0 +1,24 @@
+{
+    "facebookCredentials" : {
+        "clientID" : "323966477728028",
+        "clientSecret" : "660a1a721669c9daa0244faa45113b21",
+        "callbackURL" : "/auth/facebook/callback"
+    },
+
+    "dbOptions" : {
+        "host" : "localhost",//process.env.MYSQL_HOST,
+        "user" : "root",//process.env.MYSQL_USER,
+
+        "password" : "root_mysql",//process.env.MYSQL_PASS,
+        "database" : "willGive",//process.env.MYSQL_DB,
+        "connectionLimit" : 500,
+        "supportBigNumbers" : true
+    },
+    "emailCredentials" : {
+        "service" : "Gmail",
+        "auth" : {
+            "user" : "willgiveplatform@gmail.com",
+            "pass" : "WillGive2015"
+        }
+    }
+}

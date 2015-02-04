@@ -15,20 +15,11 @@ module.exports = function(app) {
     var LocalStrategy = require('passport-local').Strategy;
     var logger = require('../app').logger;
     var recipient = require('../lib/db/recipientOperation');
+    var config = require('config');
 
-    var facebookCredentials = {
-        clientID:'420297851460293',
-        clientSecret:'dd643be55187ac4e76e6487ccd61e7a0',
-        callbackURL:'/auth/facebook/callback'
-    };
-    // development only
-    if ('development' == app.get('env')) {
-        facebookCredentials = {
-            clientID:'323966477728028',
-            clientSecret:'660a1a721669c9daa0244faa45113b21',
-            callbackURL:'/auth/facebook/callback'
-        }
-    };
+
+    var facebookCredentials = config.get('facebookCredentials');
+
     logger.info("#########app env: "+app.get('env')+". ##############");
     logger.debug(facebookCredentials);
     ///////////////////////////////////////////////////////////////////////

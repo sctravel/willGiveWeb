@@ -216,7 +216,7 @@
 
               //get userId from session
               //query DB to find strip ID
-            //jQuery.get( url [, data ] [, success ] [, dataType ] )
+              //jQuery.get( url [, data ] [, success ] [, dataType ] )
               existingUserById = '/payment/stripePayment/queryUser/';
 
               var stripId;
@@ -243,7 +243,7 @@
                           address:     true,
                           amount:      payAmount*100,//scale in cents instead of dollar
                           currency:    'usd',
-                          name:        'User:', 
+                          name:        'User:',
                           description: 'Will Give Checkout Widget',
                           panelLabel:  'Checkout',
                           token:       token
