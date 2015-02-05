@@ -98,7 +98,7 @@
         return defaultHTML.replace("{Id}",transaction.transaction_id)
                 .replace("{Date}",dateDisplayFormatter(transaction.datetime))
                 .replace("{Amount}",transaction.amount)
-                .replace("{Recipient}",'<a href="/charities/'+transaction.recipient_id+'" style="color:black">'+transaction.name+'</a>')
+                .replace("{Recipient}",'<a href="/charity/'+transaction.recipient_id+'" style="color: #202090">'+transaction.name+'</a>')
                 .replace("{Status}",transaction.status)
                 ;
 
