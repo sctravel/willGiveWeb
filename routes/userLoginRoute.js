@@ -143,9 +143,7 @@ module.exports = function(app) {
         res.redirect("/");
     });
 
-    /////////////////////////////////////////////////////////
-    //find back password
-    //////////////////////////////////////////////////////////
+
     app.post('/services/login/signin',
         passport.authenticate('user',
             { failureRedirect: '/login/signin', failureFlash: true }
@@ -161,7 +159,25 @@ module.exports = function(app) {
 
         }
     );
+    app.post('/services/login/mobileSignin',
+        passport.authenticate('user',
+            { failureRedirect: '/login/signin', failureFlash: true }
+        ),
+        function(req,res){
+            logger.debug(req.body);
+            logger.debug(req.session);
+            if(req.session.lastPage) {
+                res.redirect(req.session.lastPage);
+            } else {
+                res.redirect("/");
+            }
 
+        }
+    );
+
+    /////////////////////////////////////////////////////////
+    //find back password
+    //////////////////////////////////////////////////////////
     app.post('/services/login/resetPassword',function(req,res){
         var email = req.body.email;
         var randomString = req.body.randomString;

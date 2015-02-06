@@ -100,6 +100,18 @@ module.exports = function(app) {
         })
     })
 
+    app.get('/services/charities/listAllCharity', function(req, res){
+
+        charityOps.listAllCharity(function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            logger.debug(results);
+            res.send(results);
+        });
+    })
     app.get('/services/charities/listCharity', function(req,res){
         logger.info('calling /services/charity/listCharity ' + req.query.category + " "+ req.query.state + " "+ req.query.city);
 		userId = null;
