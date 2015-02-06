@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en" ng-app="willGiveApp" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
@@ -8,13 +8,10 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/social-buttons.css">
     <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
-
-
-    <%activeMenu = "SignUp"%>
-    <%include ../layout/navbar.ejs%>
 </head>
 <body>
-
+    <%activeMenu = "SignUp"%>
+    <%include ../layout/navbar.ejs%>
 <div class="container" style="min-height: 70%">
     <h2 class="form-signin-heading text-center">WillGive SignUp</h2>
     <hr align="left" width="100%" background="0xff0000">
@@ -30,7 +27,7 @@
                 <input type="text" id="signupLastName" name="signupLastName" class="form-control" placeholder="Last Name" required>
              </div>
         </div>
-        <div style="padding-bottom: 1%"> &nbsp</div>
+        <div style="padding-bottom: 1%"> &nbsp;</div>
 
         <div class="input-group input-group-lg">
           <span class="input-group-addon">
@@ -39,7 +36,7 @@
             <label for="signupEmail" class="sr-only">Email address</label>
             <input type="email" id="signupEmail" name="signupEmail" class="form-control" placeholder="Email address" required autofocus>
         </div>
-        <div style="padding-bottom: 1%"> &nbsp</div>
+        <div style="padding-bottom: 1%"> &nbsp;</div>
         <div class="input-group input-group-lg" style="padding-bottom: 1%">
               <span class="input-group-addon">
                 <span class="glyphicon glyphicon-lock"></span>
@@ -47,7 +44,7 @@
             <label for="signupPassword" class="sr-only">Password</label>
             <input type="password" id="signupPassword" name="signupPassword" class="form-control" placeholder="Password" minlength="8" required>
         </div>
-        <div style="padding-bottom: 1%"> &nbsp</div>
+        <div style="padding-bottom: 1%"> &nbsp;</div>
 
         <div class="input-group input-group-lg">
               <span class="input-group-addon">
@@ -56,7 +53,7 @@
             <label for="signupPasswordConfirm" class="sr-only">Confirm Password</label>
             <input type="password" id="signupPasswordConfirm" name="signupPasswordConfirm" class="form-control" placeholder="Confirm Password" equalTo="#signupPassword" minlength="8" required>
         </div>
-        <div style="padding-bottom: 1%"> &nbsp</div>
+        <div style="padding-bottom: 1%"> &nbsp;</div>
         <button id="submitSignupFormButton" class="btn btn-lg btn-primary btn-block" type="submit" >SIGN UP</button>
     </form>
     <div class="col-xs-2 text-center">
