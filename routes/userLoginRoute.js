@@ -20,8 +20,15 @@ module.exports = function(app) {
 
     var facebookCredentials = config.get('facebookCredentials');
 
+    if( app.get('env') == 'production') {
+        facebookCredentials = {
+            "clientID" : "420297851460293",
+            "clientSecret" : "dd643be55187ac4e76e6487ccd61e7a0",
+            "callbackURL" : "/auth/facebook/callback"
+        }
+    }
     logger.info("#########app env: "+app.get('env')+". ##############");
-    logger.debug(facebookCredentials);
+    logger.info(facebookCredentials);
     ///////////////////////////////////////////////////////////////////////
     // Passport - Login methods setup
     ///////////////////////////////////////////////////////////////////////
