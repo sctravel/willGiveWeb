@@ -245,7 +245,7 @@ app.post('/payment/stripePayment',function(req,res){
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            res.send(results);
+            //res.send(results);
         });
 
         console.dir("end saving customers");
@@ -266,7 +266,7 @@ app.post('/payment/stripePayment',function(req,res){
                     res.send(constants.services.CALLBACK_FAILED);
                     return;
                 }
-                res.send(results);
+               // res.send(results);
             });
 
         });
