@@ -195,8 +195,6 @@
                         <input id="paymentAmount" type="text" maxlength="20" autocomplete="off" class="required" />
                         <button type="submit" name="submit-button" onClick="enableCheckout()">Confirm</button>
                     </div>
-
-                    <input id="amount" type="hidden" autocomplete="off" name="amount" value="300" >
                     <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:none;">
                         Contribute
                     </button>
@@ -235,13 +233,23 @@
         </div>
     </div>
 
+      <form id="form" action="/payment/stripePayment" method="POST" style="display:none;">
+          <input id="amount"  name="amount" value="300">
+
+      </form>
+
 
       <script>
           function enableCheckout() {
               document.getElementById("contribute_button").style.display="block";
-             // alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
-              jQuery('#amount').val(jQuery("#paymentAmount").val());
-              //alert("Set amount: "+ jQuery("#amount").val());
+              alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
+              jQuery("#amount").val(jQuery("#paymentAmount").val());
+              alert("Set amount: "+ jQuery("#amount").val());
+
+              alert( "amount:" +jQuery("#amount").val());
+
+              var elem = document.getElementById("amount");
+              elem.value =88;
           }
 
       </script>
@@ -249,10 +257,7 @@
 
 
 
-      <form id="form" action="/payment/stripePayment" method="POST" style="display:none;">
-          <input id="amount" type="hidden" autocomplete="off" name="amount" value="200">
 
-      </form>
 
       <script>
 
@@ -283,7 +288,9 @@
                           var $input = $('<input type=hidden name=stripeToken />').val(res.id);
                           $('form').append($input).submit();
                       };
-                      var payAmount=  jQuery('#amount').val();
+                      var payAmount=  jQuery("#paymentAmount").val();
+
+                       alert(payAmount);
                       StripeCheckout.open({
                           key:         'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
                           address:     true,
