@@ -214,20 +214,11 @@
               <!--recent donor -->
                 <div id="rec_don">
                     <h3>Contributions</h3>
-                    <hr/>
-                    <img src="/images/launch_icon.png" width="30" height="25" style="float: left" />
-                    <table style="margin-left: 50px">
-                             <tr><td>UserName1</td></tr>
-                             <tr><td>some times ago</td></tr>
-                    </table>
-                    <hr/>
-                    <img src="/images/launch_icon.png" width="30" height="25" style="float: left" />
-                    <table style="margin-left: 50px">
-                        <tr><td>UserName2</td></tr>
-                        <tr><td>some times ago</td></tr>
-                    </table>
-                    <hr/>
+                    <div id="transactionHistory">
+
                     </div>
+                    <hr/>
+
                 </div>
           </div>
         </div>
@@ -322,6 +313,7 @@
         var recipientId = document.URL.split('/').slice(-1)[0].replace(/\D/g,'');
         var mapPrefix = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD3J5wXDD6SbCrUPZoYHYwOjV3RJE7OaZU&q=';
         var charity = {};
+        var transactions={};
         function getCharityById(){
             $.get('/services/charityById/' + recipientId,function(data) {
                 if(!data || data == "failed") {
@@ -352,8 +344,43 @@
                 $('#qrCode').attr('src','/resources/recipients/qrCode/QR_'+recipientId+'.png');
             })
         }
+
+        var transactionHtml = ' <hr/> <div style="padding-bottom : 2%"><div class="col-xs-2"> ' +
+                ' <img src="{imageUrl}" width="50" height="50" style="float: left" /> </div>' +
+                ' <div class="col-xs-1"></div> <div class="col-xs-8"> '+
+                ' <table > ' +
+                ' <tr><td style="color : green; font-size: 36" ><strong>${amount}</strong></td></tr> ' +
+                ' <tr><td>{userName}</td></tr> ' +
+                ' <tr><td style="color : #808080">{date}</td></tr> ' +
+                ' </table> </div> </div> <hr/>'
+
+        function replaceHtml(transaction) {
+            return transactionHtml.replace('{imageUrl}', transaction.image_icon_url)
+                    .replace('{amount}', transaction.amount)
+                    .replace('{userName}', transaction.first_name+' '+transaction.last_name)
+                    .replace('{date}', transaction.datetime.substring(0,10));
+
+        }
+        function getTransactionsByCharityId() {
+            $.get('/services/transactionsByCharityId/' + recipientId,function(data) {
+                if(!data || data == "failed") {
+                    //TODO display failure message
+                    return;
+                }
+                console.dir(data);
+                transactions=data;
+                var resultContainer = $('#transactionHistory');
+                //show the transactions;
+                for(var i=0; i< transactions.length; ++i) {
+                    resultContainer.append(replaceHtml(transactions[i]));
+                }
+                resultContainer.append('<hr/> <hr/><div class="" style="padding-top: 1%"> Total '+ transactions.length +' contributions </div>');
+            });
+
+        }
         $(document).ready(function(){
             getCharityById();
+            getTransactionsByCharityId();
             //$('#fbShareButton').attr('href', document.URL);
             if(recipientId == $('#userId').html()) {
                 $('#editMyPageDiv').show();
