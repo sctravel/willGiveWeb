@@ -235,6 +235,7 @@
 
       <form id="form" action="/payment/stripePayment" method="POST" style="display:none;">
           <input id="amount"  name="amount" value="0">
+          <input id="receipientId"  name="receipientId" value="0">
 
       </form>
 
@@ -242,8 +243,9 @@
       <script>
           function enableCheckout() {
               document.getElementById("contribute_button").style.display="block";
-              alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
+              //alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
               jQuery("#amount").val(jQuery("#paymentAmount").val());
+              jQuery("#receipientId").val(<%=pageId%>);
               //alert("Set amount: "+ jQuery("#amount").val());
 
               //alert( "amount:" +jQuery("#amount").val());
@@ -270,18 +272,23 @@
               existingUserById = '/payment/stripePayment/queryUser/';
 
               var stripId;
+
+
               //Inside a function a special variable "arguments" is always available. It's similar to an array in that it has a length property, but it lacks the built-in methods of an array.
-              $.get(existingUserById, { userId: <%=user.userId%>},function(result) {
+              $.get(existingUserById, { userId: <%=user.userId%> },function(result) {
                       alert("<%=user.userId%>");
                       if(!result || result == "failed") {
                           alert("failed to get results");
                           return;
                       }
 
-                      alert("currentResults:"+ result);
+                      //alert("currentResults:"+ result);
                         stripId = result;
                         console.dir(stripId);
-                      alert("current stripId:"+ stripId);
+                      //alert("current stripId:"+ stripId);
+
+                     alert("charityId: "+<%=pageId%>);
+                    //need to pass thru charityId  as well
 
                       var token = function(res){
                           var $input = $('<input type=hidden name=stripeToken />').val(res.id);
