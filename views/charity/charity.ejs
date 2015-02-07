@@ -234,7 +234,7 @@
     </div>
 
       <form id="form" action="/payment/stripePayment" method="POST" style="display:none;">
-          <input id="amount"  name="amount" value="300">
+          <input id="amount"  name="amount" value="0">
 
       </form>
 
@@ -244,12 +244,11 @@
               document.getElementById("contribute_button").style.display="block";
               alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
               jQuery("#amount").val(jQuery("#paymentAmount").val());
-              alert("Set amount: "+ jQuery("#amount").val());
+              //alert("Set amount: "+ jQuery("#amount").val());
 
-              alert( "amount:" +jQuery("#amount").val());
+              //alert( "amount:" +jQuery("#amount").val());
 
-              var elem = document.getElementById("amount");
-              elem.value =88;
+
           }
 
       </script>
@@ -290,7 +289,6 @@
                       };
                       var payAmount=  jQuery("#paymentAmount").val();
 
-                       alert(payAmount);
                       StripeCheckout.open({
                           key:         'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
                           address:     true,
