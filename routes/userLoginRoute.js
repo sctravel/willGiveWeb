@@ -53,8 +53,6 @@ module.exports = function(app) {
     ));
 
 
-
-
     passport.use(new fpass(facebookCredentials,
         function(accessToken, refreshToken, fbUserData, done){
             console.dir(fbUserData);

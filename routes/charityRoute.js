@@ -54,7 +54,7 @@ module.exports = function(app) {
         res.render('charity/hotCharities', {user: req.user});
     });
 
-
+    // Currently charity == recipient
     app.get('/services/charityById/:id', function(req,res){
 
         var recipientId = req.params.id;
@@ -69,8 +69,21 @@ module.exports = function(app) {
         })
 
 
-    })
+    });
 
+    app.get('/services/transactionsByCharityId/:id', function(req, res) {
+        var recipientId = req.params.id;
+
+        charityOps.getTransactionsByCharityId(recipientId, function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            logger.debug(results);
+            res.json(results);
+        })
+    });
 
     app.get('/services/charities/searchCharity', function(req,res){
         logger.info('calling /services/charity/searchCharity ' + req.query.keyword);
