@@ -240,7 +240,7 @@ app.post('/payment/stripePayment',function(req,res){
     //logic for customers already has StripeCustomerIDs
     if(stripeCustomerId) {
         stripe.charges.create({
-            amount: amount, // amount in cents, again
+            amount: amount*100, // amount in cents, again
             currency: "usd",
             customer: stripeCustomerId
         });
