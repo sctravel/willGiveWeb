@@ -15,6 +15,7 @@ var recipient = require('./lib/db/recipientOperation')
 var constants = require('./lib/common/constants');
 global.activeMenu = "Home";
 
+global.fs = require('fs');
 var billingUntil = require('./lib/db/BillingUtil');
 
 var configUserLoginRoute = require('./routes/userLoginRoute');

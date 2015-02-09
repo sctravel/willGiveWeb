@@ -2,7 +2,7 @@
     var defaultHTML =
         ' <div  class="col-xs-11" style="border: 2px solid; border-radius: 10px; margin-top: 1%; margin-bottom: 1%"> ' +
         '   <div class="col-xs-4"> ' +
-        '      <img src="/resources/recipients/profilePicture/pp_{RecipientId}" height="150px" width="150px"> ' +
+        '      <img src="{ImagePath}" style="height:100%;max-width:220px;"> ' +
         '   </div> ' +
         '   <div class="col-xs-7"> '+
         '      <div class=""> ' +
@@ -64,13 +64,14 @@
 		 else
 		    favIcon = "<a style=\"cursor:hand; cursor:pointer\" onClick=\"flipFav('" + transaction.recipient_id + "')\"><img src='/images/fav.png' id=img" + transaction.recipient_id +" border=0 width=30 height=27></a>";
 		<%}%>
-			
+		
         return defaultHTML.replace("{name}","<a style=\"color: #202090;\" href='/charity/" + transaction.recipient_id + "'>" + transaction.name + "</a>" )
 		.replace("{ICONS}",favIcon + "<a style=\"color: #202090;\" href='" + website + "' target='_blank'><img src='/images/web.png' border=0 width=20 height=20></a>"  )
                 .replace("{EIN}",transaction.EIN)
                 .replace("{Address}",transaction.address+', '+transaction.city+', '+transaction.state+', '+transaction.zipcode)
                 .replace("{RecipientId}", transaction.recipient_id)
-		.replace("{State}",transaction.state)
+                .replace("{ImagePath}", transaction.imagePath)
+		        .replace("{State}",transaction.state)
                 .replace("{Phone}",transaction.phone)
                 .replace("{Mission}",addMore(transaction.mission))
                 ;
