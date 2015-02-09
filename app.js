@@ -30,7 +30,7 @@ var app = express();
 // all environments
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use(express.favicon());
+app.use(express.favicon(__dirname + '/public/images/icon.png'));
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
