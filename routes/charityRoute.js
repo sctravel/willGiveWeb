@@ -53,7 +53,7 @@ module.exports = function(app) {
     app.get('/services/charityById/:id', function(req,res){
 
         var recipientId = req.params.id;
-        recipientOps.getRecipientAccountInfo(recipientId, function(err, results){
+        charityOps.charityById(recipientId, function(err, results){
             if(err) {
                 logger.error(err);
                 res.send(err.toString());
