@@ -239,7 +239,9 @@ app.post('/payment/stripePayment',function(req,res){
     var stripeCustomerId=req.body.stripeCustomerId ;
 
     //logic for customers already has StripeCustomerIDs
-    if(stripeCustomerId) {
+
+    console.dir("stripeCustomerId in app.js:"+stripeCustomerId);
+    if(stripeCustomerId&&stripeCustomerId!=0) {
         stripe.charges.create({
             amount: amount*100, // amount in cents, again
             currency: "usd",

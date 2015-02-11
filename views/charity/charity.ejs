@@ -276,11 +276,14 @@
                   //alert("currentResults:"+ result);
                   stripeCustomerId = result;
                   console.dir("stripeCustomerId(charity.ejs): "+ stripeCustomerId);
-                  //alert("current stripCustomerId:"+ stripCustomerId);
+                  if(stripeCustomerId!=null)
+                    alert("current stripCustomerId:"+ stripeCustomerId);
+                  else
+                      alert("current stripCustomerId: null");
                   //need to pass thru charityId  as well
 
                   //if stripCustomerId not null, then post to the payment page automatically
-                    if(stripeCustomerId!=null) {
+                    if($.trim(stripeCustomerId)) {
                         jQuery("#stripeCustomerId").val(stripeCustomerId);
 
                          $('form').submit();
@@ -301,8 +304,8 @@
                           address:     true,
                           amount:      payAmount*100,//scale in cents instead of dollar
                           currency:    'usd',
-                          name:        'User:',
-                          description: 'Will Give Checkout Widget',
+                          name:        'User:'+ '<%=user.firstName%>',
+                          description: 'Will Give Checkout',
                           panelLabel:  'Checkout',
                           token:       token
                       });
