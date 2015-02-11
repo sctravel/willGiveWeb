@@ -15,6 +15,7 @@ var recipient = require('./lib/db/recipientOperation')
 var constants = require('./lib/common/constants');
 global.activeMenu = "Home";
 
+global.fs = require('fs');
 var billingUntil = require('./lib/db/BillingUtil');
 
 var configUserLoginRoute = require('./routes/userLoginRoute');
@@ -29,7 +30,7 @@ var app = express();
 // all environments
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use(express.favicon());
+app.use(express.favicon(__dirname + '/public/images/icon.png'));
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
@@ -205,11 +206,19 @@ app.post('/payment/stripePaymentWithStripeId/',function(req,res) {
 app.post('/payment/stripePayment',function(req,res){
 
     console.dir("UserId in passport: "+req.user.userId);
+
+    console.dir("app.js billing charityId: "+req.params.id);
     console.warn("start payment process");
 
     //'stripeToken
-    console.dir(req.body);
+    console.dir("requset body:"+ req.body);
     console.dir(req.body.stripeToken);
+
+    console.dir("receipientId: "+req.body.receipientId);
+
+    console.dir("stripeCustomerId: "+req.body.stripeCustomerId);
+
+
 
 
     var stripe = require("stripe")("sk_test_zjF1XdDy0TZAYnuifaHR0iDf");
@@ -219,11 +228,32 @@ app.post('/payment/stripePayment',function(req,res){
     var stripeToken = req.body.stripeToken;
 
     var amount = req.body.amount;
+    var url= req.url;
 
+    var recipient_id=req.body.receipientId;
+
+    console.dir("url:"+url);
     console.dir("amount:"+amount);
     //save transaction history into database
 
-    var savedId;
+    var stripeCustomerId=req.body.stripeCustomerId ;
+
+    //logic for customers already has StripeCustomerIDs
+    if(stripeCustomerId) {
+        stripe.charges.create({
+            amount: amount*100, // amount in cents, again
+            currency: "usd",
+            customer: stripeCustomerId
+        });
+
+        //need to store in transaction history table as well
+
+
+        return;
+    }
+
+
+    //logic for customers don't have StripeCustomerIDs, need to create new ones
 
     console.dir("start saving customers");
     stripe.customers.create({
@@ -238,7 +268,7 @@ app.post('/payment/stripePayment',function(req,res){
 
         console.dir("UserId in passport: "+req.user.userId);
         user_id=req.user.userId;
-        var recipient_id=900000007;
+
         billingUntil.updatePaymentMethodStripeId(user_id,customer.id,function(err,results){
             if(err){
                 console.error(err);
@@ -260,6 +290,8 @@ app.post('/payment/stripePayment',function(req,res){
             if (err && err.type === 'StripeCardError') {
                 // The card has been declined
             }
+
+            console.dir("recipient_id: "+recipient_id);
             billingUntil.insertTransactionHistroy("Stripe_"+stripeToken,amount,user_id,recipient_id,"Processing", stripeToken, function(err,results){
                 if(err){
                     console.error(err);

@@ -81,6 +81,7 @@
            if(!data || data == "failed") {
                return;
            }
+           console.dir(data);
            if(data.length>0) {
 			   $('#noresult').hide();
                initResultPage(data);

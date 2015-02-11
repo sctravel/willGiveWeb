@@ -34,18 +34,13 @@ module.exports = function(app) {
         }
     });
 
-    app.get('/charities/charities',  function (req,res){
-        req.session.lastPage = '/charity/charities';
-        res.render('charity/charities', {user: req.user});
-    });
-
     app.get('/charities/searchCharities', function (req,res){
-        req.session.lastPage = '/charity/searchCharities';
+        req.session.lastPage = '/charities/searchCharities';
         res.render('charity/searchCharities', {user: req.user, keyword: req.query.keyword});
     });
 
     app.get('/charities/listCharities', function (req,res){
-        req.session.lastPage = '/charity/listCharities';
+        req.session.lastPage = '/charities/listCharities';
         res.render('charity/listCharities', {user: req.user});
     });
 
@@ -64,7 +59,8 @@ module.exports = function(app) {
                 res.send(err.toString());
                 return;
             }
-
+			verifyImagePath([results]);
+			logger.debug(results);	
             res.json(results);
         })
 
@@ -81,6 +77,7 @@ module.exports = function(app) {
                 return;
             }
             logger.debug(results);
+            verifyImagePath(results);
             res.json(results);
         })
     });
@@ -95,7 +92,8 @@ module.exports = function(app) {
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            logger.debug(results);
+            //logger.debug(results);
+			verifyImagePath(results);
             res.json(results);
         })
     })
@@ -121,7 +119,8 @@ module.exports = function(app) {
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            logger.debug(results);
+            //logger.debug(results);
+			verifyImagePath(results);
             res.send(results);
         });
     })
@@ -135,7 +134,8 @@ module.exports = function(app) {
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            logger.debug(results);
+            //logger.debug(results);
+			verifyImagePath(results);
             res.send(results);
         });
     })
@@ -168,6 +168,17 @@ module.exports = function(app) {
 
     })
 
+  function 	verifyImagePath(results)
+  {
+	for(var i=0;i< results.length;++i) 
+		{			    
+	           var imagePath = "/resources/recipients/profilePicture/pp_default";
+               if (global.fs.existsSync("public/resources/recipients/profilePicture/pp_" + results[i].recipient_id)) {
+                    imagePath = "/resources/recipients/profilePicture/pp_" + results[i].recipient_id;                    
+			    }
+				results[i].imagePath = imagePath;
+		}
+	}
 
 
 }
