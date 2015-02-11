@@ -166,15 +166,17 @@ module.exports = function(app) {
     );
     app.post('/services/login/mobileSignin',
         passport.authenticate('user',
-            { failureRedirect: '/login/signin', failureFlash: true }
+            {  }
         ),
         function(req,res){
-            logger.debug(req.body);
-            logger.debug(req.session);
-            if(req.session.lastPage) {
-                res.redirect(req.session.lastPage);
+            logger.warn("Mobile login now!");
+            //console.dir(req.session.cookie);
+
+            if(req.isAuthenticated()) {
+                console.dir(res);
+                res.send(req.user);
             } else {
-                res.redirect("/");
+                res.send(constants.services.CALLBACK_FAILED);
             }
 
         }

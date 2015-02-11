@@ -98,6 +98,8 @@ module.exports = function(app) {
 
     })
     app.get('/services/user/settings', isLoggedIn, function(req,res) {
+        console.dir(req.session.cookie);
+
         userLogin.getAccountSettingInfoForUser(req.user.userId, function(err, userSettings){
             if(err){
                 logger.error(err);
@@ -118,7 +120,7 @@ module.exports = function(app) {
             var suffix = fileNameArray[fileNameArray.length-1].toLowerCase();
 
             //Path where image will be uploaded
-            fstream = fs.createWriteStream(__dirname + '/public/resources/profileIcons/' + fieldname +'.'+suffix);
+            fstream = fs.createWriteStream(__dirname + '/../public/resources/profileIcons/' + fieldname +'.'+suffix);
             file.pipe(fstream);
             fstream.on('close', function () {
                 logger.info("Upload Finished of " + fieldname);

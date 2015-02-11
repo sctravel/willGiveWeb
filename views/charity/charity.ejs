@@ -105,7 +105,7 @@
                 </div>
                 <div class="row" style="height: 50px; padding-top: 1%;padding-bottom: 1%">
                     <div class="share_button col-xs-2" >
-                        <fb:share class="fb-share-button" id="fbShareButton" data-href="www.willgive.org/charity/<%=pageId%>" data-type="button_count"></fb:share>
+                        <fb:share class="fb-share-button" id="fbShareButton" data-href="https://www.willgive.org/charity/<%=pageId%>" data-type="button_count"></fb:share>
                     </div>
                     <div id="tweets" class="col-xs-1">
                         <a href="https://twitter.com/share" id="twitterShareButton" class="twitter-share-button" data-size="">Tweet</a>
@@ -306,7 +306,7 @@
         var recipientId = document.URL.split('/').slice(-1)[0].replace(/\D/g,'');
         var mapPrefix = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD3J5wXDD6SbCrUPZoYHYwOjV3RJE7OaZU&q=';
         var charity = {};
-        var transactions={};
+        var transactions=[];
         function getCharityById(){
             $.get('/services/charityById/' + recipientId,function(data) {
                 if(!data || data == "failed") {
@@ -315,7 +315,7 @@
                 }
                 console.dir(data);
                 charity = data;
-                var entireAddress = (charity.address+', '+charity.city+', '+charity.state+', '+charity.zipcode);
+                var entireAddress = (charity.address.trim()+', '+charity.city.trim()+', '+charity.state.trim()+', '+charity.zipcode.trim());
                 $('#mission_content').html(charity.mission);
                 $('#charity_logo').attr('src', '/resources/recipients/profilePicture/pp_'+recipientId);
                 $('#orgName').html(charity.name);

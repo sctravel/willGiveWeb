@@ -34,7 +34,7 @@ app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.cookieParser('123456xyz'));
-app.use(express.session({cookie: { maxAge : constants.SESSION_HOURS*60*60*1000 }})); // Session expires in SESSION_HOURS hours
+app.use(express.session({cookie: { expires: new Date(new Date().getTime()+constants.SESSION_HOURS*60*60*1000), maxAge : constants.SESSION_HOURS*60*60*1000 }})); // Session expires in SESSION_HOURS hours
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
@@ -105,7 +105,6 @@ var serverOptions = {
 
 //User login, need to separate from recipient login
 function isLoggedIn(req, res, next) {
-    console.warn('isLoggedIn ---')
     if (req.isAuthenticated() && ( constants.login.LOGIN_PROVIDER.FACEBOOK==req.user.provider || constants.login.LOGIN_PROVIDER.WILLGIVE==req.user.provider)) {
         logger.debug(req.user);
         return next();
@@ -143,6 +142,7 @@ configRecipientLoginRoute(app);
 app.get('/', function (req,res){
     console.log(req.user);
     req.session.lastPage = '/';
+
     res.render('index',{user: req.user});
 });
 
