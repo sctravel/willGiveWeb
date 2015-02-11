@@ -12,6 +12,7 @@ module.exports = function(app) {
     var isLoggedIn = require('../app').isLoggedIn;
     var passport = require('passport');
     var fpass = require('passport-facebook').Strategy;
+    var FacebookTokenStrategy = require('passport-facebook-token').Strategy;
     var LocalStrategy = require('passport-local').Strategy;
     var logger = require('../app').logger;
     var recipient = require('../lib/db/recipientOperation');
@@ -55,6 +56,7 @@ module.exports = function(app) {
 
     passport.use(new fpass(facebookCredentials,
         function(accessToken, refreshToken, fbUserData, done){
+            console.warn('accessToken-'+accessToken+'; refreshToken-'+refreshToken);
             console.dir(fbUserData);
             userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
                 logger.debug(results);
@@ -94,6 +96,39 @@ module.exports = function(app) {
             // The request will be redirected to Facebook for authentication, so this
             // function will not be called.
         });
+
+    passport.use( new FacebookTokenStrategy(facebookCredentials,
+        function(accessToken, refreshToken, fbUserData, done) {
+            console.warn('@@@@@@@@@accessToken-'+accessToken+'; refreshToken-'+refreshToken);
+            console.dir(fbUserData);
+            userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
+                logger.debug(results);
+                if(err) {
+                    return done(null, false, { message: 'Facebook Login Error.' });
+                }
+                if(results.isAuthenticated == true ) {
+                    logger.debug(results);
+                    return done(null,{provider:results.provider, email: results.email, userId :results.userId, sessionId: results.sessionId,
+                        firstName: results.firstName, lastName: results.lastName, imageIconUrl: results.imageIconUrl});
+                } else {
+                    return done(null, false, { message: results.errorMessage });
+                }
+            })
+        }
+    ));
+
+    app.post('/auth/facebook/token',
+        passport.authenticate('facebook-token'),
+        function (req, res) {
+            console.dir(req);
+            if(req.isAuthenticated()) {
+                console.dir(res);
+                res.send(req.user);
+            } else {
+                res.send(constants.services.CALLBACK_FAILED);
+            }
+        }
+    );
 
 // GET /auth/facebook/callback
 //   Use passport.authenticate() as route middleware to authenticate the
