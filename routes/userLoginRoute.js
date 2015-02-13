@@ -21,13 +21,6 @@ module.exports = function(app) {
 
     var facebookCredentials = config.get('facebookCredentials');
 
-    if( app.get('env') == 'production') {
-        facebookCredentials = {
-            "clientID" : "420297851460293",
-            "clientSecret" : "dd643be55187ac4e76e6487ccd61e7a0",
-            "callbackURL" : "/auth/facebook/callback"
-        }
-    }
     logger.info("#########app env: "+app.get('env')+". ##############");
     logger.info(facebookCredentials);
     ///////////////////////////////////////////////////////////////////////
@@ -49,7 +42,6 @@ module.exports = function(app) {
                         return done(null, false, { message: results.errorMessage });
                     }
                 });
-
         }
     ));
 
@@ -99,7 +91,6 @@ module.exports = function(app) {
 
     passport.use( new FacebookTokenStrategy(facebookCredentials,
         function(accessToken, refreshToken, fbUserData, done) {
-            console.warn('@@@@@@@@@accessToken-'+accessToken+'; refreshToken-'+refreshToken);
             console.dir(fbUserData);
             userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
                 logger.debug(results);
@@ -217,6 +208,28 @@ module.exports = function(app) {
         }
     );
 
+    //Data Services for account
+    app.post('/services/login/mobileSignup', function(req,res) {
+        newAccountInfo.email = req.body.email;
+        newAccountInfo.firstName = req.body.firstName;
+        newAccountInfo.lastName = req.body.lastName;
+        newAccountInfo.provider = req.b
+        newAccountInfo.password = req.body.password;
+        newAccountInfo.passwordConf = req.body.passwordConf;
+
+        newAccountInfo.imageIconUrl = constants.paths.BLANK_ICON_PATH;
+
+        userLogin.addNewUserAccount(newAccountInfo, function(err,results){
+            if(err) {
+                logger.error(err);
+                res.send(err.toString());
+            } else {
+                logger.debug(results);
+                res.send(constants.services.CALLBACK_SUCCESS);
+            }
+        });
+    });
+
     /////////////////////////////////////////////////////////
     //find back password
     //////////////////////////////////////////////////////////
@@ -286,4 +299,19 @@ module.exports = function(app) {
         })
 
     });
+
+    app.post('/services/contactus', function (req,res){
+        var contactUsInfo = req.body.contactUsInfo;
+        if(req.isAuthenticated()) contactUsInfo.userId = req.user.userId;
+
+        userLogin.contactUs(contactUsInfo, function(err,results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            res.send(constants.services.CALLBACK_SUCCESS);
+        });
+    });
+
 };

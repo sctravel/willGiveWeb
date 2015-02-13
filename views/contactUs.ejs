@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app="willGiveApp">
+<html lang="en" >
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +7,11 @@
     <title>WillGive</title>
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+    <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
+
+    <script src="/jquery/dist/jquery.js"></script>
+    <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/jquery-validation/dist/jquery.validate.js"></script>
 
     <%activeMenu = "Contact"%>
     <%include layout/navbar.ejs%>
@@ -14,28 +19,44 @@
 <body>
 <div class="container">
     <div class="col-md-7 columns">
+
+
         <h3>Get in Touch!</h3>
         <p>We'd love to hear from you. You can either reach out to us as a whole and one of our awesome team members will get back to you, or if you have a specific question reach out to one of our staff. We love getting email all day <em>all day</em>.</p>
-        <form role="form">
+        <form role="form" id="contactUsForm" class="form-signin" >
             <br />
             <div class="row">
                 <div class="col-md-2"><label for="name">Your Name</label></div>
-                <div class="col-md-8"><input type="text" id="name" class="form-control" placeholder="Your Name" /></div>
+                <% if ( undefined == typeof user || user == null) {%>
+                <div class="col-md-8"><input type="text" id="name" name="name" class="form-control" placeholder="Your Name" required="true"/></div>
+                <%} else {%>
+                <div class="col-md-8"><input type="text" id="name" name="name" class="form-control" placeholder="Your Name" value="<%=user.firstName%> <%=user.lastName%>" required="true"/></div>
+                <% } %>
             </div>
             <br />
             <div class="row">
                 <div class="col-md-2"><label for="email">Your Email</label></div>
-                <div class="col-md-8"><input type="email" id="email" class="form-control" placeholder="Your email" /></div>
+                <% if ( undefined == typeof user || user == null) {%>
+                <div class="col-md-8"><input type="email" id="email" name="email" class="form-control" placeholder="Your email" required="true"/></div>
+                <%} else {%>
+                <div class="col-md-8"><input type="email" id="email" name="email" class="form-control" value="<%=user.email%>"placeholder="Your email" required="true"/></div>
+                <% } %>
             </div>
             <br />
             <div class="row">
                 <div class="col-md-2"><label>What's up?</label></div>
-                <div class="col-md-8"><textarea rows="3" class="form-control"></textarea></div>
+                <div class="col-md-8"><textarea name="content" id="content" rows="3" class="form-control" required="true"></textarea></div>
             </div>
             <div class="row" style="padding-top: 2%">
-                <button type="button" class="btn btn-lg btn-primary center-block">Contact Us</button>
+                <button type="button" id="submitContactUsButton" class="btn btn-lg btn-primary center-block">Contact Us</button>
             </div>
         </form>
+        <div id="contactUsSuccessMessage" class="form-group" style="padding-bottom: 1%; padding-top: 1%;display : none">
+            <p style="margin-top: 0px; float: left;color: green;font-style:italic">We've received your message, and will answer your questions as soon as possible.</p><br>
+        </div>
+        <div id="contactUsFailMessage" class="form-group" style="padding-bottom: 1%; display : none">
+            <p style="margin-top: 0px; float: left;color: red; font-style: italic">Send contactUs message failed. Please try it again.</p><br>
+        </div>
     </div>
 
     <div class="col-md-4 columns">
@@ -77,8 +98,67 @@
 </div>
 <%include layout/footer.ejs%>
 
-<script src="/jquery/dist/jquery.js"></script>
-<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+<script>
+
+    var formValidateParams = {
+        errorClass: "my-error-class",
+        //validClass: "my-valid-class",
+        rules: {
+            name: {
+                required: true
+            },
+            email: {
+                required : true,
+                email : true
+            },
+            content: {
+                required :true
+            }
+        },
+        messages: {
+            name: {
+                required: "Required."
+            },
+            email: {
+                required: "Required.",
+                email: "Please enter a validate email address."
+            },
+            content: {
+                required: "Required."
+            }
+        }
+    };
+    $("#contactUsForm").validate(
+            formValidateParams
+    );
+
+    $("#submitContactUsButton" ).click(function( ) {
+        event.preventDefault();
+        $('#contactUsSuccessMessage').hide();
+        $('#contactUsFailMessage').hide();
+
+        if (!$("#contactUsForm").valid()) {
+            console.log("contact us form is not valid!");
+            return;
+        }
+
+        var contactUsInfo={};
+        contactUsInfo.name = $('#name').val();
+        contactUsInfo.email = $('#email').val();
+        contactUsInfo.content = $('#content').val();
+        console.log("Submitting contact us form!");
+        $.post("/services/contactus", {contactUsInfo : contactUsInfo}, function(data){
+            if(data=="success") {
+                $('#contactUsSuccessMessage').show();
+                $('#contactUsFailMessage').hide();
+                $('#content').val("");
+            } else {
+                $('#contactUsSuccessMessage').hide();
+                $('#contactUsFailMessage').show();
+            }
+        })
+    });
+</script>
 </body>
 
 </html>
