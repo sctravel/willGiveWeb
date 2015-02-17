@@ -29,39 +29,31 @@ module.exports = function(app) {
         var caller = req.query.caller;
         if (caller != null && caller == "app")
         {
-               charityOps.getRecipientIdByEIN (id, function(error, result){
-			      console.log('recipient_Id: '+ result); 
-				  charityOps.charityById(result, function(err, results){
+               charityOps.charityByEIN (id, function(error, results){
 					if(err) {
 						logger.error(err);
-						res.send(err.toString());
+						res.send(constants.services.CALLBACK_FAILED);
 						return;
 					}
 					verifyImagePath([results]);
 					logger.debug(results);	
 					res.json(results);
-				})
 			   });
         }
-        else if(ua.indexOf("iPhone") !=-1 || ua.indexOf("iPad") != -1 || ua.indexOf("iPod")!=-1 || flag == "IOS")
-       {
+        else if(ua.indexOf("iPhone") !=-1 || ua.indexOf("iPad") != -1 || ua.indexOf("iPod")!=-1 || flag == "IOS") {
             res.redirect("http://appstore.com/keynote");
-       }else if(ua.indexOf("Android") !=-1 || flag == "Android")
-       {
+        } else if(ua.indexOf("Android") !=-1 || flag == "Android") {
             res.redirect("https://play.google.com/store/apps/details?id=com.brainbow.peak.app");
-       }else if(ua.indexOf("Fire")!=-1 || ua.indexOf("Silk")!=-1 || flag == "Amazon")
-       {
+        }else if(ua.indexOf("Fire")!=-1 || ua.indexOf("Silk")!=-1 || flag == "Amazon") {
           res.redirect("http://www.amazon.com/gp/mas/get-appstore/android");
-       }else if(ua.indexOf("Windows Phone")!=-1 || ua.indexOf("IEMobile")!=-1|| flag == "Win")
-	   {
+        }else if(ua.indexOf("Windows Phone")!=-1 || ua.indexOf("IEMobile")!=-1|| flag == "Win") {
 	      res.redirect("http://www.windowsphone.com/en-us/store/app/youtube/dcbb1ac6-a89a-df11-a490-00237de2db9e");
-       }else
-       {
-               charityOps.getRecipientIdByEIN (id, function(error, result){
+        }else {
+            charityOps.getRecipientIdByEIN (id, function(error, result){
 			    if(error) return;
 				res.redirect('/charity/'+ result);
-			   });
-       }
+			});
+        }
     });
 
     app.get('/charity/:id', function (req,res){

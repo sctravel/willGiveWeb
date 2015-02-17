@@ -9,6 +9,7 @@ module.exports = function(app) {
     var userLogin = require('../lib/db/userLogin');
     var forgotPassword = require('../lib/db/forgotPassword');
     var constants = require('../lib/common/constants');
+    var stringUtil = require('../lib/utils/stringUtils');
     var isLoggedIn = require('../app').isLoggedIn;
     var passport = require('passport');
     var fpass = require('passport-facebook').Strategy;
@@ -30,7 +31,6 @@ module.exports = function(app) {
         function ( username, password, done) {
 
                 userLogin.manualLogin(username, password, function(error,results){
-                    logger.debug(results);
                     if(error) {
                         return done(null, false, { message: 'Login Error. Please try again' });
                     }
@@ -196,10 +196,8 @@ module.exports = function(app) {
         ),
         function(req,res){
             logger.warn("Mobile login now!");
-            //console.dir(req.session.cookie);
 
             if(req.isAuthenticated()) {
-                console.dir(res);
                 res.send(req.user);
             } else {
                 res.send(constants.services.CALLBACK_FAILED);
@@ -213,10 +211,9 @@ module.exports = function(app) {
         newAccountInfo.email = req.body.email;
         newAccountInfo.firstName = req.body.firstName;
         newAccountInfo.lastName = req.body.lastName;
-        newAccountInfo.provider = req.b
+        newAccountInfo.provider = constants.login.LOGIN_PROVIDER.WILLGIVE;
         newAccountInfo.password = req.body.password;
         newAccountInfo.passwordConf = req.body.passwordConf;
-
         newAccountInfo.imageIconUrl = constants.paths.BLANK_ICON_PATH;
 
         userLogin.addNewUserAccount(newAccountInfo, function(err,results){
@@ -225,7 +222,22 @@ module.exports = function(app) {
                 res.send(err.toString());
             } else {
                 logger.debug(results);
-                res.send(constants.services.CALLBACK_SUCCESS);
+                var user = {};
+                user.sessionId = stringUtil.generateRandomString(constants.login.SESSION_ID_LENGTH);
+                user.email = newAccountInfo.email;
+                user.firstName = newAccountInfo.firstName;
+                user.lastName = newAccountInfo.lastName;
+                user.provioder = newAccountInfo.provider;
+                user.imageIconUrl = newAccountInfo.imageIconUrl;
+                user.userId = results.insertId;
+
+                req.login(user, function(err) {
+                    if(err) {
+                        logger.error(err);
+                        return;
+                    }
+                    res.json(req.user);
+                });
             }
         });
     });
