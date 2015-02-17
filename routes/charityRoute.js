@@ -157,7 +157,9 @@ module.exports = function(app) {
 
     app.get('/services/charities/listAllCharity', function(req, res){
 
-        charityOps.listAllCharity(function(err, results){
+        var start = req.query.start;
+        var count = req.query.count;
+        charityOps.listAllCharity(start, count, function(err, results){
             if(err){
                 logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);

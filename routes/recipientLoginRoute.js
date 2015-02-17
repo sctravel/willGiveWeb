@@ -85,7 +85,7 @@ module.exports = function(app) {
                 return;
             }
             user.user_id = results;
-            user.firstName = signUpFrom.organizationName;
+            user.firstName = signUpFrom.name;
             user.lastName = '';
             user.provider = constants.login.LOGIN_PROVIDER.RECIPIENT;
             user.email = signUpFrom.email;

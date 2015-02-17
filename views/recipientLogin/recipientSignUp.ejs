@@ -45,10 +45,10 @@
         <h3 class="form-signin-heading" style="padding-top: 1%">2. Basic Information</h3>
 
             <div class="row form-group-lg">
-                    <label for="signupOrganizationName" class="">Organization Name
+                    <label for="signupName" class="">Name
                         <span style="color:red;">*</span>
                     </label>
-                    <input type="text" id="signupOrganizationName" name="signupOrganizationName" class="form-control" placeholder="Organization Name" required>
+                    <input type="text" id="signupName" name="signupName" class="form-control" placeholder="Name" required>
             </div>
             <div class="row form-group-lg">
                 <label for="signupEIN" class="">EIN
@@ -239,9 +239,7 @@
         errorClass: "my-error-class",
         //validClass: "my-valid-class",
         rules: {
-            signupFirstName: "required",
-            signupLastName: "required",
-            signupOrganizationName: "required",
+            signupName: "required",
             signupEIN: "required",
             signupCategory: "required",
             signupAddress: "required",
@@ -290,7 +288,7 @@
         var recipientSignUpForm = {};
         recipientSignUpForm.email = $('#signupEmail').val();
         recipientSignUpForm.password = $('#signupPassword').val();
-        recipientSignUpForm.organizationName = $('#signupOrganizationName').val();
+        recipientSignUpForm.name = $('#signupName').val();
         recipientSignUpForm.EIN = $('#signupEIN').val();
         recipientSignUpForm.address = $('#signupAddress').val();
         recipientSignUpForm.city = $('#signupCity').val();
