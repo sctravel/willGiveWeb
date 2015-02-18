@@ -84,7 +84,7 @@ module.exports = function(app) {
                 res.send(err.toString());
                 return;
             }
-            user.user_id = results;
+            user.userId = results;
             user.firstName = signUpFrom.name;
             user.lastName = '';
             user.provider = constants.login.LOGIN_PROVIDER.RECIPIENT;
@@ -110,10 +110,10 @@ module.exports = function(app) {
             fstream = fs.createWriteStream(__dirname + '/../public/resources/recipients/profilePicture/pp_'+recipientId );
             file.pipe(fstream);
             fstream.on('close', function () {
-                logger.info("Upload Finished of " + fieldname);
+                logger.info("Upload Finished of " + fieldname+' with id-'+req.user.userId);
                 var imageUrl = '/resources/recipients/profilePicture/pp_' + recipientId;
                 //we don't need the imageUrl actually, we are using convention to find the profile picture
-                res.redirect('/charity?id='+recipientId);
+                res.redirect('/charity/'+recipientId);
 
                 /*
                 userLogin.updateUserProfileImageUrl( imageUrl, req.user.userId,function(err, results){
