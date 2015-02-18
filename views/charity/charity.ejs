@@ -189,15 +189,16 @@
 
                 <form action="javascript:void(0);" method="post" id="example-form" style="display: block;">
 
-
-                    <div class="form-row">
-                        <label>Amount</label>
-                        <input id="paymentAmount" type="text" maxlength="20" autocomplete="off" class="required" />
-                        <button type="submit" name="submit-button" onClick="enableCheckout()">Confirm</button>
-                    </div>
-                    <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:none;">
+                    <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:block;" onClick="enableAmount()">
                         Contribute
                     </button>
+
+                    <div id = "paymentAmountForm" class="form-row"  style="display:none;">
+                        <label>Amount</label>
+                        <input id="paymentAmount" type="text" maxlength="20" autocomplete="off" class="required" />
+                        <button id = "confirm" type="submit" name="submit-button" onClick="enableCheckout()">Confirm</button>
+                    </div>
+
                 </form>
                 <hr/>
                 <h4 class="text-center">QR Code</h4>
@@ -234,7 +235,8 @@
 
       <script>
           function enableCheckout() {
-              document.getElementById("contribute_button").style.display="block";
+              document.getElementById("contribute_button").style.display="none";
+              document.getElementById("paymentAmountForm").style.display="block";
               //alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
               jQuery("#amount").val(jQuery("#paymentAmount").val());
               jQuery("#receipientId").val(<%=pageId%>);
@@ -245,6 +247,20 @@
 
           }
 
+          function enableAmount() {
+              document.getElementById("contribute_button").style.display="none";
+              document.getElementById("paymentAmountForm").style.display="block";
+              //alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
+              jQuery("#amount").val(jQuery("#paymentAmount").val());
+              jQuery("#receipientId").val(<%=pageId%>);
+              //alert("Set amount: "+ jQuery("#amount").val());
+
+              //alert( "amount:" +jQuery("#amount").val());
+
+
+          }
+
+
       </script>
 
 
@@ -254,7 +270,7 @@
 
       <script>
 
-          $('#contribute_button').click(function(){
+          $('#confirm').click(function(){
               <%if ( undefined==user || user.provider=='recipient' ) {%>
                     window.location.href='/login/signin';
               <%} else {%>
