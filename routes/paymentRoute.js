@@ -4,6 +4,15 @@
 //query if it's known customer
 
 module.exports = function(app) {
+    var billingUntil = require('../lib/db/BillingUtil');
+
+    var userLogin = require('../lib/db/userLogin');
+    var constants = require('../lib/common/constants');
+    var charityOps = require('../lib/db/charityOperation');
+
+    var isLoggedIn = require('../app').isLoggedIn;
+    var logger = require('../app').logger;
+    
     this.name = 'paymentRoute';
     app.get('/payment/stripePayment/queryUser/', function (req, res) {
 
