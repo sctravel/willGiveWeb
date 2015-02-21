@@ -18,6 +18,20 @@ module.exports = function(app) {
         res.render('charity/charity',{user: req.user});
     });
 
+    app.get('/services/charityByEIN/:id', function(req, res) {
+        var id = req.params.id;
+
+        charityOps.charityByEIN (id, function(err, results){
+            if(err) {
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            verifyImagePath([results]);
+            logger.debug(results);
+            res.json(results);
+        });
+    })
     app.get('/c/:id', function (req,res){
         var id = req.params.id;
         req.session.lastPage = '/c/'+id;
@@ -29,7 +43,7 @@ module.exports = function(app) {
         var caller = req.query.caller;
         if (caller != null && caller == "app")
         {
-               charityOps.charityByEIN (id, function(error, results){
+               charityOps.charityByEIN (id, function(err, results){
 					if(err) {
 						logger.error(err);
 						res.send(constants.services.CALLBACK_FAILED);

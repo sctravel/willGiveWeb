@@ -199,8 +199,10 @@ module.exports = function(app) {
 
             if(req.isAuthenticated()) {
                 res.send(req.user);
+                console.dir(req.user);
             } else {
                 res.send(constants.services.CALLBACK_FAILED);
+                console.warn('login failed');
             }
 
         }
@@ -208,12 +210,13 @@ module.exports = function(app) {
 
     //Data Services for account
     app.post('/services/login/mobileSignup', function(req,res) {
+        var newAccountInfo = {};
         newAccountInfo.email = req.body.email;
         newAccountInfo.firstName = req.body.firstName;
         newAccountInfo.lastName = req.body.lastName;
         newAccountInfo.provider = constants.login.LOGIN_PROVIDER.WILLGIVE;
         newAccountInfo.password = req.body.password;
-        newAccountInfo.passwordConf = req.body.passwordConf;
+        newAccountInfo.passwordConf = req.body.password; //do not have password conf in mobile signup
         newAccountInfo.imageIconUrl = constants.paths.BLANK_ICON_PATH;
 
         userLogin.addNewUserAccount(newAccountInfo, function(err,results){
