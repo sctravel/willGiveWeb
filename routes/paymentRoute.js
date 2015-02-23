@@ -12,7 +12,7 @@ module.exports = function(app) {
 
     var isLoggedIn = require('../app').isLoggedIn;
     var logger = require('../app').logger;
-    
+
     this.name = 'paymentRoute';
     app.get('/payment/stripePayment/queryUser/', function (req, res) {
 
