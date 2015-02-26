@@ -165,9 +165,9 @@ app.get('/payment', function (req,res){
 });
 
 
-app.get('/Enquiry', function (req,res){
+app.get('/search', function (req,res){
     req.session.lastPage = '/Enquiry';
-    res.render('Inquery', {user: req.user});
+    res.render('search', {user: req.user});
 });
 
 
