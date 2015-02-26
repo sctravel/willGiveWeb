@@ -9,6 +9,17 @@
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
     <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
 
+    <link rel="stylesheet" type="text/css" href="/assets/css/ui.jqgrid.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/ui.multiselect.css">
+    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css">
+
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/custom-theme/jquery-ui-1.10.3.custom.css">
+    <link rel="stylesheet" href="/assets/css/font-awesome.min.css">
+
+
     <script src="/jquery/dist/jquery.js"></script>
     <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/jquery-validation/dist/jquery.validate.js"></script>
@@ -36,13 +47,13 @@
             <label>transactionId</label>
             <input id="transactionId" type="text" maxlength="20" autocomplete="off" class="required" />
         </div>
-        <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:block;" onClick="enableAmount()">
+        <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:block;" onClick="search()">
             Search
         </button>
 
 
 
-<%include layout/footer.ejs%>
+
 
 
         <div class="container" >
@@ -125,6 +136,8 @@
 
 
 
+
+
                             caption: "donation listings",
                             width: 770,
                             height: "100%"
@@ -143,5 +156,7 @@
 
 
 </body>
+
+<%include layout/footer.ejs%>
 
 </html>
