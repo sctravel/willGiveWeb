@@ -165,6 +165,12 @@ app.get('/payment', function (req,res){
 });
 
 
+app.get('/search', function (req,res){
+    req.session.lastPage = '/Enquiry';
+    res.render('search', {user: req.user});
+});
+
+
 
 app.get('/services/getConfirmPic',  function(req,res){
     var conf = confirmPicGenerator.generateConfirmPic();

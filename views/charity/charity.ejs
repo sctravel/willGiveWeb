@@ -194,8 +194,14 @@
                     </button>
 
                     <div id = "paymentAmountForm" class="form-row"  style="display:none;">
+                        <div>
                         <label>Amount</label>
                         <input id="paymentAmount" type="text" maxlength="20" autocomplete="off" class="required" />
+                        </div>
+                        <div>
+                        <label>Notes</label>
+                        <input id="Notes" type="text" maxlength="20" autocomplete="off" class="required" />
+                        </div>
                         <button id = "confirm" type="submit" name="submit-button" onClick="enableCheckout()">Confirm</button>
                     </div>
 

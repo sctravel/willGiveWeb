@@ -9,7 +9,14 @@
     <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/css/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+<style type="text/css">
 
+
+    .carousel-control {
+        padding-top:10%;
+        width:5%;
+    }
+</style>
     <%activeMenu = "Home"%>
     <%include layout/navbar.ejs%>
 </head>
@@ -38,15 +45,25 @@
 <div id="about" class="pad-section">
 
     <div class="container">
-        <div class="row">
-            <div class="col-sm-6">
-                <img src="/images/logo.jpg" alt="" />
-            </div>
+        <div class="col-md-12">
+            <h1>HOTTEST CHARITIES</h1>
 
-            <div class="col-sm-6 text-center">
-                <h2>Make A Better World</h2>
-                <p class="lead">Donation make the world better. Please try our best to make the world better and better</p>
+            <div class="well">
+                <div id="myCarousel" class="carousel slide">
+
+                    <!-- Carousel items -->
+                    <div id="hotCharityWrapper" class="carousel-inner">
+
+
+                        <!--/item-->
+                    </div>
+                    <!--/carousel-inner--> <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
+
+                    <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+                </div>
+                <!--/myCarousel-->
             </div>
+            <!--/well-->
         </div>
     </div>
 </div>
@@ -95,8 +112,8 @@
                         <h2 class="panel-title">Why us?</h2>
                     </div>
                     <div class="panel-body lead">
-                        <b>Charities</b> -- It is free to use our services and get access to our app users. 
-                        <p><b>Donators</b> -- We verifiy every registered charity and make sure that they're not only eligible but also efficient. 100% of your donated money (except fees charged by credit card companies) directly go to the charities of your choice.  
+                        <b>Charities</b> -- It is free to use our services and get access to our app users.
+                        <p><b>Donators</b> -- We verifiy every registered charity and make sure that they're not only eligible but also efficient. 100% of your donated money (except fees charged by credit card companies) directly go to the charities of your choice.
                     </div>
                 </div>
             </div>
@@ -106,8 +123,8 @@
                         <h2 class="panel-title">How to start?</h2>
                     </div>
                     <div class="panel-body lead">
-                        <b>Charities</b> -- Register online or call our support line 1-800-296-GIVE
-	       <p><b>Donators</b> -- Register online and download the app. 
+                      <p>  <b>Charities</b> -- Register online or call our support line 1-800-296-GIVE
+	                  <b>Donators</b> -- Register online and download the app. </p>
                     </div>
                 </div>
             </div>
@@ -115,13 +132,90 @@
     </div>
 </div>
 <!-- /fourth section -->
-
 <%include layout/footer.ejs%>
+
+<script language="JavaScript">
+    function getHotCharites(){
+
+        $.get('/services/getHotCharities/',function(data) {
+            if(!data || data == "failed") {
+                //TODO display failure message
+                return;
+            }
+          var hotCharities = data;
+            var picNumMax= 0;
+            var id ;
+            for( var i = 0; i < hotCharities.length;i++){
+
+
+                if($('#innerWrapper').length> 0 && picNumMax<2 ){
+                    picNumMax ++;
+                               $('#innerWrapper').append(
+
+                        '<div class=\"col-sm-3\">' +
+                        '<a href="'+  "http://" + hotCharities[i].website +  '"><img src="/resources/recipients/profilePicture/pp_'
+                        + hotCharities[i].recipient_id +
+                        '"' +  ' height="500px" width="500px"' + ' alt=\"est\" class=\"img-responsive\"></a>' +
+                        '<div class=\"carousel-caption\">' + hotCharities[i].name + '</div>' +
+                        '</div>'
+
+                )
+            } else {
+               if(picNumMax<2){
+                       id= "innerWrapper";
+                   picNumMax ++ ;
+                $('#hotCharityWrapper').append(' <div  class=\"item active\"> '+
+                ' <div id=' + id + ' class="row">' +
+                '<div class=\"col-sm-3\">' +
+                '<a href="'+  "http://" + hotCharities[i].website +  '"><img src="/resources/recipients/profilePicture/pp_'
+                + hotCharities[i].recipient_id +
+                '"' + ' height="500px" width="500px"' + ' alt=\"est\" class=\"img-responsive\"></a>' +
+                '<div class=\"carousel-caption\">' + hotCharities[i].name + '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>');
+               } else {
+                   picNumMax ++;
+                   $('#hotCharityWrapper').append(' <div  class=\"item\"> '+
+                   ' <div  class=\"row\">' +
+                   '<div class=\"col-sm-3\">' +
+                   '<a href="'+  "http://" + hotCharities[i].website +  '"><img src="/resources/recipients/profilePicture/pp_'
+                   + hotCharities[i].recipient_id +
+                   '"' + ' height="500px" width="500px"' + ' alt=\"est\" class=\"img-responsive\"></a>' +
+                   '<div class=\"carousel-caption\">' + hotCharities[i].name + '</div>' +
+                   '</div>' +
+                   '</div>' +
+                   '</div>');
+
+               }
+
+            }
+
+            }
+
+        })
+    }
+
+
+
+</script>
+
+
+
 
 <!-- /footer -->
 
 <script src="/jquery/dist/jquery.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+
+
+<script language="JavaScript">
+    $(document).ready(function(){
+        getHotCharites();
+
+    });
+
+</script>
 
 </body>
 
