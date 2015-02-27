@@ -140,6 +140,20 @@ module.exports = function(app) {
         });
     })
 
+    app.get('/services/getHotCharities', function(req,res){
+
+        charityOps.getHotCharites(function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+
+            var hotCharties = results;
+            res.send(results);
+        });
+    })
+
     app.post('/services/charity/updatePassword', isLoggedInAsRecipient, function(req, res){
 
         var updatedData = req.body.updatedData;
