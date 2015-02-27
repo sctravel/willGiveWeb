@@ -133,7 +133,7 @@ module.exports = function(app) {
     });
 
     app.get('/services/charities/searchCharity', function(req,res){
-        logger.info('calling /services/charity/searchCharity ' + req.query.keyword);
+        logger.info('calling /services/charities/searchCharity ' + req.query.keyword);
 		userId = null;
 		if (req.user!= null) userId = req.user.userId;
         charityOps.searchCharity(userId, req.query.keyword, function(err, results){

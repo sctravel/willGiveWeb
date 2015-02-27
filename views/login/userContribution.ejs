@@ -93,8 +93,8 @@
         ' </tr> ';
 
     function replaceHtml(transaction){
-        return defaultHTML.replace("{Id}",transaction.transaction_id)
-                .replace("{Date}",dateDisplayFormatter(transaction.datetime))
+        return defaultHTML.replace("{Id}",transaction.transactionId)
+                .replace("{Date}",dateDisplayFormatter(transaction.dateTime))
                 .replace("{Amount}",transaction.amount)
                 .replace("{Recipient}",'<a href="/charity/'+transaction.recipient_id+'" style="color: #202090">'+transaction.name+'</a>')
                 .replace("{Status}",transaction.status)
