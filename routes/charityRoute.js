@@ -18,6 +18,58 @@ module.exports = function(app) {
         res.render('charity/charity',{user: req.user});
     });
 
+    app.get('/services/charityByEIN/:id', function(req, res) {
+        var id = req.params.id;
+
+        charityOps.charityByEIN (id, function(err, results){
+            if(err) {
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            verifyImagePath([results]);
+            logger.debug(results);
+            res.json(results);
+        });
+    })
+    app.get('/c/:id', function (req,res){
+        var id = req.params.id;
+        req.session.lastPage = '/c/'+id;
+        var ua = req.headers['user-agent'];
+		if (ua == null) ua = "";		
+		console.log('ua: '+ua);		
+        var flag = req.query.flag;
+		if (flag == null) flag = "";
+        var caller = req.query.caller;
+        if (caller != null && caller == "app")
+        {
+               charityOps.charityByEIN (id, function(err, results){
+					if(err) {
+						logger.error(err);
+						res.send(constants.services.CALLBACK_FAILED);
+						return;
+					}
+					verifyImagePath([results]);
+					logger.debug(results);	
+					res.json(results);
+			   });
+        }
+        else if(ua.indexOf("iPhone") !=-1 || ua.indexOf("iPad") != -1 || ua.indexOf("iPod")!=-1 || flag == "IOS") {
+            res.redirect("http://appstore.com/keynote");
+        } else if(ua.indexOf("Android") !=-1 || flag == "Android") {
+            res.redirect("https://play.google.com/store/apps/details?id=com.brainbow.peak.app");
+        }else if(ua.indexOf("Fire")!=-1 || ua.indexOf("Silk")!=-1 || flag == "Amazon") {
+          res.redirect("http://www.amazon.com/gp/mas/get-appstore/android");
+        }else if(ua.indexOf("Windows Phone")!=-1 || ua.indexOf("IEMobile")!=-1|| flag == "Win") {
+	      res.redirect("http://www.windowsphone.com/en-us/store/app/youtube/dcbb1ac6-a89a-df11-a490-00237de2db9e");
+        }else {
+            charityOps.getRecipientIdByEIN (id, function(error, result){
+			    if(error) return;
+				res.redirect('/charity/'+ result);
+			});
+        }
+    });
+
     app.get('/charity/:id', function (req,res){
         var id = req.params.id;
         req.session.lastPage = '/charity/'+id;
@@ -59,12 +111,10 @@ module.exports = function(app) {
                 res.send(err.toString());
                 return;
             }
-			verifyImagePath([results]);
-			logger.debug(results);	
+	        verifyImagePath([results]);
+	        logger.debug(results);	
             res.json(results);
         })
-
-
     });
 
     app.get('/services/transactionsByCharityId/:id', function(req, res) {
@@ -113,7 +163,9 @@ module.exports = function(app) {
 
     app.get('/services/charities/listAllCharity', function(req, res){
 
-        charityOps.listAllCharity(function(err, results){
+        var start = req.query.start;
+        var count = req.query.count;
+        charityOps.listAllCharity(start, count, function(err, results){
             if(err){
                 logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
