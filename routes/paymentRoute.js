@@ -14,6 +14,27 @@ module.exports = function(app) {
     var logger = require('../app').logger;
 
     this.name = 'paymentRoute';
+
+
+    app.get('/services/user/getTransactionHistory/:confirmationCode', function(req, res){
+
+        var confirmationCode = req.params.confirmationCode;
+
+        console.dir("confirmationCode: "+confirmationCode);
+
+        billingUntil.getTransactionHistoryBasedOnConfirmationCode(confirmationCode,function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            logger.debug(results);
+            res.send(results);
+        })
+    })
+
+
+
     app.get('/payment/stripePayment/queryUser/', function (req, res) {
 
         var user_id = req.query.userId;
