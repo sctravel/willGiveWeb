@@ -56,10 +56,10 @@ module.exports = function(app) {
         }
         else if(ua.indexOf("iPhone") !=-1 || ua.indexOf("iPad") != -1 || ua.indexOf("iPod")!=-1 || flag == "IOS") {
             res.redirect("http://appstore.com/keynote");
+        }else if(ua.indexOf("Fire")!=-1 || ua.indexOf("Silk")!=-1 || ua.indexOf("SD4930UR")!=-1 || ua.indexOf("Amazon")!=-1 || ua.indexOf("KF")!=-1 ||flag == "Amazon") {
+          res.redirect("http://www.amazon.com/gp/mas/get-appstore/android");
         } else if(ua.indexOf("Android") !=-1 || flag == "Android") {
             res.redirect("https://play.google.com/store/apps/details?id=com.brainbow.peak.app");
-        }else if(ua.indexOf("Fire")!=-1 || ua.indexOf("Silk")!=-1 || flag == "Amazon") {
-          res.redirect("http://www.amazon.com/gp/mas/get-appstore/android");
         }else if(ua.indexOf("Windows Phone")!=-1 || ua.indexOf("IEMobile")!=-1|| flag == "Win") {
 	      res.redirect("http://www.windowsphone.com/en-us/store/app/youtube/dcbb1ac6-a89a-df11-a490-00237de2db9e");
         }else {
