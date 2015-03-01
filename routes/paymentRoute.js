@@ -22,7 +22,7 @@ module.exports = function(app) {
 
         console.dir("confirmationCode: "+confirmationCode);
 
-        billingUntil.getTransactionHistoryBasedOnConfirmationCode(confirmationCode,function(err, results){
+        billingUtil.getTransactionHistoryBasedOnConfirmationCode(confirmationCode,function(err, results){
             if(err){
                 logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
