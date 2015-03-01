@@ -158,6 +158,14 @@ app.get('/aboutus', function (req,res){
     req.session.lastPage = '/aboutus';
     res.render('aboutUs', {user: req.user});
 });
+app.get('/terms', function (req,res){
+    req.session.lastPage = '/terms';
+    res.render('Terms', {user: req.user});
+});
+app.get('/Privacy', function (req,res){
+    req.session.lastPage = '/Privacy';
+    res.render('Privacy', {user: req.user});
+});
 
 
 app.get('/payment', function (req,res){
