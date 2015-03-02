@@ -102,6 +102,9 @@ module.exports = function(app) {
 
         var stripeCustomerId = req.body.stripeCustomerId;
 
+        console.dir("UserId in passport: " + req.user.userId);
+        user_id = req.user.userId;
+
         //logic for customers already has StripeCustomerIDs
 
         console.dir("stripeCustomerId in app.js:" + stripeCustomerId);
@@ -113,6 +116,15 @@ module.exports = function(app) {
             });
 
             //need to store in transaction history table as well
+
+            billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, user_id, recipient_id, "Processing", stripeToken, function (err, results) {
+                if (err) {
+                    console.error(err);
+                    res.send(constants.services.CALLBACK_FAILED);
+                    return;
+                }
+                res.send(constants.services.CALLBACK_SUCCESS);
+            });
 
 
             return;
@@ -132,8 +144,7 @@ module.exports = function(app) {
 
             //update customerId into for payment method table
 
-            console.dir("UserId in passport: " + req.user.userId);
-            user_id = req.user.userId;
+
 
             billingUtil.updatePaymentMethodStripeId(user_id, customer.id, function (err, results) {
                 if (err) {
