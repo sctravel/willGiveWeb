@@ -200,7 +200,7 @@
                         </div>
                         <div>
                         <label>Notes</label>
-                        <input id="Notes" type="text" maxlength="20" autocomplete="off" class="required" />
+                        <input id="paymentNotes" type="text" maxlength="1000" autocomplete="off" class="required" />
                         </div>
                         <button id = "confirm" type="submit" name="submit-button" onClick="enableCheckout()">Confirm</button>
                     </div>
@@ -233,6 +233,7 @@
 
       <form id="form" action="/payment/stripePayment" method="POST" style="display:none;">
           <input id="amount"  name="amount" value="0">
+          <input id="notes"  name="notes" value="0">
           <input id="receipientId"  name="receipientId" value="0">
           <input id="stripeCustomerId"  name="stripeCustomerId" value="0">
 
@@ -245,7 +246,9 @@
               document.getElementById("paymentAmountForm").style.display="block";
               //alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
               jQuery("#amount").val(jQuery("#paymentAmount").val());
+              jQuery("#notes").val(jQuery("#paymentNotes").val());
               jQuery("#receipientId").val(<%=pageId%>);
+
               //alert("Set amount: "+ jQuery("#amount").val());
 
               //alert( "amount:" +jQuery("#amount").val());

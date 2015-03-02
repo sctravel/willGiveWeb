@@ -84,7 +84,9 @@ module.exports = function(app) {
 
         console.dir("stripeCustomerId: " + req.body.stripeCustomerId);
 
+        console.dir("payment Notes: " + req.body.notes);
 
+        var notes =req.body.notes;
         var stripe = require("stripe")("sk_test_zjF1XdDy0TZAYnuifaHR0iDf");
 
 // (Assuming you're using express - expressjs.com)
@@ -116,8 +118,8 @@ module.exports = function(app) {
             });
 
             //need to store in transaction history table as well
-
-            billingUtil.insertTransactionHistroy("Stripe_RecurrentPayment" + new Date().getTime(), amount, user_id, recipient_id, "Processing", stripeToken, function (err, results) {
+             //exports.insertTransactionHistroy = function(transaction_id,amount,user_id,recipient_id, status,notes,stripeToken, callback)
+            billingUtil.insertTransactionHistroy("Stripe_RecurrentPayment" + new Date().getTime(), amount, user_id, recipient_id, "Processed", notes, stripeToken, function (err, results) {
                 if (err) {
                     console.error(err);
                     //res.send(constants.services.CALLBACK_FAILED);
@@ -169,7 +171,7 @@ module.exports = function(app) {
                 }
 
                 console.dir("recipient_id: " + recipient_id);
-                billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, user_id, recipient_id, "Processing", stripeToken, function (err, results) {
+                billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, user_id, recipient_id, "Processed", notes,stripeToken, function (err, results) {
                     if (err) {
                         console.error(err);
                         //res.send(constants.services.CALLBACK_FAILED);
