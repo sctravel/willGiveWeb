@@ -4,7 +4,7 @@
 //query if it's known customer
 
 module.exports = function(app) {
-    var billingUntil = require('../lib/db/BillingUtil');
+    var billingUtil = require('../lib/db/BillingUtil');
 
     var userLogin = require('../lib/db/userLogin');
     var constants = require('../lib/common/constants');
@@ -14,13 +14,34 @@ module.exports = function(app) {
     var logger = require('../app').logger;
 
     this.name = 'paymentRoute';
+
+
+    app.get('/services/user/getTransactionHistory/:confirmationCode', function(req, res){
+
+        var confirmationCode = req.params.confirmationCode;
+
+        console.dir("confirmationCode: "+confirmationCode);
+
+        billingUtil.getTransactionHistoryBasedOnConfirmationCode(confirmationCode,function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            logger.debug(results);
+            res.send(results);
+        })
+    })
+
+
+
     app.get('/payment/stripePayment/queryUser/', function (req, res) {
 
         var user_id = req.query.userId;
 
         console.dir("app userId:" + user_id);
 
-        billingUntil.queryExistingStripCustomers(user_id, function (err, customerToken) {
+        billingUtil.queryExistingStripCustomers(user_id, function (err, customerToken) {
             if (err) {
                 console.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
@@ -32,6 +53,21 @@ module.exports = function(app) {
 
     });
 
+    app.post('/payment/pledge', isLoggedIn, function(req, res) {
+        var userPledge = {};
+        userPledge.amount = req.body.amount;
+        userPledge.userId = req.user.userId;
+        userPledge.recipientId = req.body.recipientId;
+
+        billingUtil.insertUserPledge(userPledge, function(err, results){
+            if(err) {
+                console.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            res.send(constants.services.CALLBACK_SUCCESS);
+        })
+    });
 
     app.post('/payment/stripePayment', function (req, res) {
 
@@ -66,6 +102,9 @@ module.exports = function(app) {
 
         var stripeCustomerId = req.body.stripeCustomerId;
 
+        console.dir("UserId in passport: " + req.user.userId);
+        user_id = req.user.userId;
+
         //logic for customers already has StripeCustomerIDs
 
         console.dir("stripeCustomerId in app.js:" + stripeCustomerId);
@@ -77,6 +116,15 @@ module.exports = function(app) {
             });
 
             //need to store in transaction history table as well
+
+            billingUtil.insertTransactionHistroy("Stripe_RecurrentPayment" + new Date().getTime(), amount, user_id, recipient_id, "Processing", stripeToken, function (err, results) {
+                if (err) {
+                    console.error(err);
+                    //res.send(constants.services.CALLBACK_FAILED);
+                    return;
+                }
+                //res.send(constants.services.CALLBACK_SUCCESS);
+            });
 
 
             return;
@@ -96,10 +144,9 @@ module.exports = function(app) {
 
             //update customerId into for payment method table
 
-            console.dir("UserId in passport: " + req.user.userId);
-            user_id = req.user.userId;
 
-            billingUntil.updatePaymentMethodStripeId(user_id, customer.id, function (err, results) {
+
+            billingUtil.updatePaymentMethodStripeId(user_id, customer.id, function (err, results) {
                 if (err) {
                     console.error(err);
                     res.send(constants.services.CALLBACK_FAILED);
@@ -122,13 +169,13 @@ module.exports = function(app) {
                 }
 
                 console.dir("recipient_id: " + recipient_id);
-                billingUntil.insertTransactionHistroy("Stripe_" + stripeToken, amount, user_id, recipient_id, "Processing", stripeToken, function (err, results) {
+                billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, user_id, recipient_id, "Processing", stripeToken, function (err, results) {
                     if (err) {
                         console.error(err);
-                        res.send(constants.services.CALLBACK_FAILED);
+                        //res.send(constants.services.CALLBACK_FAILED);
                         return;
                     }
-                    // res.send(results);
+                    // res.send(constants.services.CALLBACK_SUCCESS);
                 });
 
             });

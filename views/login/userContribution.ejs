@@ -53,8 +53,8 @@
                     <table id="transactionHistoryTable" class="table table-striped">
                         <thead>
                         <tr>
-                            <th>#ID</th>
-                            <th>Date</th>
+                            <th>Confirmation #</th>
+                            <th>Date/Time</th>
                             <th>Amount($)</th>
                             <th>Contribute To</th>
                             <th>Status</th>
@@ -93,10 +93,10 @@
         ' </tr> ';
 
     function replaceHtml(transaction){
-        return defaultHTML.replace("{Id}",transaction.transaction_id)
-                .replace("{Date}",dateDisplayFormatter(transaction.datetime))
+        return defaultHTML.replace("{Id}",transaction.confirmationCode)
+                .replace("{Date}",dateTimeDisplayFormatter(transaction.dateTime))
                 .replace("{Amount}",transaction.amount)
-                .replace("{Recipient}",'<a href="/charity/'+transaction.recipient_id+'" style="color: #202090">'+transaction.name+'</a>')
+                .replace("{Recipient}",'<a href="/charity/'+transaction.recipientId+'" style="color: #202090">'+transaction.name+'</a>')
                 .replace("{Status}",transaction.status)
                 ;
 
@@ -108,9 +108,9 @@
         var itemsOnPage = 20;
         var resultConainer = $('#transactionHistoryTableBody');
 
-        $('#botPage').pagination({  //首先获取对应的ID，第二步已经定义了ID为page
-            items: transactionHistory.length,  //这里是项目的总数，假使有100个项目
-            itemsOnPage: itemsOnPage,  //这里是每页显示多少个项目
+        $('#botPage').pagination({  
+            items: transactionHistory.length,
+            itemsOnPage: itemsOnPage,
             onInit: initPage,
             currentPage: 0,
             onPageClick: function(){
@@ -122,7 +122,7 @@
                 //$("#page").pagination('drawPage',$("#botPage").pagination('getCurrentPage'));
 
             },
-            cssStyle: 'light-theme'  //这里就是css风格了，可设置light-theme,dark-theme,compact-theme,效果依次按文章开头的大图中展现
+            cssStyle: 'light-theme'
         });
         function initPage() {
             resultConainer.empty();
@@ -139,6 +139,9 @@
     }
     function dateDisplayFormatter( cellvalue, options, rowObject ){
         return cellvalue.substr(0,10);
+    }
+    function dateTimeDisplayFormatter( cellvalue, options, rowObject ){
+        return cellvalue.substr(0,16);
     }
     function getUserTransactionHistory(){
        $.get('/services/user/getTransactionHistory',function(data){

@@ -106,30 +106,41 @@ module.exports = function(app) {
         req.pipe(req.busboy);
         req.busboy.on('file', function (fieldname, file, filename) {
 
+            var imagePath = __dirname + '/../public/resources/recipients/profilePicture/pp_'+recipientId;
             //Path where image will be uploaded
-            fstream = fs.createWriteStream(__dirname + '/../public/resources/recipients/profilePicture/pp_'+recipientId );
+            fstream = fs.createWriteStream(imagePath);
             file.pipe(fstream);
             fstream.on('close', function () {
                 logger.info("Upload Finished of " + fieldname+' with id-'+req.user.userId);
                 var imageUrl = '/resources/recipients/profilePicture/pp_' + recipientId;
+
+                //Resize the uploaded image to small/medium/large size
+                var gm = require('gm');
+                gm(imagePath)
+                    .resize(100, 75, "!")
+                    .noProfile()
+                    .write(imagePath+'_small', function (err) {
+                        if (!err) logger.info('small done');
+                        else logger.error(err);
+                    });
+                gm(imagePath)
+                    .resize(400, 300, "!")
+                    .noProfile()
+                    .write(imagePath+'_medium', function (err) {
+                        if (!err) logger.info('medium done');
+                        else logger.error(err);
+                    });
+                gm(imagePath)
+                    .resize(1000, 750, "!")
+                    .noProfile()
+                    .write(imagePath+'_large', function (err) {
+                        if (!err) logger.info('large done');
+                        else logger.error(err);
+                    });
                 //we don't need the imageUrl actually, we are using convention to find the profile picture
                 res.redirect('/charity/'+recipientId);
 
-                /*
-                userLogin.updateUserProfileImageUrl( imageUrl, req.user.userId,function(err, results){
-                    if(!err) {
-                        var user = req.user;
-                        user.imageIconUrl = iconUrl;
-                        req.logIn(user, function(error) {
-                            if (error) {
-                                logger.warn('after updating basic info login failed');
-                                res.send(constants.services.CALLBACK_FAILED);
-                            }
-                            res.redirect('/users/account');
-                        });
-                    }
-                });*/
-                //where to go next
+
             });
         });
 
