@@ -367,8 +367,11 @@
                 $('#phoneInfo').html(charity.phone);
                 $('#faxInfo').html(charity.fax);
                 if(charity.website) {
-                    $('#websiteInfo').html(charity.website.trim());
-                    $('#websiteInfo').attr('href','http://'+charity.website.trim());
+					var website = charity.website.trim();
+                    $('#websiteInfo').html(website);
+					if(website.indexOf("http:") == -1)
+						website = "http://" + website;
+                    $('#websiteInfo').attr('href', website);
                 }
                 if(charity.facebookUrl) {
                     $('#facebookPageInfo').html(charity.facebookUrl.trim());
