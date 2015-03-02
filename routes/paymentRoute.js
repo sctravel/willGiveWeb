@@ -9,6 +9,7 @@ module.exports = function(app) {
     var userLogin = require('../lib/db/userLogin');
     var constants = require('../lib/common/constants');
     var charityOps = require('../lib/db/charityOperation');
+    var emailUtil = require('../lib/utils/emailUtil');
 
     var isLoggedIn = require('../app').isLoggedIn;
     var logger = require('../app').logger;
@@ -126,6 +127,20 @@ module.exports = function(app) {
                     return;
                 }
                 //res.send(constants.services.CALLBACK_SUCCESS);
+            });
+
+            var mailOptions = {
+                from: "WillGive <willgiveplatform@gmail.com>", // sender address
+                to: req.user.email, // list of receivers
+                subject: "Thanks for the donation for WillGive", // Subject line
+                html: constants.emails.donationEmail.replace('{FirstName}', req.user.firstName) // html body
+            };
+            emailUtil.sendEmail(mailOptions,function(err,results){
+                if(err) {
+                    logger.error(err);
+                }
+                logger.info("successfully sending emails");
+                return;
             });
 
 

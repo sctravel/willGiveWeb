@@ -189,7 +189,7 @@
 
                 <form action="javascript:void(0);" method="post" id="example-form" style="display: block;">
 
-                    <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:block;" onClick="enableAmount()">
+                    <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:block;" onClick="enableCheckout()">
                         Contribute
                     </button>
 
@@ -256,17 +256,11 @@
 
           }
 
-          function enableAmount() {
-              document.getElementById("contribute_button").style.display="none";
-              document.getElementById("paymentAmountForm").style.display="block";
+          function disableCheckout() {
+              document.getElementById("contribute_button").style.display="block";
+              document.getElementById("paymentAmountForm").style.display="none";
               //alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
-              jQuery("#amount").val(jQuery("#paymentAmount").val());
-              jQuery("#receipientId").val(<%=pageId%>);
-              //alert("Set amount: "+ jQuery("#amount").val());
-
-              //alert( "amount:" +jQuery("#amount").val());
-
-
+              jQuery("#paymentAmount").val(0);
           }
 
 
@@ -296,6 +290,7 @@
                   alert("<%=user.userId%>");
                   if (!result || result == "failed") {
                       alert("failed to get results");
+                      disableCheckout();
                       return;
                   }
                   //alert("currentResults:"+ result);
@@ -314,6 +309,10 @@
                          $('form').submit();
 
                         alert( "payment successfully made ");
+                        disableCheckout();
+
+
+
                           return;
                      }
 
@@ -335,7 +334,9 @@
                           token:       token
                       });
 
-                      return false;
+                  disableCheckout();
+
+                  return false;
               });
               <% } %>
 
