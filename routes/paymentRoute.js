@@ -79,7 +79,7 @@ module.exports = function(app) {
 
         //'stripeToken
         console.dir("requset body:" + req.body);
-        console.dir(req.body.stripeToken);
+        console.dir("stripeTokens:" + req.body.stripeToken);
 
         console.dir("receipientId: " + req.body.receipientId);
 
@@ -175,7 +175,7 @@ module.exports = function(app) {
             console.dir("end saving customers");
 
             var charge = stripe.charges.create({
-                amount: amount, // amount in cents, again
+                amount: amount*100, // amount in cents, again
                 currency: "usd",
                 card: stripeToken,
                 description: "payinguser@example.com"
@@ -186,6 +186,7 @@ module.exports = function(app) {
                 }
 
                 console.dir("recipient_id: " + recipient_id);
+                //"Stripe_RecurrentPayment" + new Date().getTime(), amount, user_id, recipient_id, "Processed", notes, stripeToken,
                 billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, user_id, recipient_id, "Processed", notes,stripeToken, function (err, results) {
                     if (err) {
                         console.error(err);
