@@ -236,6 +236,7 @@
           <input id="notes"  name="notes" value="0">
           <input id="receipientId"  name="receipientId" value="0">
           <input id="stripeCustomerId"  name="stripeCustomerId" value="0">
+          <input id= stripeTokenInput type=hidden name=stripeToken />
 
       </form>
 
@@ -316,10 +317,14 @@
                           return;
                      }
 
-                    //else of stripCustomerId is null, need to pop up Stripe checkout widget to enter credit card info
+                  $( '#stripeTokenInput').val('');
+
+                    //else of stripCustomerId is null, need to pop up Stripe checkout widget to enter credit card info, token is a function rather than variable
                       var token = function(res){
-                          var $input = $('<input type=hidden name=stripeToken />').val(res.id);
-                          $('form').append($input).submit();
+                         // var $input = $('<input id= stripeTokenInput type=hidden name=stripeToken />').val(res.id);
+                         // $('form').append($input).submit();
+                          $( '#stripeTokenInput').val(res.id);
+                          $('form').submit();
                       };
                       var payAmount=  jQuery("#paymentAmount").val();
 
@@ -333,6 +338,8 @@
                           panelLabel:  'Checkout',
                           token:       token
                       });
+
+
 
                   disableCheckout();
 
