@@ -209,7 +209,7 @@ module.exports = function(app) {
     );
 
     //Data Services for account
-    app.post('/services/login/mobileSignup', function(req,res) {
+    app.post('/services/login/mobileSignup', function(req, res) {
         var newAccountInfo = {};
         newAccountInfo.email = req.body.email;
         newAccountInfo.firstName = req.body.firstName;
@@ -222,9 +222,9 @@ module.exports = function(app) {
         userLogin.addNewUserAccount(newAccountInfo, function(err,results){
             if(err) {
                 logger.error(err);
-                res.send(err.toString());
+                res.send(constants.services.CALLBACK_FAILED);
             } else {
-                logger.debug(results);
+                logger.info(results);
                 var user = {};
                 user.sessionId = stringUtil.generateRandomString(constants.login.SESSION_ID_LENGTH);
                 user.email = newAccountInfo.email;
@@ -233,13 +233,24 @@ module.exports = function(app) {
                 user.provioder = newAccountInfo.provider;
                 user.imageIconUrl = newAccountInfo.imageIconUrl;
                 user.userId = results.insertId;
+                user.email = newAccountInfo.email;
+
+                req.body.username = req.body.email;
 
                 req.login(user, function(err) {
                     if(err) {
                         logger.error(err);
                         return;
                     }
-                    res.json(req.user);
+
+                    if(req.isAuthenticated()) {
+                        console.dir(req);
+                        res.send(req.user);
+                        console.dir(req.user);
+                    } else {
+                        res.send(constants.services.CALLBACK_FAILED);
+                        logger.warn('login failed in mobile signup');
+                    }
                 });
             }
         });
