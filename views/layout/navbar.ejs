@@ -1,3 +1,4 @@
+<meta HTTP-EQUIV="expires" CONTENT="Wed, 01 Jan 1997 01:01:01 GMT">
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -6,27 +7,23 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">WillGive</a>
+            </button>            
         </div>
         <% 
-         var menuClass = new Array("#", "#","#","#","#","#");
+         var menuClass = new Array("#", "#","#","#","#","#", "#", "#", "#");
          if(activeMenu == "Home") menuClass[0] = "active";
-         if(activeMenu == "About") menuClass[1] = "active";
-         if(activeMenu == "Contact") menuClass[2] = "active";
+         if(activeMenu == "Charities") menuClass[1] = "active";
+         if(activeMenu == "Enquiry") menuClass[2] = "active";
          if(activeMenu == "SignIn") menuClass[3] = "active";
          if(activeMenu == "SignUp") menuClass[4] = "active";
-         if(activeMenu == "Charities") menuClass[5] = "active";
-         if(activeMenu == "Enquiry") menuClass[6] = "active";
+		 if(activeMenu == "CharitySignIn") menuClass[5] = "active";
 
         %>
         <div class="collapse navbar-collapse" id="exampleNavbarCollapse">
             <ul class="nav navbar-nav">
-                <li class="<%=menuClass[0]%>"><a href="/">Home</a></li>
-                <li class="<%=menuClass[5]%>"><a href="/charities/listCharities">Charities</a></li>
-                <li class="<%=menuClass[1]%>"><a href="/aboutus">About Us</a></li>
-                <li class="<%=menuClass[2]%>"><a href="/contactus">Contact Us</a></li>
-                <li class="<%=menuClass[6]%>"><a href="/search">Donation Tracking</a></li>
+                <li class="<%=menuClass[0]%>"><a href="/">WillGive</a></li>
+                <li class="<%=menuClass[1]%>"><a href="/charities/listCharities">Charities</a></li>
+                <li class="<%=menuClass[2]%>"><a href="/search">Donation Tracking</a></li>
             </ul>
             <form class="nav navbar-nav navbar-form" action="/charities/searchCharities" method="get" role="search">
                 <div class="input-group">
@@ -37,10 +34,10 @@
                 </div>
             </form>
             <% if ( 'undefined' == typeof user || user == null ) { %>
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav navbar-right" style="padding-right:15px;">
                 <li class="<%=menuClass[3]%>"><a href="/login/signin">SignIn</a></li>
                 <li class="<%=menuClass[4]%>"><a href="/login/signup">SignUp</a></li>
-                <li><a href="/recipient/login">Chairty SignIn</a></li>
+                <li class="<%=menuClass[5]%>"><a href="/recipient/login">Chairty SignIn</a></li>
             </ul>
             <% } else if( 'recipient' != user.provider ){ %>
             <ul class="nav navbar-nav navbar-right">

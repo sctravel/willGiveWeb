@@ -9,11 +9,33 @@ module.exports = function(app) {
     var userLogin = require('../lib/db/userLogin');
     var constants = require('../lib/common/constants');
     var charityOps = require('../lib/db/charityOperation');
+    var emailUtil = require('../lib/utils/emailUtil');
 
     var isLoggedIn = require('../app').isLoggedIn;
     var logger = require('../app').logger;
 
     this.name = 'paymentRoute';
+
+
+    app.get('/services/user/getTransactionHistory/:confirmationCode', function(req, res){
+
+        var confirmationCode = req.params.confirmationCode;
+
+        console.dir("confirmationCode: "+confirmationCode);
+
+        billingUtil.getTransactionHistoryBasedOnConfirmationCode(confirmationCode,function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            logger.debug(results);
+            res.send(results);
+        })
+    })
+
+
+
     app.get('/payment/stripePayment/queryUser/', function (req, res) {
 
         var user_id = req.query.userId;
@@ -57,13 +79,15 @@ module.exports = function(app) {
 
         //'stripeToken
         console.dir("requset body:" + req.body);
-        console.dir(req.body.stripeToken);
+        console.dir("stripeTokens:" + req.body.stripeToken);
 
         console.dir("receipientId: " + req.body.receipientId);
 
         console.dir("stripeCustomerId: " + req.body.stripeCustomerId);
 
+        console.dir("payment Notes: " + req.body.notes);
 
+        var notes =req.body.notes;
         var stripe = require("stripe")("sk_test_zjF1XdDy0TZAYnuifaHR0iDf");
 
 // (Assuming you're using express - expressjs.com)
@@ -81,6 +105,9 @@ module.exports = function(app) {
 
         var stripeCustomerId = req.body.stripeCustomerId;
 
+        console.dir("UserId in passport: " + req.user.userId);
+        user_id = req.user.userId;
+
         //logic for customers already has StripeCustomerIDs
 
         console.dir("stripeCustomerId in app.js:" + stripeCustomerId);
@@ -92,6 +119,29 @@ module.exports = function(app) {
             });
 
             //need to store in transaction history table as well
+             //exports.insertTransactionHistroy = function(transaction_id,amount,user_id,recipient_id, status,notes,stripeToken, callback)
+            billingUtil.insertTransactionHistroy("Stripe_RecurrentPayment" + new Date().getTime(), amount, user_id, recipient_id, "Processed", notes, stripeToken, function (err, results) {
+                if (err) {
+                    console.error(err);
+                    //res.send(constants.services.CALLBACK_FAILED);
+                    return;
+                }
+                //res.send(constants.services.CALLBACK_SUCCESS);
+            });
+
+            var mailOptions = {
+                from: "WillGive <willgiveplatform@gmail.com>", // sender address
+                to: req.user.email, // list of receivers
+                subject: "Thanks for the donation for WillGive", // Subject line
+                html: constants.emails.donationEmail.replace('{FirstName}', req.user.firstName) // html body
+            };
+            emailUtil.sendEmail(mailOptions,function(err,results){
+                if(err) {
+                    logger.error(err);
+                }
+                logger.info("successfully sending emails");
+                return;
+            });
 
 
             return;
@@ -111,8 +161,7 @@ module.exports = function(app) {
 
             //update customerId into for payment method table
 
-            console.dir("UserId in passport: " + req.user.userId);
-            user_id = req.user.userId;
+
 
             billingUtil.updatePaymentMethodStripeId(user_id, customer.id, function (err, results) {
                 if (err) {
@@ -126,7 +175,7 @@ module.exports = function(app) {
             console.dir("end saving customers");
 
             var charge = stripe.charges.create({
-                amount: amount, // amount in cents, again
+                amount: amount*100, // amount in cents, again
                 currency: "usd",
                 card: stripeToken,
                 description: "payinguser@example.com"
@@ -137,13 +186,14 @@ module.exports = function(app) {
                 }
 
                 console.dir("recipient_id: " + recipient_id);
-                billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, user_id, recipient_id, "Processing", stripeToken, function (err, results) {
+                //"Stripe_RecurrentPayment" + new Date().getTime(), amount, user_id, recipient_id, "Processed", notes, stripeToken,
+                billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, user_id, recipient_id, "Processed", notes,stripeToken, function (err, results) {
                     if (err) {
                         console.error(err);
-                        res.send(constants.services.CALLBACK_FAILED);
+                        //res.send(constants.services.CALLBACK_FAILED);
                         return;
                     }
-                     res.send(constants.services.CALLBACK_SUCCESS);
+                    // res.send(constants.services.CALLBACK_SUCCESS);
                 });
 
             });

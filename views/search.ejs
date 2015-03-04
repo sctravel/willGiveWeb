@@ -6,17 +6,14 @@
 
     <title>WillGive</title>
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
+
+
+    <link rel="stylesheet" type="text/css" href="/jqgrid/css/ui.jqgrid.css">
+
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
     <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
-
     <link rel="stylesheet" type="text/css" href="/assets/css/ui.jqgrid.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/ui.multiselect.css">
-    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
-    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">
-    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css">
-
-    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/custom-theme/jquery-ui-1.10.3.custom.css">
     <link rel="stylesheet" href="/assets/css/font-awesome.min.css">
 
 
@@ -24,139 +21,136 @@
     <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/jquery-validation/dist/jquery.validate.js"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+    <script src="/jqgrid/js/minified/jquery.jqGrid.min.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="http://trirand.com/blog/jqgrid/themes/redmond/jquery-ui-custom.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="http://trirand.com/blog/jqgrid/themes/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="http://trirand.com/blog/jqgrid/themes/ui.multiselect.css" />
 
 
+
+
+<!--
     <script src="/assets/js/jqgridmain.js" type="text/javascript"></script>
     <script src="/assets/js/jqgridTablednd.js" type="text/javascript"></script>
     <script src="/assets/js/jqgridContextmenu.js" type="text/javascript"></script>
 
-    <%activeMenu = "Contact"%>
+
+    <script src="/assets/js/jquery.simplePagination.js"></script>
+
+      -->
+
+
+    <%activeMenu = "Enquiry"%>
+
     <%include layout/navbar.ejs%>
+
 </head>
 <body>
 <div class="container">
-    <div class="col-md-7 columns">
+    <div class="col-md-7 columns" >
 
-
-        <h3>please enter the transaction ID to query charity donation</h3>
-        <p>We take the charity donation security very seriously. We made all the donation transaction public and easy to track.
+        <h3>Please enter a confirmation code to query charity donation</h3>
+        <p>We take the charity donation security and transparency very seriously. We've made all the donation transaction public and easy to track.
             WillGive wants only the best for you, so we use industry-leading Secure Sockets Layer (SSL) technology to keep personal information as secure as possible.
             Built in Stripe payment also helps protect your information by only working with partners that provide a secure and safe environment for credit card donations</em>.</p>
         <div>
-            <label>transactionId</label>
-            <input id="transactionId" type="text" maxlength="20" autocomplete="off" class="required" />
+
+            <label>Confirmation Code</label>
+            <input id="transactionId" type="text" maxlength="100" autocomplete="off" class="required" />
         </div>
-        <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:block;" onClick="search()">
+        <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:block;" onClick="refresh()">
             Search
         </button>
 
-
-
-
-
-
-        <div class="container" >
-
-            <!--  <button id="getAllSpots">查询景点</button>-->
-
+       <div class="container" >
 
             <table id="listResult"></table>
             <table id="grid"></table>
             <div id="pagerResults"></div>
         </div>
 
-
         <script>
+            function refresh() {
+                jQuery('#listResult').jqGrid('GridUnload');
+
+                var transactions = [];
+
+                $.get("/services/user/getTransactionHistory/" + jQuery("#transactionId").val(), function (results) {
+
+                    for (i in results) {
+                        transactions.push(results[i]);
+                    }
+
+                    console.dir(transactions);
+                    /*
+                     var tra = [
+                     {transaction_id: "11", amount: "20", user_name: "michael", recipient_name: "redCross", date: "2012-1-2", notes: "test"}
+                     ];
+                     alert("transactionId" + jQuery("#transactionId").val());
+                     if (jQuery("#transactionId").val() == 1) {
+                     tra.push({transaction_id: "2", amount: "20", user_name: "michael", recipient_name: "redCross", date: "2012-1-2", notes: "test"});
+                     }*/
+                    //setGridParam({'postData': data});
+
+                    jQuery(document).ready(function () {
+                        jQuery("#listResult").jqGrid({
+                            datatype: "local",
+                            data: transactions,
+                            colNames: ['transaction_id', 'amount', 'user_id', 'recipient_id', 'dateTime', 'notes'],
+                            colModel: [
+                                {name: 'transaction_id', index: 'transaction_id', align: "center", editable: true, sortable: true},
+                                {name: 'amount', index: 'amount', align: "center", editable: true, sortable: true},
+                                {name: 'user_id', index: 'user_name', align: "center", editable: true, sortable: true},
+                                {name: 'recipient_id', index: 'recipient_name', align: "center", editable: true, sortable: true},
+                                {name: 'dateTime', index: 'dateTime', align: "center", editable: true, sortable: true},
+                                {name: 'notes', index: 'notes', align: "center", editable: true, sortable: true}
+                            ],
+                            rowNum: 10,
+                            rowList: [10, 20, 30],
+                            sortname: 'transaction_id',
+                            viewrecords: true,
+                            sortorder: "desc",
+                            caption: "donation listings",
+                            width: 1000,
+                            height: "100%"
+                        });
+
+                        //jQuery("#listResult").jqGrid('setGridParam', { data: transactions }).trigger("reloadGrid");
+
+                    })
+                });
+            }
 
 
-
+            /*
             $(function() {
                 console.log("search transaction Now");
-                var transactions=[{transaction_id:"1",amount:"20",user_name:"michael", recipient_name:"redCross",date:"2012-1-2",notes:"test"}];
+                transactions=[{transaction_id:"1",amount:"20",user_name:"michael", recipient_name:"redCross",date:"2012-1-2",notes:"test"}];
 
                 transactions.push({transaction_id:"2",amount:"20",user_name:"michael", recipient_name:"redCross",date:"2012-1-2",notes:"test"});
                 transactions.push({transaction_id:"3",amount:"20",user_name:"michael", recipient_name:"redCross",date:"2012-1-2",notes:"test"});
                 transactions.push({transaction_id:"4",amount:"20",user_name:"michael", recipient_name:"redCross",date:"2012-1-2",notes:"test"});
                 transactions.push({transaction_id:"5",amount:"20",user_name:"michael", recipient_name:"redCross",date:"2012-1-2",notes:"test"});
-                /*
-                $.get("/services/getAll/sceneryspots", function (results) {
-                    spots = []; //results is an object, not an array
-                    for (i in results) {
-                        spots.push(results[i]);
-                    }*/
 
-                    console.dir(transactions);
-                    jQuery(document).ready( function() {
-                        jQuery("#listResult").jqGrid ( {
-                            datatype: "local",
-                            data: transactions,
-                            colNames: ['transaction_id','amount', 'user_name', 'recipient_name', 'date', 'notes'],
-                            colModel: [
-                                {name: 'transaction_id', index: 'transaction_id', align: "center", editable: true, sortable: true},
-                                {name: 'amount', index: 'amount', align: "center", editable: true, sortable: true},
-                                {name: 'user_name', index: 'user_name', align: "center", editable: true, sortable: true},
-                                {name: 'recipient_name', index: 'recipient_name', align: "center", editable: true, sortable: true},
-                                {name: 'date', index: 'date', align: "center",   editable: true, sortable: true},
-                                {name: 'notes', index: 'notes', align: "center", editable:true, sortable: true},
-                            ],
-                            rowNum:10,
-                            rowList:[10,20,30],
-                            sortname: 'transaction_id',
-                            viewrecords: true,
-                            sortorder: "desc",
+                //jQuery("#listResult").jqGrid('navGrid',"#pagerResults",{edit:false,add:false,del:true});
+                // jQuery("#listResult").jqGrid('inlineNav',"#pagerResults");
 
-                            onclickSubmit: function(options, postdata) {
-
-                                alert("hahaha");
-                                var idName= $(this).jqGrid('getGridParam').prmNames.id;
-
-                                // [UPDATED]
-                                if (postdata[idName] === undefined) {
-                                    var idInPostdata = this.id + "_id";
-                                    postdata[idName] = postdata[idInPostdata];
-                                    postdata['row'] = postdata[idInPostdata];
-                                }
-
-                                $('#mygrid').jqGrid('setRowData', postdata.row, postdata);
-
-                                if (options.closeAfterEdit) {
-                                    $.jgrid.hideModal('#editmod' + gridId, {
-                                        gb: '#gbox_' + gridId,
-                                        jqm: options.jqModal,
-                                        onClose: options.onClose
-                                    });
-                                }
-
-                                options.processing = true;
-
-                                return {};
-                            },
-
-
-
-
-
-
-                            caption: "donation listings",
-                            width: 770,
-                            height: "100%"
-                        });
-
-                        //jQuery("#listResult").jqGrid('navGrid',"#pagerResults",{edit:false,add:false,del:true});
-                       // jQuery("#listResult").jqGrid('inlineNav',"#pagerResults");
-
-                    });
-
-                })
-
-
+            })}
+            */
 
         </script>
 
 
+
+    </div>
+
+</div>
+
+
 </body>
 
-<%include layout/footer.ejs%>
+
 
 </html>
