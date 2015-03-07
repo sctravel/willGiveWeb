@@ -10,7 +10,7 @@
         '           {ICONS} ' +
         '          </h4> '+
         '      </div> ' +
-        '      <strong>EIN:</strong> {EIN} <br> '+
+        '      <strong>EIN:</strong> {ein} <br> '+
         '      <strong>Address:</strong> {Address} <br> '+
         '      <strong>Phone:</strong> {Phone} <br> '+
         '      <strong>Mission:</strong> {Mission} ' +
@@ -67,8 +67,8 @@
 		
         return defaultHTML.replace("{name}","<a style=\"color: #202090;\" href='/charity/" + transaction.recipientId + "'>" + transaction.name + "</a>" )
 		.replace("{ICONS}",favIcon + "<a style=\"color: #202090;\" href='" + website + "' target='_blank'><img src='/images/web.png' border=0 width=20 height=20></a>"  )
-                .replace("{EIN}",transaction.ein)
-                .replace("{Address}",transaction.address+', '+transaction.city+', '+transaction.state+', '+transaction.zipcode)
+                .replace("{ein}",transaction.ein)
+                .replace("{Address}",transaction.address+', '+transaction.city+', '+transaction.state+', '+transaction.zipCode)
                 .replace("{RecipientId}", transaction.recipientId)
                 .replace("{ImagePath}", transaction.imagePath)
 		        .replace("{State}",transaction.state)

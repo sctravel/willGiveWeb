@@ -367,7 +367,7 @@
                 }
                 console.dir(data);
                 charity = data;
-                var entireAddress = (charity.address.trim()+', '+charity.city.trim()+', '+charity.state.trim()+', '+charity.zipcode.trim());
+                var entireAddress = (charity.address.trim()+', '+charity.city.trim()+', '+charity.state.trim()+', '+charity.zipCode.trim());
                 $('#mission_content').html(charity.mission);
                 $('#charity_logo').attr('src', charity.imagePath);
                 $('#orgName').html(charity.name);

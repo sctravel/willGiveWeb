@@ -2,7 +2,7 @@
     var defaultHTML =
         '<tr> <td> {name} </td> '+
         ' <td align=middle> {ICONS} </td> ' +
-        ' <td> {EIN} </td> ' +
+        ' <td> {ein} </td> ' +
         ' <td> {City} </td> ' +
         ' <td> {State} </td> ' +
         ' <td> {Phone} </td> ' +
@@ -58,7 +58,7 @@
 			
         return defaultHTML.replace("{name}","<a style=\"color: #202090;\" href='/charity/" + transaction.recipientId + "'>" + transaction.name + "</a>" )
 		.replace("{ICONS}","<a style=\"color: #202090;\" href='" + website + "' target='_blank'><img src='/images/web.png' border=0 width=20 height=20></a>"  + favIcon)
-                .replace("{EIN}",transaction.ein)
+                .replace("{ein}",transaction.ein)
                 .replace("{City}",transaction.city)
 		.replace("{State}",transaction.state)
                 .replace("{Phone}",transaction.phone)
