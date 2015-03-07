@@ -32,6 +32,10 @@ module.exports = function(app) {
     app.get('/users/collections', isLoggedIn, function(req,res){
         res.render('login/userCollections', {user: req.user});
     })
+
+    app.get('/users/pledge', isLoggedIn, function(req,res){
+        res.render('login/userPledges', {user: req.user});
+    })
     /////////////////////////////////////
     // User Account related Services
     /////////////////////////////////////
