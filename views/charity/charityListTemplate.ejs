@@ -60,16 +60,16 @@
        	;
        	<% } else { %>		
 		  if(transaction.isFavored == 'Y')
-			favIcon = "<a style=\"cursor:hand; cursor:pointer\"  onClick=\"flipFav('" + transaction.recipient_id + "')\"><img src='/images/fav2.png' id=img" + transaction.recipient_id +" border=0 width=30 height=27></a>";
+			favIcon = "<a style=\"cursor:hand; cursor:pointer\"  onClick=\"flipFav('" + transaction.recipientId + "')\"><img src='/images/fav2.png' id=img" + transaction.recipientId +" border=0 width=30 height=27></a>";
 		 else
-		    favIcon = "<a style=\"cursor:hand; cursor:pointer\" onClick=\"flipFav('" + transaction.recipient_id + "')\"><img src='/images/fav.png' id=img" + transaction.recipient_id +" border=0 width=30 height=27></a>";
+		    favIcon = "<a style=\"cursor:hand; cursor:pointer\" onClick=\"flipFav('" + transaction.recipientId + "')\"><img src='/images/fav.png' id=img" + transaction.recipientId +" border=0 width=30 height=27></a>";
 		<%}%>
 		
-        return defaultHTML.replace("{name}","<a style=\"color: #202090;\" href='/charity/" + transaction.recipient_id + "'>" + transaction.name + "</a>" )
+        return defaultHTML.replace("{name}","<a style=\"color: #202090;\" href='/charity/" + transaction.recipientId + "'>" + transaction.name + "</a>" )
 		.replace("{ICONS}",favIcon + "<a style=\"color: #202090;\" href='" + website + "' target='_blank'><img src='/images/web.png' border=0 width=20 height=20></a>"  )
-                .replace("{EIN}",transaction.EIN)
+                .replace("{EIN}",transaction.ein)
                 .replace("{Address}",transaction.address+', '+transaction.city+', '+transaction.state+', '+transaction.zipcode)
-                .replace("{RecipientId}", transaction.recipient_id)
+                .replace("{RecipientId}", transaction.recipientId)
                 .replace("{ImagePath}", transaction.imagePath)
 		        .replace("{State}",transaction.state)
                 .replace("{Phone}",transaction.phone)

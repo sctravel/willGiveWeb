@@ -152,8 +152,9 @@
                                $('#innerWrapper').append(
 
                         '<div class=\"col-sm-3\">' +
+                        //maybe https? need to determine whether it contains http or not
                         '<a href="'+  "http://" + hotCharities[i].website +  '"><img src="/resources/recipients/profilePicture/pp_'
-                        + hotCharities[i].recipient_id +
+                        + hotCharities[i].recipientId +
                         '"' +  ' height="500px" width="500px"' + ' alt=\"est\" class=\"img-responsive\"></a>' +
                         '<div class=\"carousel-caption\">' + hotCharities[i].name + '</div>' +
                         '</div>'
@@ -167,7 +168,7 @@
                 ' <div id=' + id + ' class="row">' +
                 '<div class=\"col-sm-3\">' +
                 '<a href="'+  "http://" + hotCharities[i].website +  '"><img src="/resources/recipients/profilePicture/pp_'
-                + hotCharities[i].recipient_id +
+                + hotCharities[i].recipientId +
                 '"' + ' height="500px" width="500px"' + ' alt=\"est\" class=\"img-responsive\"></a>' +
                 '<div class=\"carousel-caption\">' + hotCharities[i].name + '</div>' +
                 '</div>' +
@@ -179,7 +180,7 @@
                    ' <div  class=\"row\">' +
                    '<div class=\"col-sm-3\">' +
                    '<a href="'+  "http://" + hotCharities[i].website +  '"><img src="/resources/recipients/profilePicture/pp_'
-                   + hotCharities[i].recipient_id +
+                   + hotCharities[i].recipientId +
                    '"' + ' height="500px" width="500px"' + ' alt=\"est\" class=\"img-responsive\"></a>' +
                    '<div class=\"carousel-caption\">' + hotCharities[i].name + '</div>' +
                    '</div>' +

@@ -374,7 +374,7 @@
                 $('#editMyPageLink').attr('href', '/charity/'+recipientId+'/edit');
                 $('#map').attr('src', mapPrefix+entireAddress.replace(/ /g,'+'));
                 $('#nameInfo').html(charity.name);
-                $('#EINInfo').html(charity.EIN);
+                $('#EINInfo').html(charity.ein);
                 $('#phoneInfo').html(charity.phone);
                 $('#faxInfo').html(charity.fax);
                 if(charity.website) {
@@ -403,9 +403,9 @@
                 ' </table> </div> </div> <hr/>'
 
         function replaceHtml(transaction) {
-            return transactionHtml.replace('{imageUrl}', transaction.image_icon_url)
+            return transactionHtml.replace('{imageUrl}', transaction.imageIconUrl)
                     .replace('{amount}', transaction.amount)
-                    .replace('{userName}', transaction.first_name+' '+transaction.last_name)
+                    .replace('{userName}', transaction.firstName+' '+transaction.lastName)
                     .replace('{date}', transaction.datetime.substring(0,10));
 
         }

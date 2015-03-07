@@ -76,6 +76,7 @@ module.exports = function(app) {
     app.post('/services/recipient/signup', function(req, res) {
         //should auto login after signup
         var signUpFrom = req.body.recipientSignUpForm;
+        signUpFrom.ein = signUpFrom.EIN;
         logger.debug(signUpFrom);
         var user={};
         recipient.createNewRecipient(signUpFrom, function(err, results) {

@@ -488,7 +488,7 @@
         $.get('/services/charityById/'+userId, function(data){
             charity = data;
             console.dir(data);
-            $('#EIN').val(charity.EIN);
+            $('#EIN').val(charity.ein);
             $('#category').val(charity.category);
             $('#website').val(charity.website);
             $('#facebookPage').val(charity.facebookUrl);

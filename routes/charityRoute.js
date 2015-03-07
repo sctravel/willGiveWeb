@@ -165,7 +165,11 @@ module.exports = function(app) {
 
         var start = req.query.start;
         var count = req.query.count;
-        charityOps.listAllCharity(start, count, function(err, results){
+        var userId = null;
+        if(req.user && req.user.provider == constants.login.LOGIN_PROVIDER.WILLGIVE) {
+            userId = req.user.userId;
+        }
+        charityOps.listAllCharity(userId, start, count, function(err, results){
             if(err){
                 logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
@@ -239,8 +243,8 @@ module.exports = function(app) {
 	for(var i=0;i< results.length;++i) 
 		{			    
 	           var imagePath = "/resources/recipients/profilePicture/pp_default";
-               if (global.fs.existsSync("public/resources/recipients/profilePicture/pp_" + results[i].recipient_id)) {
-                    imagePath = "/resources/recipients/profilePicture/pp_" + results[i].recipient_id;                    
+               if (global.fs.existsSync("public/resources/recipients/profilePicture/pp_" + results[i].recipientId)) {
+                    imagePath = "/resources/recipients/profilePicture/pp_" + results[i].recipientId;
 			    }
 				results[i].imagePath = imagePath;
 		}

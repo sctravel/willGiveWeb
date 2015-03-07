@@ -91,7 +91,7 @@
 		if(website.indexOf("http:") == -1)
 			website = "http://" + website;
         return defaultHTML.replace("{name}",transaction.name)
-                .replace("{EIN}",transaction.EIN)
+                .replace("{EIN}",transaction.ein)
                 .replace("{City}",transaction.city)
 		.replace("{State}",transaction.state)
                 .replace("{Phone}",transaction.phone)
