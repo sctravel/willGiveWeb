@@ -288,9 +288,9 @@
 
               //Inside a function a special variable "arguments" is always available. It's similar to an array in that it has a length property, but it lacks the built-in methods of an array.
               $.get(existingUserById, { userId: <%=user.userId%> },function(result) {
-                  alert("<%=user.userId%>");
+                  console.dir("userId on UI: <%=user.userId%>");
                   if (!result || result == "failed") {
-                      alert("failed to get results");
+                      console.dir("failed to get results");
                       disableCheckout();
                       return;
                   }
@@ -298,9 +298,9 @@
                   stripeCustomerId = result;
                   console.dir("stripeCustomerId(charity.ejs): "+ stripeCustomerId);
                   if(stripeCustomerId!=null)
-                    alert("current stripCustomerId:"+ stripeCustomerId);
+                      console.dir("current stripCustomerId:"+ stripeCustomerId);
                   else
-                      alert("current stripCustomerId: null");
+                      console.dir("current stripCustomerId: null");
                   //need to pass thru charityId  as well
 
                   //if stripCustomerId not null, then post to the payment page automatically
@@ -309,7 +309,7 @@
 
                          $('form').submit();
 
-                        alert( "payment successfully made ");
+                        console.dir( "payment successfully made ");
                         disableCheckout();
 
 
