@@ -20,7 +20,7 @@
             <span style="color:red; ">* </span>Required
         </div>
     </div>
-    <form id="recipientSignupFormV1" class="col-xs-12" method="post" style="padding-top: 2%">
+    <form id="recipientSignupFormV1" class="col-xs-12" method="get" style="padding-top: 2%">
         <div id="recipientSignUpReporter" style="padding-bottom: 2%"></div>
         <h3 class="form-signin-heading" style="padding-top: 1%">1. Account</h3>
 
@@ -265,7 +265,6 @@
             signupPasswordConfirm : {
                 required: true,
                 minlength: 8,
-                equalTo : signupPassword
             },
             signupEmail: {
                 required : true,
