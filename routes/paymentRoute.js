@@ -38,11 +38,11 @@ module.exports = function(app) {
 
     app.get('/payment/stripePayment/queryUser/', function (req, res) {
 
-        var user_id = req.query.userId;
+        var userId = req.query.userId;
 
-        console.dir("app userId:" + user_id);
+        console.dir("app userId:" + userId);
 
-        billingUtil.queryExistingStripCustomers(user_id, function (err, customerToken) {
+        billingUtil.queryExistingStripCustomers(userId, function (err, customerToken) {
             if (err) {
                 console.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
@@ -97,7 +97,7 @@ module.exports = function(app) {
         var amount = req.body.amount;
         var url = req.url;
 
-        var recipient_id = req.body.receipientId;
+        var recipientId = req.body.receipientId;
 
         console.dir("url:" + url);
         console.dir("amount:" + amount);
@@ -106,7 +106,7 @@ module.exports = function(app) {
         var stripeCustomerId = req.body.stripeCustomerId;
 
         console.dir("UserId in passport: " + req.user.userId);
-        user_id = req.user.userId;
+        userId = req.user.userId;
 
         //logic for customers already has StripeCustomerIDs
 
@@ -119,10 +119,10 @@ module.exports = function(app) {
             });
 
             //need to store in transaction history table as well
-             //exports.insertTransactionHistroy = function(transaction_id,amount,user_id,recipient_id, status,notes,stripeToken, callback)
+             //exports.insertTransactionHistroy = function(transactionId,amount,userId,recipientId, status,notes,stripeToken, callback)
 
             var newTransactionId="Stripe_RecurrentPayment" + new Date().getTime() ;
-            billingUtil.insertTransactionHistroy(newTransactionId, amount, user_id, recipient_id, "Processed", notes, stripeToken, function (err, results) {
+            billingUtil.insertTransactionHistroy(newTransactionId, amount, userId, recipientId, "Processed", notes, stripeToken, function (err, results) {
                 if (err) {
                     console.error(err);
                     //res.send(constants.services.CALLBACK_FAILED);
@@ -172,7 +172,7 @@ module.exports = function(app) {
 
 
 
-            billingUtil.updatePaymentMethodStripeId(user_id, customer.id, function (err, results) {
+            billingUtil.updatePaymentMethodStripeId(userId, customer.id, function (err, results) {
                 if (err) {
                     console.error(err);
                     res.send(constants.services.CALLBACK_FAILED);
@@ -194,9 +194,9 @@ module.exports = function(app) {
                     // The card has been declined
                 }
 
-                console.dir("recipient_id: " + recipient_id);
-                //"Stripe_RecurrentPayment" + new Date().getTime(), amount, user_id, recipient_id, "Processed", notes, stripeToken,
-                billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, user_id, recipient_id, "Processed", notes,stripeToken, function (err, results) {
+                console.dir("recipientId: " + recipientId);
+                //"Stripe_RecurrentPayment" + new Date().getTime(), amount, userId, recipientId, "Processed", notes, stripeToken,
+                billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, userId, recipientId, "Processed", notes,stripeToken, function (err, results) {
                     if (err) {
                         console.error(err);
                         //res.send(constants.services.CALLBACK_FAILED);
