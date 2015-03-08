@@ -310,7 +310,7 @@
             if(data == "success") {
                 window.location.href='/recipient/designPage';
             } else {
-                reporter.error(data);
+                reporter.errorStatus(data);
                 reporter.render();
             }
         });
