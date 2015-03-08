@@ -43,7 +43,10 @@ module.exports = function(app) {
         var caller = req.query.caller;
         if (caller != null && caller == "app")
         {
-               charityOps.charityByEIN (id, function(err, results){
+			   var rid = req.query.r;
+			   if ( 'undefined' == typeof rid || rid == null )
+			   {
+				charityOps.charityByEIN (id, function(err, results){
 					if(err) {
 						logger.error(err);
 						res.send(constants.services.CALLBACK_FAILED);
@@ -52,7 +55,20 @@ module.exports = function(app) {
 					verifyImagePath([results]);
 					logger.debug(results);	
 					res.json(results);
-			   });
+				});
+			  }else
+			  {
+				charityOps.charityById (rid, function(err, results){
+					if(err) {
+						logger.error(err);
+						res.send(constants.services.CALLBACK_FAILED);
+						return;
+					}
+					verifyImagePath([results]);
+					logger.debug(results);	
+					res.json(results);
+				});
+			  }
         }
         else if(ua.indexOf("iPhone") !=-1 || ua.indexOf("iPad") != -1 || ua.indexOf("iPod")!=-1 || flag == "IOS") {
             res.redirect("http://appstore.com/keynote");
@@ -63,10 +79,17 @@ module.exports = function(app) {
         }else if(ua.indexOf("Windows Phone")!=-1 || ua.indexOf("IEMobile")!=-1|| flag == "Win") {
 	      res.redirect("http://www.windowsphone.com/en-us/store/app/youtube/dcbb1ac6-a89a-df11-a490-00237de2db9e");
         }else {
+		   var rid = req.query.r;
+		   if ( 'undefined' == typeof rid || rid == null )
+		   {
             charityOps.getRecipientIdByEIN (id, function(error, result){
 			    if(error) return;
 				res.redirect('/charity/'+ result);
 			});
+		   }else
+		   {
+			   res.redirect('/charity/'+ rid);
+		   }
         }
     });
 
