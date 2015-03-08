@@ -76,6 +76,18 @@ module.exports = function(app) {
 
     })
 
+    app.get('/services/user/getPledgeHistory', isLoggedIn, function(req, res){
+        userLogin.getUserPledgeHistory(req.user.userId, function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            logger.debug(results);
+            res.send(results);
+        })
+    })
+
 
     app.get('/services/user/getTransactionHistory', isLoggedIn, function(req, res){
         userLogin.getUserTransactionHistory(req.user.userId, function(err, results){

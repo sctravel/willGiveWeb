@@ -147,7 +147,7 @@
         return cellvalue.substr(0,16);
     }
     function getUserTransactionHistory(){
-       $.get('/services/user/getTransactionHistory',function(data){
+       $.get('/services/user/getPledgeHistory',function(data){
            if(!data || data == "failed") {
                //get history failed
                return;
