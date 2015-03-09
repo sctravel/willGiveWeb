@@ -16,7 +16,7 @@
          if(activeMenu == "Enquiry") menuClass[2] = "active";
          if(activeMenu == "SignIn") menuClass[3] = "active";
          if(activeMenu == "SignUp") menuClass[4] = "active";
-		 if(activeMenu == "CharitySignIn") menuClass[5] = "active";
+		 if(activeMenu == "MyAccount") menuClass[5] = "active";
 
         %>
         <div class="collapse navbar-collapse" id="exampleNavbarCollapse">
@@ -35,9 +35,8 @@
             </form>
             <% if ( 'undefined' == typeof user || user == null ) { %>
             <ul class="nav navbar-nav navbar-right" style="padding-right:15px;">
-                <li class="<%=menuClass[3]%>"><a href="/login/signin">SignIn</a></li>
-                <li class="<%=menuClass[4]%>"><a href="/login/signup">SignUp</a></li>
-                <li class="<%=menuClass[5]%>"><a href="/recipient/login">Chairty SignIn</a></li>
+                <li class="<%=menuClass[3]%>"><a href="/login/signin">Log In</a></li>
+                <li class="<%=menuClass[4]%>"><a href="/login/signup">Join</a></li>
             </ul>
             <% } else if( 'recipient' != user.provider ){ %>
             <ul class="nav navbar-nav navbar-right">
@@ -61,13 +60,14 @@
             </ul>
             <% } else {%>
             <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
+                <li class="dropdown" class="<%=menuClass[5]%>">
                     <a href="" data-toggle="dropdown" class="dropdown-toggle">
-                        <%=user.firstName%> (Chairty)
+                        My Account
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="/charity/<%=user.userId%>">My Page</a></li>
+                        <li><a href="/charity/<%=user.userId%>">My Profile</a></li>
+                        <li><a href="/charity/<%=user.userId%>">Reports</a></li>
                         <li class="divider"></li>
                         <li><a href="/recipient/logout">Logout</a></li>
                     </ul>
