@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WillGive</title>
+<style>
+A:link {text-decoration: none;} A:visited {text-decoration: none;}
+A:active {text-decoration: none;}
+TR.title
+{
+    border:1 solid black;
+    border-collapse:"collapse";  
+    text-align:center;
+    font-size:11;
+    font-weight:bold;
+    font-family:arial;
+    background-color:#c8c8c8;
+}
+
+TR.normal{
+    vertical-align:top;   
+    color:black;
+    border: 1px solid gray;
+    border-spacing: 20px;
+    font-size:11;
+    font-weight:normal;
+    font-family:arial
+}
+
+TR.msg{
+    vertical-align:top;   
+    color:black;
+    border: 1px solid gray;
+    border-spacing: 20px;
+    font-size:18;
+    font-weight:normal;
+    font-family:arial
+}
+
+A.normal, INPUT.normal, OPTION.normal{    	
+	font-size:11;
+	font-weight:normal;
+	font-family:arial
+}
+
+</style>
+</head>
+<body>
+<% if ( 'undefined' == typeof user || user == null || 'recipient' == user.provider || 'admin@admin.com' != user.email) {%>
+<% } else { %>
+<UL style='font-size:14px;'>
+<LI><a href='/tools/toolContactUs'>Contact us tool</a>
+<LI><a href='/tools/toolSQL'>SQL tool</a>
+</UL>
+<%}%>
+</body>
+</html>
