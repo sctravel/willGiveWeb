@@ -61,6 +61,7 @@
                             <th>Amount($)</th>
                             <th>Contribute To</th>
                             <th>Status</th>
+                            <th>Approve</th>
                         </tr>
                         </thead>
                         <tbody id="transactionHistoryTableBody">
@@ -79,6 +80,9 @@
 
     </div><!--/.row-->
 </div><!--/.container-->
+
+
+
 <%include ../layout/footer.ejs%>
 <script src="/jquery/dist/jquery.min.js"></script>
 <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -87,12 +91,57 @@
 <script>
     var transactionHistory=[];
 
+
+    function approvePledge(pb) {
+
+        var queryPledgeByConfirmationCode = '/payment/stripePayment/queryPledge/';
+
+        alert("confirmationId: "+pb.id);//
+
+        $.get(queryPledgeByConfirmationCode, { confirmationCode: pb.id}, function (result) {
+            console.dir("queryPledgeByConfirmationCode: "+ pb.id);
+            if (!result || result == "failed") {
+                console.dir("failed to get results");
+                //update transaction histroy and mark status as complete
+                refreshPage();
+                return;
+            }
+            //alert("currentResults:"+ result);
+            stripeCustomerId = result.stripeCustomerId;
+            amount =result.amount;
+            receipientId =result.receipientId;
+
+            jQuery("#amount").val(amount);
+            jQuery("#stripeCustomerId").val(stripeCustomerId);
+            jQuery("#receipientId").val(receipientId);
+            jQuery("#isPledge").val(true);
+
+            console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
+
+            console.dir(" isPledge .val " +  jQuery("#isPledge").val());
+
+            //if stripCustomerId not null, then post to the payment page automatically
+            if ($.trim(stripeCustomerId)) {
+                jQuery("#stripeCustomerId").val(stripeCustomerId);
+
+                $('form').submit();
+
+                console.dir("payment successfully made ");
+                refreshPage();
+
+
+                return;
+            }
+        });
+    }
+
     var defaultHTML =
         '<tr> <td> {Id} </td> '+
         ' <td> {Date} </td> ' +
         ' <td class="text-center"> {Amount} </td> ' +
         ' <td> {Recipient} </td> ' +
         ' <td> {Status} </td> ' +
+        ' <td> <button type="button" id={ConfirmationId} class=\'donateButton\' onclick=\'approvePledge(this);\'>Approve</button></td>'
         ' </tr> ';
 
     function replaceHtml(transaction){
@@ -100,7 +149,7 @@
                 .replace("{Date}",dateTimeDisplayFormatter(transaction.dateTime))
                 .replace("{Amount}",transaction.amount)
                 .replace("{Recipient}",'<a href="/charity/'+transaction.recipientId+'" style="color: #202090">'+transaction.name+'</a>')
-                .replace("{Status}",transaction.status)
+                .replace("{Status}",transaction.status).replace("{ConfirmationId}",transaction.confirmationCode)
                 ;
 
     }
@@ -127,6 +176,9 @@
             },
             cssStyle: 'light-theme'
         });
+
+
+
         function initPage() {
             resultConainer.empty();
             for(var i=0;i<itemsOnPage && i< transactionHistory.length;++i) {
@@ -134,6 +186,31 @@
             }
         }
     }
+
+
+
+</script>
+
+    <form id="form" action="/payment/stripePayment" method="POST" style="display:none;">
+        <input id="amount"  name="amount" value="0">
+        <input id="notes"  name="notes" value="0">
+        <input id="receipientId"  name="receipientId" value="0">
+        <input id="stripeCustomerId"  name="stripeCustomerId" value="0">
+        <input id= stripeTokenInput type=hidden name=stripeToken />
+        <input id="isPledge"  name="isPledge" value=false>
+
+    </form>
+
+
+
+
+<script>
+
+    function refreshPage(){
+
+
+    }
+
     function displayNoResults(){
         //resultConainer.empty();
         $('#botPage').empty();
@@ -147,7 +224,7 @@
         return cellvalue.substr(0,16);
     }
     function getUserTransactionHistory(){
-       $.get('/services/user/getTransactionHistory',function(data){
+       $.get('/services/user/getPledgeHistory',function(data){
            if(!data || data == "failed") {
                //get history failed
                return;

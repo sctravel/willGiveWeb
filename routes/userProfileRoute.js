@@ -36,6 +36,33 @@ module.exports = function(app) {
     app.get('/users/pledge', isLoggedIn, function(req,res){
         res.render('login/userPledges', {user: req.user});
     })
+	
+	// Tools
+    app.get('/tools/adminTools', isLoggedIn, function(req,res){
+        res.render('login/adminTools', {user: req.user});
+    })
+    app.get('/tools/toolContactUs', isLoggedIn, function(req,res){
+        res.render('login/toolContactUs', {user: req.user});
+    })
+    app.get('/tools/toolSQL', isLoggedIn, function(req,res){
+        res.render('login/toolSQL', {user: req.user});
+    })
+	
+    /////////////////////////////////////
+    // Tool Services
+    /////////////////////////////////////
+    app.post('/services/tools/query', isLoggedIn, function(req,res){
+        var query = req.body.query;
+		var maxRecords = req.body.maxRecords;
+        userLogin.toolRunQuery(query, maxRecords, function(err,results){
+            if(err){
+                logger.error("Route error logging:" + err);
+                res.send(err.toString());
+                return;
+            }
+            res.send(results);
+        })
+    })
     /////////////////////////////////////
     // User Account related Services
     /////////////////////////////////////
@@ -43,13 +70,12 @@ module.exports = function(app) {
         var updatedData = req.body.updatedData;
         userLogin.updatePasswordForUserAccount(updatedData, req.user.userId,function(err,results){
             if(err){
-                logger.error(err);
+                logger.error("Route error logging:" + err);
                 res.send(err.toString());
                 return;
             }
             res.send(results);
         })
-
     })
 
     app.post('/services/user/updateBasicInfo', isLoggedIn, function(req,res){
@@ -74,6 +100,18 @@ module.exports = function(app) {
             }
         })
 
+    })
+
+    app.get('/services/user/getPledgeHistory', isLoggedIn, function(req, res){
+        userLogin.getUserPledgeHistory(req.user.userId, function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            logger.debug(results);
+            res.send(results);
+        })
     })
 
 
