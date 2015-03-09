@@ -91,13 +91,54 @@
 <script>
     var transactionHistory=[];
 
+
+    function approvePledge(pb) {
+
+        var queryPledgeByConfirmationCode = '/payment/stripePayment/queryPledge/';
+
+        alert("confirmationId: "+pb.id);//
+
+        $.get(queryPledgeByConfirmationCode, { confirmationCode: pb.id}, function (result) {
+            console.dir("queryPledgeByConfirmationCode: "+ pb.id);
+            if (!result || result == "failed") {
+                console.dir("failed to get results");
+                //update transaction histroy and mark status as complete
+                refreshPage();
+                return;
+            }
+            //alert("currentResults:"+ result);
+            stripeCustomerId = result[0];
+            amount =result[1];
+            receipientId =result[2];
+
+            jQuery("#amount").val(amount);
+            jQuery("#stripeCustomerId").val(stripeCustomerId);
+            jQuery("#receipientId").val(receipientId);
+
+            console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
+
+            //if stripCustomerId not null, then post to the payment page automatically
+            if ($.trim(stripeCustomerId)) {
+                jQuery("#stripeCustomerId").val(stripeCustomerId);
+
+                $('form').submit();
+
+                console.dir("payment successfully made ");
+                refreshPage();
+
+
+                return;
+            }
+        });
+    }
+
     var defaultHTML =
         '<tr> <td> {Id} </td> '+
         ' <td> {Date} </td> ' +
         ' <td class="text-center"> {Amount} </td> ' +
         ' <td> {Recipient} </td> ' +
         ' <td> {Status} </td> ' +
-        ' <td> <button type="button" id={ConfirmationId} onclick=\'approvePledge(this);\'>Approve</button></td>'
+        ' <td> <button type="button" id={ConfirmationId} class=\'donateButton\' onclick=\'approvePledge(this);\'>Approve</button></td>'
         ' </tr> ';
 
     function replaceHtml(transaction){
@@ -132,6 +173,9 @@
             },
             cssStyle: 'light-theme'
         });
+
+
+
         function initPage() {
             resultConainer.empty();
             for(var i=0;i<itemsOnPage && i< transactionHistory.length;++i) {
@@ -158,50 +202,6 @@
     function refreshPage(){
 
 
-    }
-
-    function approvePledge(pb) {
-
-        var queryPledgeByConfirmationCode = '/payment/stripePayment/queryPledge/';
-
-        //alert(pb);
-
-        $.get(queryPledgeByConfirmationCode, { contributionConfirmationCode: "123"}, function (result) {
-            console.dir("queryPledgeByConfirmationCode: ");
-            if (!result || result == "failed") {
-                console.dir("failed to get results");
-                //update transaction histroy and mark status as complete
-                refreshPage();
-                return;
-            }
-            //alert("currentResults:"+ result);
-            stripeCustomerId = result[0];
-            amount =result[1];
-            receipientId =result[2];
-
-            jQuery("#amount").val(amount);
-            jQuery("#stripeCustomerId").val(stripeCustomerId);
-            jQuery("#receipientId").val(receipientId);
-
-            console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
-
-            //if stripCustomerId not null, then post to the payment page automatically
-            if ($.trim(stripeCustomerId)) {
-                jQuery("#stripeCustomerId").val(stripeCustomerId);
-
-                $('form').submit();
-
-                console.dir("payment successfully made ");
-                refreshPage();
-
-
-                return;
-            }
-
-
-
-
-        });
     }
 
     function displayNoResults(){

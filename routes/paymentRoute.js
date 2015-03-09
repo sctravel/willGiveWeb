@@ -71,7 +71,9 @@ module.exports = function(app) {
     });
 
 
-    app.post('/payment/stripePayment/queryPledge/', function (req, res) {
+    app.get('/payment/stripePayment/queryPledge/', function (req, res) {
+
+        var confirmationCode = req.query.confirmationCode;
 
         billingUtil.queryExistingPledgeByConfirmationCode(confirmationCode, function (err, PledgeInfo) {
             if (err) {
