@@ -70,6 +70,22 @@ module.exports = function(app) {
         })
     });
 
+
+    app.post('/payment/stripePayment/queryPledge/', function (req, res) {
+
+        billingUtil.queryExistingPledgeByConfirmationCode(confirmationCode, function (err, PledgeInfo) {
+            if (err) {
+                console.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            console.dir("query results: " + PledgeInfo);
+            res.send(PledgeInfo);
+        });
+
+
+    });
+
     app.post('/payment/stripePayment', function (req, res) {
 
         console.dir("UserId in passport: " + req.user.userId);
