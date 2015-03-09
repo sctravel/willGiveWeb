@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WillGive</title>
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/jquery-validation/dist/jquery.validate.js"></script>
+<script src="/assets/js/jquery.simplePagination.js"></script>
+<style>
+A:link {text-decoration: none;} A:visited {text-decoration: none;}
+A:active {text-decoration: none;}
+TD.title
+{
+    border:1 solid black;
+    border-collapse:"collapse";  
+    text-align:center;
+    font-size:11;
+    font-weight:bold;
+    font-family:arial;
+    background-color:#c8c8c8;
+}
+
+TD.normal{
+    vertical-align:top;   
+    color:black;
+    border: 1px solid gray;
+    border-spacing: 20px;
+    font-size:11;
+    font-weight:normal;
+    font-family:arial
+}
+
+TR.msg{
+    vertical-align:top;   
+    color:black;
+    border: 1px solid gray;
+    border-spacing: 20px;
+    font-size:18;
+    font-weight:normal;
+    font-family:arial
+}
+
+A.normal, INPUT.normal, OPTION.normal{    	
+	font-size:11;
+	font-weight:normal;
+	font-family:arial
+}
+
+</style>
+</head>
+<body>
+<% if ( 'undefined' == typeof user || user == null || 'recipient' == user.provider || 'admin@admin.com' != user.email) {%>
+<% } else { %>
+<div style="padding:50px">
+<a href='/tools/adminTools'> Back to admin tools page </a>
+<P>To get the list of tables, run "show tables". 
+<P>To get the table schema, run "describe [table]".
+<h2>Enter SQL below:</h2>
+<P>
+<textarea id='query' rows=6 cols=60></textarea>
+<P>Max Displayed Records: <input type=text  id='maxRecords' value='100'><br>
+<P><button id="Run" type="button">Run</button>
+<P><div id="dbResult">&nbsp;</div>
+<P><div id="dbmsg">&nbsp;</div>
+</div>
+<%}%>
+<script>
+    $('#Run').click(function() {
+	   $('#dbResult').empty();
+	   $('#dbmsg').empty();
+	   var query = $('#query').val().trim();
+	   if (query.toLowerCase().indexOf("delete") != -1 || query.toLowerCase().indexOf("update") != -1)
+		if (query.toLowerCase().indexOf("where") == -1)
+		{
+			$('#dbmsg').append("<font color=red>Delete or Update statements must have where clause.</font>");
+			return;
+		}
+	   if (query == "") return;
+	   var maxRecords = 100;	   
+	   if ($('#maxRecords').val().trim() != "") maxRecords = $('#maxRecords').val();	   
+       $.post('/services/tools/query', {query: query, maxRecords: maxRecords}, function(data){
+           if(data == null) {
+               return;
+           }
+		   if ("string" == typeof data)
+			  $('#dbmsg').append(data);
+		   else if ("undefined" == typeof data.length)
+		   {
+			if ("undefined" != typeof data.message)
+				$('#dbmsg').append(data.message);
+		   }
+		   else{
+		    var result = "";
+		    result += "<table border=2 cellpadding=2 cellspacing=0>";
+			if (data.length == 0)
+			{
+				result += "No results are found.</table>"
+				$('#dbResult').append(result);
+				return;
+			}
+			result += "<tr>";
+			for(var propertyName in data[0]) {
+					result += "<td class=title>" + propertyName + "</td>";
+			}
+			result += "</tr>";
+			if (maxRecords > data.length)
+				maxRecords = data.length  
+			for (var i=0; i < maxRecords; i ++)
+			{
+				result += "<tr>";
+				for(var propertyName in data[i]) {
+					result += "<td  class=normal>" + data[i][propertyName] + "</td>";
+				}
+				result += "</tr>";
+			}
+			result += "</table>";
+			$('#dbResult').append(result);
+		   }
+		});
+	})
+</script>
+</body>
+</html>

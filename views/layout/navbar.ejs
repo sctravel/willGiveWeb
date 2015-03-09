@@ -39,7 +39,7 @@
                 <li class="<%=menuClass[4]%>"><a href="/login/signup">Join</a></li>
             </ul>
             <% } else if( 'recipient' != user.provider ){ %>
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav navbar-right" style="padding-right:15px;">
                 <li class="dropdown">
                     <a href="" data-toggle="dropdown" class="dropdown-toggle">
                         <img src="<%=user.imageIconUrl%>" height="25" width="25"/>
@@ -47,6 +47,9 @@
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
+					  <% if ( 'admin@admin.com' == user.email) { %>
+                        <li><a href="/tools/adminTools" target='_blank'>Admin Tools</a></li>
+					  <% } %>
                         <li><a href="/users/account">Edit Profile</a></li>
                         <li><a href="/users/settings">Settings</a></li>
                         <li><a href="/users/paymentMethod">Payment Method</a></li>
@@ -59,7 +62,7 @@
                 </li>
             </ul>
             <% } else {%>
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav navbar-right" style="padding-right:15px;">
                 <li class="dropdown" class="<%=menuClass[5]%>">
                     <a href="" data-toggle="dropdown" class="dropdown-toggle">
                         My Account
