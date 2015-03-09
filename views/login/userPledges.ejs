@@ -107,15 +107,18 @@
                 return;
             }
             //alert("currentResults:"+ result);
-            stripeCustomerId = result[0];
-            amount =result[1];
-            receipientId =result[2];
+            stripeCustomerId = result.stripeCustomerId;
+            amount =result.amount;
+            receipientId =result.receipientId;
 
             jQuery("#amount").val(amount);
             jQuery("#stripeCustomerId").val(stripeCustomerId);
             jQuery("#receipientId").val(receipientId);
+            jQuery("#isPledge").val(true);
 
             console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
+
+            console.dir(" isPledge .val " +  jQuery("#isPledge").val());
 
             //if stripCustomerId not null, then post to the payment page automatically
             if ($.trim(stripeCustomerId)) {
@@ -194,8 +197,12 @@
         <input id="receipientId"  name="receipientId" value="0">
         <input id="stripeCustomerId"  name="stripeCustomerId" value="0">
         <input id= stripeTokenInput type=hidden name=stripeToken />
+        <input id="isPledge"  name="isPledge" value=false>
 
     </form>
+
+
+
 
 <script>
 
