@@ -401,11 +401,19 @@
                 ' </table> </div> </div> <hr/>'
 
         function replaceHtml(transaction) {
-            return transactionHtml.replace('{imageUrl}', transaction.imageIconUrl)
+            var result;
+            if(transaction.transactionPublic=='N') {
+                result = transactionHtml.replace('{imageUrl}', '/images/blank_icon.jpg')
+                        .replace('{amount}', transaction.amount)
+                        .replace('{userName}', 'Anonymous')
+                        .replace('{date}', transaction.datetime.substring(0,10));
+            } else {
+                result = transactionHtml.replace('{imageUrl}', transaction.imageIconUrl)
                     .replace('{amount}', transaction.amount)
                     .replace('{userName}', transaction.firstName+' '+transaction.lastName)
                     .replace('{date}', transaction.datetime.substring(0,10));
-
+            }
+            return result;
         }
         function getTransactionsByCharityId() {
             $.get('/services/transactionsByCharityId/' + recipientId,function(data) {
