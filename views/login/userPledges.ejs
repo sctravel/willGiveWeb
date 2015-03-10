@@ -115,6 +115,7 @@
             jQuery("#stripeCustomerId").val(stripeCustomerId);
             jQuery("#receipientId").val(receipientId);
             jQuery("#isPledge").val(true);
+            jQuery("#confirmationCode").val(pb.id);
 
             console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
 
@@ -132,6 +133,8 @@
 
                 return;
             }
+
+            refreshPage();
         });
     }
 
@@ -197,6 +200,7 @@
         <input id="receipientId"  name="receipientId" value="0">
         <input id="stripeCustomerId"  name="stripeCustomerId" value="0">
         <input id= stripeTokenInput type=hidden name=stripeToken />
+        <input id= confirmationCode type=hidden name=confirmationCode />
         <input id="isPledge"  name="isPledge" value=false>
 
     </form>
@@ -207,8 +211,7 @@
 <script>
 
     function refreshPage(){
-
-
+        location.reload();
     }
 
     function displayNoResults(){

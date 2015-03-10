@@ -238,6 +238,9 @@ module.exports = function(app) {
 
         var stripeCustomerId = req.body.stripeCustomerId;
 
+        var confirmationCode  = req.body.confirmationCode;
+        console.dir("confirmationCode:" + confirmationCode);
+
         console.dir("UserId in passport: " + req.user.userId);
         userId = req.user.userId;
 
@@ -287,6 +290,34 @@ module.exports = function(app) {
                         });
                     });
                 });
+            }
+            else {
+
+                billingUtil.updateTransactionHistroy(confirmationCode, function (err, results) {
+                    if (err) {
+                        console.error(err);
+                        //res.send(constants.services.CALLBACK_FAILED);
+                        return;
+                    }
+                    //res.send(constants.services.CALLBACK_SUCCESS);
+
+                        var mailOptions = {
+                            from: "WillGive <willgiveplatform@gmail.com>", // sender address
+                            to: req.user.email, // list of receivers
+                            subject: "Thanks for the donation for WillGive", // Subject line
+                            html: constants.emails.donationEmail.replace('{FirstName}', req.user.firstName).replace('{ConfirmationCode}', confirmationCode) // html body
+                        };
+                        emailUtil.sendEmail(mailOptions, function (err, results) {
+                            if (err) {
+                                logger.error(err);
+                            }
+                            logger.info("successfully sending emails");
+                            return;
+
+                    });
+                });
+
+
             }
 
 
