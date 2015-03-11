@@ -43,8 +43,6 @@
 			<span> City: <select id="city"></select> </span>
 			</div>
             <div id="resultsContainer" class="">
-
-
             </div>
             <div id="botPage" style="float: left"></div>
             <div id="noresult" style="display: none" >
@@ -68,7 +66,7 @@
                return;
            }
            if(data.length>0) {
-               console.dir(data);
+
 			   $('#noresult').hide(); 
                initResultPage(data);
            }
