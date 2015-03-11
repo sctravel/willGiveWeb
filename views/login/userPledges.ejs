@@ -101,7 +101,7 @@
             if (!result || result == "failed") {
                 console.dir("failed to get results");
                 //update transaction histroy and mark status as complete
-                refreshPage();
+                //freshPage();
                 return;
             }
             //alert("currentResults:"+ result);
@@ -115,6 +115,9 @@
             jQuery("#isPledge").val(true);
             jQuery("#confirmationCode").val(pb.id);
 
+            alert("hiding: " + pb.id+"tr");
+            jQuery(pb.id+"tr").hide();
+
             console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
 
             console.dir(" isPledge .val " +  jQuery("#isPledge").val());
@@ -126,18 +129,20 @@
                 $('form').submit();
 
                 console.dir("payment successfully made ");
-                refreshPage();
+                //freshPage();
+
+                jQuery(pb.id+"tr").hide();
 
 
                 return;
             }
 
-            refreshPage();
+            //refeshPage();
         });
     }
 
     var defaultHTML =
-        '<tr> <td> {Id} </td> '+
+        '<tr id={ConfirmationIdTr}> <td > {Id} </td> '+
         ' <td> {Date} </td> ' +
         ' <td class="text-center"> {Amount} </td> ' +
         ' <td> {Recipient} </td> ' +
@@ -150,7 +155,7 @@
                 .replace("{Date}",dateTimeDisplayFormatter(transaction.dateTime))
                 .replace("{Amount}",transaction.amount)
                 .replace("{Recipient}",'<a href="/charity/'+transaction.recipientId+'" style="color: #202090">'+transaction.name+'</a>')
-                .replace("{Status}",transaction.status).replace("{ConfirmationId}",transaction.confirmationCode)
+                .replace("{Status}",transaction.status).replace("{ConfirmationId}",transaction.confirmationCode).replace("{ConfirmationIdTr}",transaction.confirmationCode+"tr");
                 ;
 
     }
@@ -224,7 +229,7 @@
     function dateTimeDisplayFormatter( cellvalue, options, rowObject ){
         return cellvalue.substr(0,16);
     }
-    function getUserTransactionHistory(){
+    function getUserPlegeHistory(){
        $.get('/services/user/getPledgeHistory',function(data){
            if(!data || data == "failed") {
                //get history failed
@@ -242,8 +247,9 @@
     }
 
    $( document).ready(function(){
-       getUserTransactionHistory();
-   })
+       getUserPlegeHistory();
+   }
+   )
 </script>
 </body>
 </html>
