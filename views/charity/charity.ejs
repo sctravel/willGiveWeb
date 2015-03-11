@@ -7,8 +7,13 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
       <!-- attach CSS styles -->
       <%activeMenu = "Charities"%>
+
       <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
       <link href="/assets/css/style.css" rel="stylesheet" />
+      <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+
+      <link rel="stylesheet" href="/assets/css/simplePagination.css" >
+
       <style>
           body{
               background-color: lightgray;
@@ -45,6 +50,7 @@
       <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
       <script src="https://checkout.stripe.com/v2/checkout.js"></script>
       <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places,geometry"></script>
+      <script src="/assets/js/jquery.simplePagination.js"></script>
   </head>
 
   <body>
@@ -227,7 +233,8 @@
                     <h3>Contributions</h3>
                     <div id="transactionHistory">
 
-                    </div>
+                    </div><hr/>
+                    <div id="botPage" style="float: left"></div>
                     <hr/>
 
                 </div>
@@ -450,12 +457,39 @@
                     //TODO display failure message
                     return;
                 }
-                console.dir(data);
+
                 transactions=data;
+                 results = data;
                 var resultContainer = $('#transactionHistory');
-                //show the transactions;
-                for(var i=0; i< transactions.length; ++i) {
-                    resultContainer.append(replaceHtml(transactions[i]));
+
+                var itemsOnPage = 10;
+
+                var botpage = $('#botpage');
+                $('#botPage').empty();
+
+                var itemsOnPage = 10;
+
+                $('#botPage').pagination({
+                    items: results.length,
+                    itemsOnPage: itemsOnPage,
+                    onInit: initPage,
+                    currentPage: 0,
+                    onPageClick: function(){
+                        var page_index = $("#botPage").pagination('getCurrentPage') -1;
+                        resultContainer.empty();
+                        for(var i=page_index*itemsOnPage;i<(page_index+1)*itemsOnPage;++i) {
+                            resultContainer.append(replaceHtml(results[i]));
+                        }
+                        //$("#page").pagination('drawPage',$("#botPage").pagination('getCurrentPage'));
+
+                    },
+                    cssStyle: 'light-theme'
+                });
+                function initPage() {
+                    resultContainer.empty();
+                    for(var i=0;i<itemsOnPage && i< results.length;++i) {
+                        resultContainer.append(replaceHtml(results[i]));
+                    }
                 }
                 resultContainer.append('<hr/> <hr/><div class="" style="padding-top: 1%"> Total '+ transactions.length +' contributions </div>');
             });
