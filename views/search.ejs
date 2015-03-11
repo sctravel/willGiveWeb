@@ -99,15 +99,15 @@
                         jQuery("#listResult").jqGrid({
                             datatype: "local",
                             data: transactions,
-                            colNames: ['transactionId', 'amount', 'firstName','lastName','recipientId', 'datetime', 'notes'],
+                            colNames: ['Transaction ID', 'Amount', 'First Name','Last Name','Recipient ID', 'Date Time', 'Notes'],
                             colModel: [
-                                {name: 'transactionId', index: 'transactionId', align: "center", editable: true, sortable: true},
-                                {name: 'amount', index: 'amount', align: "center", editable: true, sortable: true},
-                                {name: 'First Name', index: 'firstName', align: "center", editable: true, sortable: true},
-                                {name: 'Last Name', index: 'lastName', align: "center", editable: true, sortable: true},
-                                {name: 'recipientId', index: 'recipientId', align: "center", editable: true, sortable: true},
-                                {name: 'datetime', index: 'datetime', align: "center", editable: true, sortable: true},
-                                {name: 'notes', index: 'notes', align: "center", editable: true, sortable: true}
+                                {name: 'transactionId', index: 'Transaction ID', align: "center", editable: true, sortable: true},
+                                {name: 'amount', index: 'Amount', align: "center", editable: true, sortable: true},
+                                {name: 'firstName', index: 'First Name', align: "center", editable: true, sortable: true},
+                                {name: 'lastName', index: 'Last Name', align: "center", editable: true, sortable: true},
+                                {name: 'recipientId', index: 'Recipient ID', align: "center", editable: true, sortable: true},
+                                {name: 'dateTime', index: 'Date Time', align: "center", editable: true, sortable: true},
+                                {name: 'notes', index: 'Notes', align: "center", editable: true, sortable: true}
                             ],
                             rowNum: 10,
                             rowList: [10, 20, 30],
