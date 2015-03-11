@@ -13,15 +13,14 @@ module.exports = function(app) {
     var logger = require('../app').logger;
     var isLoggedInAsRecipient = require('../app').isLoggedInAsRecipient;
 
-    app.get('/charity', function (req,res){
-        req.session.lastPage = '/charity/';
-        res.render('charity/charity',{user: req.user});
-    });
 
     app.get('/services/charityByEIN/:id', function(req, res) {
         var id = req.params.id;
-
-        charityOps.charityByEIN (id, function(err, results){
+        var userId = null;
+        if(req.user) {
+            userId = req.user.userId;
+        }
+        charityOps.charityByEIN (id, userId, function(err, results){
             if(err) {
                 logger.error(err);
                 res.send(constants.services.CALLBACK_FAILED);
@@ -44,21 +43,26 @@ module.exports = function(app) {
         if (caller != null && caller == "app")
         {
 			   var rid = req.query.r;
+               var userId = null;
+               if(req.user) {
+                   userId = req.user.userId;
+               }
 			   if ( 'undefined' == typeof rid || rid == null )
 			   {
-				charityOps.charityByEIN (id, function(err, results){
-					if(err) {
-						logger.error(err);
-						res.send(constants.services.CALLBACK_FAILED);
-						return;
-					}
-					verifyImagePath([results]);
-					logger.debug(results);	
-					res.json(results);
-				});
-			  }else
-			  {
-				charityOps.charityById (rid, function(err, results){
+
+                    charityOps.charityByEIN (id, userId, function(err, results){
+                        if(err) {
+                            logger.error(err);
+                            res.send(constants.services.CALLBACK_FAILED);
+                            return;
+                        }
+                        verifyImagePath([results]);
+                        logger.debug(results);
+                        res.json(results);
+                    });
+			   }else
+			   {
+				charityOps.charityById (rid, userId, function(err, results){
 					if(err) {
 						logger.error(err);
 						res.send(constants.services.CALLBACK_FAILED);
@@ -128,7 +132,11 @@ module.exports = function(app) {
     app.get('/services/charityById/:id', function(req,res){
 
         var recipientId = req.params.id;
-        charityOps.charityById(recipientId, function(err, results){
+        var userId = null;
+        if(req.user) {
+            userId = req.user.userId;
+        }
+        charityOps.charityById(recipientId, userId, function(err, results){
             if(err) {
                 logger.error(err);
                 res.send(err.toString());
@@ -150,7 +158,7 @@ module.exports = function(app) {
                 return;
             }
             logger.debug(results);
-            verifyImagePath(results);
+            //verifyImagePath(results);
             res.json(results);
         })
     });

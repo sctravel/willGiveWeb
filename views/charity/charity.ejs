@@ -115,6 +115,12 @@
                         <a href="https://twitter.com/share" id="twitterShareButton" class="twitter-share-button" data-size="">Tweet</a>
                         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
                     </div>
+
+                    <div id="userFav" class="col-xs-2 pull-right">
+                    </div>
+                    <div class="col-xs-1">
+                        &nbsp;
+                    </div>
                 </div>
                 <!-- left text-->
                 <div id="introduction">
@@ -364,6 +370,23 @@
         var mapPrefix = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD3J5wXDD6SbCrUPZoYHYwOjV3RJE7OaZU&q=';
         var charity = {};
         var transactions=[];
+        var lock = false;
+        function flipFav(rid)
+        {
+            if (lock) return;
+            lock = true;
+            var currentImg = "" + document.getElementById("img" + rid).src;
+            var newValue = "N";
+            if (currentImg.indexOf("fav2") == -1) // No
+            {
+                document.getElementById("img" + rid).src = "/images/fav2.png";
+                newValue = "Y";
+            }else
+                document.getElementById("img" + rid).src = "/images/fav.png";
+            $.get("/services/user/setFavoriteCharity?rid=" + rid + "&value=" + newValue,function(data){});
+            lock = false;
+        }
+
         function getCharityById(){
             $.get('/services/charityById/' + recipientId,function(data) {
                 if(!data || data == "failed") {
@@ -394,6 +417,17 @@
                     $('#facebookPageInfo').attr('href',charity.facebookUrl.trim());
                 }
 
+                <% if ( 'undefined' == typeof user || user.provider=='recipient') { %>
+                ;
+                <% } else { %>
+                    if(charity.isFavored == 'Y')
+                        favIcon = "<a style=\"cursor:hand; cursor:pointer\"  onClick=\"flipFav('" + recipientId + "')\"><img src='/images/fav2.png' id=img" + recipientId +" border=0 width=30 height=27></a>";
+                    else
+                        favIcon = "<a style=\"cursor:hand; cursor:pointer\" onClick=\"flipFav('" + recipientId + "')\"><img src='/images/fav.png' id=img" + recipientId +" border=0 width=30 height=27></a>";
+                    $('#userFav').append(favIcon)
+                <%}%>
+
+                if(charity.isFavored)
                 $('#qrCode').attr('src','/resources/recipients/qrCode/QR_'+recipientId+'.png');
             })
         }
@@ -409,17 +443,12 @@
 
         function replaceHtml(transaction) {
             var result;
-            if(transaction.transactionPublic=='N') {
-                result = transactionHtml.replace('{imageUrl}', '/images/blank_icon.jpg')
-                        .replace('{amount}', transaction.amount)
-                        .replace('{userName}', 'Anonymous')
-                        .replace('{date}', transaction.datetime.substring(0,10));
-            } else {
+
                 result = transactionHtml.replace('{imageUrl}', transaction.imageIconUrl)
                     .replace('{amount}', transaction.amount)
                     .replace('{userName}', transaction.firstName+' '+transaction.lastName)
                     .replace('{date}', transaction.datetime.substring(0,10));
-            }
+
             return result;
         }
         function getTransactionsByCharityId() {

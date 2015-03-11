@@ -181,8 +181,8 @@ module.exports = function(app) {
                 }
 
                 console.dir("recipientId: " + recipientId);
-                //"Stripe_RecurrentPayment" + new Date().getTime(), amount, userId, recipientId, "Processed", notes, stripeToken,
-                billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, userId, recipientId, "Processed", notes,stripeToken, function (err, results) {
+                //"Stripe_RecurrentPayment" + new Date().getTime(), amount, userId, recipientId, constants.paymentStatus.PAID, notes, stripeToken,
+                billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, userId, recipientId, constants.paymentStatus.PAID, notes,stripeToken, function (err, results) {
                     if (err) {
                         console.error(err);
                         //res.send(constants.services.CALLBACK_FAILED);
@@ -263,7 +263,7 @@ module.exports = function(app) {
             var newTransactionId="Stripe_RecurrentPayment" + new Date().getTime() ;
 
             if(isPledge == undefined || isPledge== null|| !isPledge) {
-                billingUtil.insertTransactionHistroy(newTransactionId, amount, userId, recipientId, "Processed", notes, stripeToken, function (err, results) {
+                billingUtil.insertTransactionHistroy(newTransactionId, amount, userId, recipientId, constants.paymentStatus.PAID, notes, stripeToken, function (err, results) {
                     if (err) {
                         console.error(err);
                         //res.send(constants.services.CALLBACK_FAILED);

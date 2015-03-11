@@ -78,6 +78,27 @@ module.exports = function(app) {
         })
     })
 
+    app.post('/services/user/updateEmail', isLoggedIn, function(req,res){
+        var updatedData = req.body.updatedData;
+        userLogin.updateEmailForUserAccount(updatedData, req.user.userId,function(err,results){
+            if(err){
+                logger.error("Route error logging:" + err);
+                res.send(err.toString());
+                return;
+            } else {
+                var user = req.user;
+                user.email = updatedData.newEmail;
+
+                req.logIn(user, function(error) {
+                    if (error) {
+                        logger.warn('after updating email info login failed');
+                        res.send("Successfully updated your email. Please login again.");
+                    }
+                });
+                res.send(constants.services.CALLBACK_SUCCESS);
+            }
+        })
+    })
     app.post('/services/user/updateBasicInfo', isLoggedIn, function(req,res){
         var basicInfo = req.body.updatedData;
         logger.info('calling /services/user/updateBasicInfo');
