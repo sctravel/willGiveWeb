@@ -66,8 +66,13 @@ module.exports = function(app) {
     /////////////////////////////////////
     // User Account related Services
     /////////////////////////////////////
-    app.post('/services/user/updatePassword', isLoggedIn, function(req,res){
+    app.post('/services/user/updatePassword', isLoggedIn, function(req, res){
         var updatedData = req.body.updatedData;
+        //only willgive user can update password
+        if(req.user.provider != constants.login.LOGIN_PROVIDER.WILLGIVE) {
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
         userLogin.updatePasswordForUserAccount(updatedData, req.user.userId,function(err,results){
             if(err){
                 logger.error("Route error logging:" + err);
@@ -80,6 +85,11 @@ module.exports = function(app) {
 
     app.post('/services/user/updateEmail', isLoggedIn, function(req,res){
         var updatedData = req.body.updatedData;
+        //only willgive user can update password
+        if(req.user.provider != constants.login.LOGIN_PROVIDER.WILLGIVE) {
+            res.send(constants.services.CALLBACK_FAILED);
+            return;
+        }
         userLogin.updateEmailForUserAccount(updatedData, req.user.userId,function(err,results){
             if(err){
                 logger.error("Route error logging:" + err);
