@@ -94,17 +94,15 @@
 
         var queryPledgeByConfirmationCode = '/payment/stripePayment/queryPledge/';
 
-        alert("confirmationId: "+pb.id);//
+        console.dir("confirmationId: "+pb.id);//
 
         $.get(queryPledgeByConfirmationCode, { confirmationCode: pb.id}, function (result) {
             console.dir("queryPledgeByConfirmationCode: "+ pb.id);
             if (!result || result == "failed") {
                 console.dir("failed to get results");
                 //update transaction histroy and mark status as complete
-                //freshPage();
                 return;
             }
-            //alert("currentResults:"+ result);
             stripeCustomerId = result.stripeCustomerId;
             amount =result.amount;
             receipientId =result.receipientId;
@@ -115,8 +113,10 @@
             jQuery("#isPledge").val(true);
             jQuery("#confirmationCode").val(pb.id);
 
-            alert("hiding: " + pb.id+"tr");
-            jQuery(pb.id+"tr").hide();
+            console.dir("hiding: " + pb.id+"tr");
+            jQuery("#"+pb.id+"tr").hide();
+
+
 
             console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
 
@@ -125,19 +125,10 @@
             //if stripCustomerId not null, then post to the payment page automatically
             if ($.trim(stripeCustomerId)) {
                 jQuery("#stripeCustomerId").val(stripeCustomerId);
-
                 $('form').submit();
-
                 console.dir("payment successfully made ");
-                //freshPage();
-
-                jQuery(pb.id+"tr").hide();
-
-
                 return;
             }
-
-            //refeshPage();
         });
     }
 
