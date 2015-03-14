@@ -54,11 +54,12 @@ module.exports = function(app) {
 
     });
 
-    app.post('/payment/pledge', isLoggedIn, function(req, res) {
+    app.post('/services/payment/pledge', isLoggedIn, function(req, res) {
         var userPledge = {};
         userPledge.amount = req.body.amount;
         userPledge.userId = req.user.userId;
         userPledge.recipientId = req.body.recipientId;
+        userPledge.notes = req.body.notes ? req.body.notes : '';
 
         billingUtil.insertUserPledge(userPledge, function(err, results){
             if(err) {
@@ -262,6 +263,7 @@ module.exports = function(app) {
 
             var newTransactionId="Stripe_RecurrentPayment" + new Date().getTime() ;
 
+            console.error('@@@@@@@isPledge--'+isPledge);
             if(isPledge == undefined || isPledge== null|| !isPledge) {
                 billingUtil.insertTransactionHistroy(newTransactionId, amount, userId, recipientId, constants.paymentStatus.PAID, notes, stripeToken, function (err, results) {
                     if (err) {
@@ -301,18 +303,18 @@ module.exports = function(app) {
                     }
                     //res.send(constants.services.CALLBACK_SUCCESS);
 
-                        var mailOptions = {
-                            from: "WillGive <willgiveplatform@gmail.com>", // sender address
-                            to: req.user.email, // list of receivers
-                            subject: "Thanks for the donation for WillGive", // Subject line
-                            html: constants.emails.donationEmail.replace('{FirstName}', req.user.firstName).replace('{ConfirmationCode}', confirmationCode) // html body
-                        };
-                        emailUtil.sendEmail(mailOptions, function (err, results) {
-                            if (err) {
-                                logger.error(err);
-                            }
-                            logger.info("successfully sending emails");
-                            return;
+                    var mailOptions = {
+                        from: "WillGive <willgiveplatform@gmail.com>", // sender address
+                        to: req.user.email, // list of receivers
+                        subject: "Thanks for the donation for WillGive", // Subject line
+                        html: constants.emails.donationEmail.replace('{FirstName}', req.user.firstName).replace('{ConfirmationCode}', confirmationCode) // html body
+                    };
+                    emailUtil.sendEmail(mailOptions, function (err, results) {
+                        if (err) {
+                            logger.error(err);
+                        }
+                        logger.info("successfully sending emails");
+                        return;
 
                     });
                 });

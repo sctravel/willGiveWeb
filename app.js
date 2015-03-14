@@ -36,7 +36,7 @@ app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.cookieParser('123456xyz'));
-app.use(express.session({cookie: { expires: new Date(new Date().getTime()+constants.SESSION_HOURS*60*60*1000), maxAge : constants.SESSION_HOURS*60*60*1000 }})); // Session expires in SESSION_HOURS hours
+app.use(express.session({cookie: { expires: new Date(new Date().getTime()+constants.login.SESSION_HOURS*60*60*1000)}})); // Session expires in SESSION_HOURS hours
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());

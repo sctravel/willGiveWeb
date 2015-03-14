@@ -108,11 +108,15 @@ module.exports = function(app) {
         }
     ));
 
+    //Mobile facebook login
     app.post('/auth/facebook/token',
         passport.authenticate('facebook-token'),
         function (req, res) {
             console.dir(req);
             if(req.isAuthenticated()) {
+                var hour = 3600000;
+                req.session.cookie.maxAge = constants.login.MOBILE_SESSION_HOURS * hour; //mobile session 1 week;
+
                 console.dir(res);
                 res.send(req.user);
             } else {
@@ -198,6 +202,9 @@ module.exports = function(app) {
             logger.warn("Mobile login now!");
 
             if(req.isAuthenticated()) {
+                var hour = 3600000;
+                req.session.cookie.maxAge = constants.login.MOBILE_SESSION_HOURS * hour; //mobile session 1 week;
+
                 res.send(req.user);
                 console.dir(req.user);
             } else {
@@ -237,6 +244,7 @@ module.exports = function(app) {
 
                 req.body.username = req.body.email;
 
+                //It looks doesn't work. do the login inside mobile app
                 req.login(user, function(err) {
                     if(err) {
                         logger.error(err);
