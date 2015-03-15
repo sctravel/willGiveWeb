@@ -92,7 +92,7 @@
 
     function approvePledge(pb) {
 
-        var queryPledgeByConfirmationCode = '/payment/stripePayment/queryPledge/';
+        var queryPledgeByConfirmationCode = '/service/payment/stripePayment/queryPledge/';
 
         console.dir("confirmationId: "+pb.id);//
 
@@ -188,7 +188,7 @@
 
 </script>
 
-    <form id="form" action="/payment/stripePayment" method="POST" style="display:none;">
+    <form id="form" action="/service/payment/stripePayment" method="POST" style="display:none;">
         <input id="amount"  name="amount" value="0">
         <input id="notes"  name="notes" value="0">
         <input id="receipientId"  name="receipientId" value="0">
