@@ -125,9 +125,23 @@
             //if stripCustomerId not null, then post to the payment page automatically
             if ($.trim(stripeCustomerId)) {
                 jQuery("#stripeCustomerId").val(stripeCustomerId);
-                $('form').submit();
-                console.dir("payment successfully made ");
-                return;
+                /*
+                $('form').submit().done( function(msg) { console.dir("after submission succeed"); } )
+                        .fail( function(xhr, textStatus, errorThrown) {
+                            alert(xhr.responseText);
+                        });*/
+
+                $.post("/service/payment/stripePayment", {amount: jQuery("#amount").val(), notes: jQuery("#notes").val(),
+                            receipientId: jQuery("#receipientId").val(), stripeCustomerId: jQuery("#stripeCustomerId").val(),
+                            stripeTokenInput: jQuery("#stripeTokenInput").val(), isPledge:jQuery("#isPledge").val(),
+                            confirmationCode:jQuery("#confirmationCode").val()
+                        }
+                ) .done( function(msg) { console.dir("after submission succeed"); } )
+                        .fail( function(xhr, textStatus, errorThrown) {
+                            alert(xhr.responseText);
+                        });;
+                console.dir("Pledge payment successfully made ");
+                //return;
             }
         });
     }
