@@ -36,7 +36,8 @@ module.exports = function(app) {
 
 
 
-    app.get('/payment/stripePayment/queryUser/', function (req, res) {
+    app.get('/service/payment/stripePayment/queryUser/', function (req, res) {
+
 
         var userId = req.query.userId;
 
@@ -72,7 +73,7 @@ module.exports = function(app) {
     });
 
 
-    app.get('/payment/stripePayment/queryPledge/', function (req, res) {
+    app.get('/service/payment/stripePayment/queryPledge/', function (req, res) {
 
         var confirmationCode = req.query.confirmationCode;
 
@@ -89,123 +90,9 @@ module.exports = function(app) {
 
     });
 
+    app.post('/service/payment/stripePayment', function (req, res) {
 
-    app.post('/payment/stripePledge', function (req, res) {
-
-        console.dir("UserId in passport: " + req.user.userId);
-
-        console.dir("app.js billing charityId: " + req.params.id);
-        console.warn("start payment process");
-
-        //'stripeToken
-        console.dir("requset body:" + req.body);
-        console.dir("stripeTokens:" + req.body.stripeToken);
-
-        console.dir("receipientId: " + req.body.receipientId);
-
-        console.dir("stripeCustomerId: " + req.body.stripeCustomerId);
-
-        console.dir("payment Notes: " + req.body.notes);
-
-        var notes =req.body.notes;
-        var stripe = require("stripe")("sk_test_zjF1XdDy0TZAYnuifaHR0iDf");
-
-// (Assuming you're using express - expressjs.com)
-// Get the credit card details submitted by the form
-        var stripeToken = req.body.stripeToken;
-
-        var amount = req.body.amount;
-        var url = req.url;
-
-        var recipientId = req.body.receipientId;
-
-        console.dir("url:" + url);
-        console.dir("amount:" + amount);
-        //save transaction history into database
-
-        var stripeCustomerId = req.body.stripeCustomerId;
-
-        console.dir("UserId in passport: " + req.user.userId);
-        userId = req.user.userId;
-
-        //logic for customers already has StripeCustomerIDs
-
-        console.dir("stripeCustomerId in app.js:" + stripeCustomerId);
-        if (stripeCustomerId && stripeCustomerId != 0) {
-            stripe.charges.create({
-                amount: amount * 100, // amount in cents, again
-                currency: "usd",
-                customer: stripeCustomerId
-            });
-
-
-
-            return;
-        }
-
-
-        //logic for customers don't have StripeCustomerIDs, need to create new ones
-
-        console.dir("start saving customers");
-        stripe.customers.create({
-            card: stripeToken,
-            description: 'payinguser@example.com'
-        }).then(function (customer) {
-
-            console.dir("using customerId:" + customer.id);
-            console.dir("creating customers");
-
-            //update customerId into for payment method table
-
-
-
-            billingUtil.updatePaymentMethodStripeId(userId, customer.id, function (err, results) {
-                if (err) {
-                    console.error(err);
-                    res.send(constants.services.CALLBACK_FAILED);
-                    return;
-                }
-                //res.send(results);
-            });
-
-            console.dir("end saving customers");
-
-            var charge = stripe.charges.create({
-                amount: amount*100, // amount in cents, again
-                currency: "usd",
-                card: stripeToken,
-                description: "payinguser@example.com"
-                //customer: customer.id
-            }, function (err, charge) {
-                if (err && err.type === 'StripeCardError') {
-                    // The card has been declined
-                }
-
-                console.dir("recipientId: " + recipientId);
-                //"Stripe_RecurrentPayment" + new Date().getTime(), amount, userId, recipientId, constants.paymentStatus.PAID, notes, stripeToken,
-                billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, userId, recipientId, constants.paymentStatus.PAID, notes,stripeToken, function (err, results) {
-                    if (err) {
-                        console.error(err);
-                        //res.send(constants.services.CALLBACK_FAILED);
-                        return;
-                    }
-                    // res.send(constants.services.CALLBACK_SUCCESS);
-                });
-
-            });
-
-            console.dir("end saving charges");
-
-
-            console.warn("end payment process");
-
-        })
-
-
-    });
-
-    app.post('/payment/stripePayment', function (req, res) {
-
+        console.dir("begin invoking feed /payment/stripePayment");
         console.dir("UserId in passport: " + req.user.userId);
 
         console.dir("app.js billing charityId: " + req.params.id);
@@ -288,8 +175,14 @@ module.exports = function(app) {
                                 logger.error(err);
                             }
                             logger.info("successfully sending emails");
-                            return;
+
                         });
+                        var response = {
+                            status  : 200,
+                            success : 'Successful payment'
+                        }
+
+                        res.end(JSON.stringify(response));
                     });
                 });
             }
@@ -315,7 +208,6 @@ module.exports = function(app) {
                         }
                         logger.info("successfully sending emails");
                         return;
-
                     });
                 });
 
@@ -323,7 +215,7 @@ module.exports = function(app) {
             }
 
 
-
+            console.dir("end invoking feed /payment/stripePayment");
 
             return;
         }

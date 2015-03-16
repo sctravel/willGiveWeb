@@ -92,19 +92,17 @@
 
     function approvePledge(pb) {
 
-        var queryPledgeByConfirmationCode = '/payment/stripePayment/queryPledge/';
+        var queryPledgeByConfirmationCode = '/service/payment/stripePayment/queryPledge/';
 
-        alert("confirmationId: "+pb.id);//
+        console.dir("confirmationId: "+pb.id);//
 
         $.get(queryPledgeByConfirmationCode, { confirmationCode: pb.id}, function (result) {
             console.dir("queryPledgeByConfirmationCode: "+ pb.id);
             if (!result || result == "failed") {
                 console.dir("failed to get results");
                 //update transaction histroy and mark status as complete
-                //freshPage();
                 return;
             }
-            //alert("currentResults:"+ result);
             stripeCustomerId = result.stripeCustomerId;
             amount =result.amount;
             receipientId =result.receipientId;
@@ -115,8 +113,10 @@
             jQuery("#isPledge").val(true);
             jQuery("#confirmationCode").val(pb.id);
 
-            alert("hiding: " + pb.id+"tr");
-            jQuery(pb.id+"tr").hide();
+            console.dir("hiding: " + pb.id+"tr");
+            jQuery("#"+pb.id+"tr").hide();
+
+
 
             console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
 
@@ -125,19 +125,24 @@
             //if stripCustomerId not null, then post to the payment page automatically
             if ($.trim(stripeCustomerId)) {
                 jQuery("#stripeCustomerId").val(stripeCustomerId);
+                /*
+                $('form').submit().done( function(msg) { console.dir("after submission succeed"); } )
+                        .fail( function(xhr, textStatus, errorThrown) {
+                            alert(xhr.responseText);
+                        });*/
 
-                $('form').submit();
-
-                console.dir("payment successfully made ");
-                //freshPage();
-
-                jQuery(pb.id+"tr").hide();
-
-
-                //window.location.href="/users/pledge";
+                $.post("/service/payment/stripePayment", {amount: jQuery("#amount").val(), notes: jQuery("#notes").val(),
+                            receipientId: jQuery("#receipientId").val(), stripeCustomerId: jQuery("#stripeCustomerId").val(),
+                            stripeTokenInput: jQuery("#stripeTokenInput").val(), isPledge:jQuery("#isPledge").val(),
+                            confirmationCode:jQuery("#confirmationCode").val()
+                        }
+                ) .done( function(msg) { console.dir("after submission succeed"); } )
+                        .fail( function(xhr, textStatus, errorThrown) {
+                            alert(xhr.responseText);
+                        });;
+                console.dir("Pledge payment successfully made ");
+                //return;
             }
-
-            //refeshPage();
         });
     }
 
@@ -197,7 +202,7 @@
 
 </script>
 
-    <form id="form" action="/payment/stripePayment" method="POST" style="display:none;">
+    <form id="form" action="/service/payment/stripePayment" method="POST" style="display:none;">
         <input id="amount"  name="amount" value="0">
         <input id="notes"  name="notes" value="0">
         <input id="receipientId"  name="receipientId" value="0">
