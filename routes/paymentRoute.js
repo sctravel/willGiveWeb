@@ -36,7 +36,7 @@ module.exports = function(app) {
 
 
 
-    app.get('/service/payment/stripePayment/queryUser/', function (req, res) {
+    app.get('/services/payment/stripePayment/queryUser/', function (req, res) {
 
 
         var userId = req.query.userId;
@@ -73,7 +73,7 @@ module.exports = function(app) {
     });
 
 
-    app.get('/service/payment/stripePayment/queryPledge/', function (req, res) {
+    app.get('/services/payment/stripePayment/queryPledge/', function (req, res) {
 
         var confirmationCode = req.query.confirmationCode;
 
@@ -90,7 +90,7 @@ module.exports = function(app) {
 
     });
 
-    app.post('/service/payment/stripePayment', function (req, res) {
+    app.post('/services/payment/stripePayment', function (req, res) {
 
         console.dir("begin invoking feed /payment/stripePayment");
         console.dir("UserId in passport: " + req.user.userId);

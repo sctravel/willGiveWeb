@@ -242,7 +242,7 @@
         </div>
     </div>
     </div>
-      <form id="form" action="/service/payment/stripePayment" method="POST" style="display:none;">
+      <form id="form" action="/services/payment/stripePayment" method="POST" style="display:none;">
           <input id="amount"  name="amount" value="0">
           <input id="notes"  name="notes" value="0">
           <input id="receipientId"  name="receipientId" value="0">
@@ -292,7 +292,7 @@
               //get userId from session
               //query DB to find strip ID
               //jQuery.get( url [, data ] [, success ] [, dataType ] )
-              existingUserById = '/service/payment/stripePayment/queryUser/';
+              existingUserById = '/services/payment/stripePayment/queryUser/';
 
               var stripId;
 
@@ -333,7 +333,7 @@
                          $("#form").submit();
                          */
 
-                        $.post("/service/payment/stripePayment", {amount: jQuery("#amount").val(), notes: jQuery("#notes").val(),
+                        $.post("/services/payment/stripePayment", {amount: jQuery("#amount").val(), notes: jQuery("#notes").val(),
                                     receipientId: jQuery("#receipientId").val(), stripeCustomerId: jQuery("#stripeCustomerId").val(), stripeTokenInput: jQuery("#stripeTokenInput").val()
                                 }
                         ) .done( function(msg) { console.dir("after submission succeed"); } )

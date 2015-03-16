@@ -92,7 +92,7 @@
 
     function approvePledge(pb) {
 
-        var queryPledgeByConfirmationCode = '/service/payment/stripePayment/queryPledge/';
+        var queryPledgeByConfirmationCode = '/services/payment/stripePayment/queryPledge/';
 
         console.dir("confirmationId: "+pb.id);//
 
@@ -131,7 +131,7 @@
                             alert(xhr.responseText);
                         });*/
 
-                $.post("/service/payment/stripePayment", {amount: jQuery("#amount").val(), notes: jQuery("#notes").val(),
+                $.post("/services/payment/stripePayment", {amount: jQuery("#amount").val(), notes: jQuery("#notes").val(),
                             receipientId: jQuery("#receipientId").val(), stripeCustomerId: jQuery("#stripeCustomerId").val(),
                             stripeTokenInput: jQuery("#stripeTokenInput").val(), isPledge:jQuery("#isPledge").val(),
                             confirmationCode:jQuery("#confirmationCode").val()
@@ -202,7 +202,7 @@
 
 </script>
 
-    <form id="form" action="/service/payment/stripePayment" method="POST" style="display:none;">
+    <form id="form" action="/services/payment/stripePayment" method="POST" style="display:none;">
         <input id="amount"  name="amount" value="0">
         <input id="notes"  name="notes" value="0">
         <input id="receipientId"  name="receipientId" value="0">
