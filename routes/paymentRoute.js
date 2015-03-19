@@ -143,76 +143,90 @@ module.exports = function(app) {
                 amount: amount * 100, // amount in cents, again
                 currency: "usd",
                 customer: stripeCustomerId
-            });
+            },function(err, charge) {
+                // asynchronously called
+                //need to store in transaction history table as well
+                //exports.insertTransactionHistroy = function(transactionId,amount,userId,recipientId, status,notes,stripeToken, callback)
 
-            //need to store in transaction history table as well
-             //exports.insertTransactionHistroy = function(transactionId,amount,userId,recipientId, status,notes,stripeToken, callback)
+                var newTransactionId="Stripe_RecurrentPayment" + new Date().getTime() ;
 
-            var newTransactionId="Stripe_RecurrentPayment" + new Date().getTime() ;
+                console.error('@@@@@@@isPledge--'+isPledge);
+                if(isPledge == undefined || isPledge== null|| !isPledge) {
+                    billingUtil.insertTransactionHistroy(newTransactionId, amount, userId, recipientId, constants.paymentStatus.PAID, notes, stripeToken, function (err, results) {
+                        if (err) {
+                            console.error(" error"+ err);
+                            //res.send(constants.services.CALLBACK_FAILED);
+                            //create refund in case of DB error
+                            stripe.charges.createRefund(
+                                charge,
+                                { },
+                                function(err, refund) {
+                                    // asynchronously called
+                                }
+                            );
 
-            console.error('@@@@@@@isPledge--'+isPledge);
-            if(isPledge == undefined || isPledge== null|| !isPledge) {
-                billingUtil.insertTransactionHistroy(newTransactionId, amount, userId, recipientId, constants.paymentStatus.PAID, notes, stripeToken, function (err, results) {
-                    if (err) {
-                        console.error(err);
-                        //res.send(constants.services.CALLBACK_FAILED);
-                        return;
-                    }
-                    //res.send(constants.services.CALLBACK_SUCCESS);
 
-                    billingUtil.getConfirmationCode(newTransactionId, function (err, results) {
 
-                        console.dir("Confirmation Code: " + results);
+                            return;
+                        }
+                        //res.send(constants.services.CALLBACK_SUCCESS);
+
+                        billingUtil.getConfirmationCode(newTransactionId, function (err, results) {
+
+                            console.dir("Confirmation Code: " + results);
+
+                            var mailOptions = {
+                                from: "WillGive <willgiveplatform@gmail.com>", // sender address
+                                to: req.user.email, // list of receivers
+                                subject: "Thanks for the donation for WillGive", // Subject line
+                                html: constants.emails.donationEmail.replace('{FirstName}', req.user.firstName).replace('{ConfirmationCode}', results) // html body
+                            };
+                            emailUtil.sendEmail(mailOptions, function (err, results) {
+                                if (err) {
+                                    logger.error(err);
+                                }
+                                logger.info("successfully sending emails");
+
+                            });
+                            var response = {
+                                status  : 200,
+                                success : 'Successful payment'
+                            }
+
+                            res.end(JSON.stringify(response));
+                        });
+                    });
+                }
+                else {
+
+                    billingUtil.updateTransactionHistroy(confirmationCode, function (err, results) {
+                        if (err) {
+                            console.error(err);
+                            //res.send(constants.services.CALLBACK_FAILED);
+                            return;
+                        }
+                        //res.send(constants.services.CALLBACK_SUCCESS);
 
                         var mailOptions = {
                             from: "WillGive <willgiveplatform@gmail.com>", // sender address
                             to: req.user.email, // list of receivers
                             subject: "Thanks for the donation for WillGive", // Subject line
-                            html: constants.emails.donationEmail.replace('{FirstName}', req.user.firstName).replace('{ConfirmationCode}', results) // html body
+                            html: constants.emails.donationEmail.replace('{FirstName}', req.user.firstName).replace('{ConfirmationCode}', confirmationCode) // html body
                         };
                         emailUtil.sendEmail(mailOptions, function (err, results) {
                             if (err) {
                                 logger.error(err);
                             }
                             logger.info("successfully sending emails");
-
+                            return;
                         });
-                        var response = {
-                            status  : 200,
-                            success : 'Successful payment'
-                        }
-
-                        res.end(JSON.stringify(response));
                     });
-                });
-            }
-            else {
-
-                billingUtil.updateTransactionHistroy(confirmationCode, function (err, results) {
-                    if (err) {
-                        console.error(err);
-                        //res.send(constants.services.CALLBACK_FAILED);
-                        return;
-                    }
-                    //res.send(constants.services.CALLBACK_SUCCESS);
-
-                    var mailOptions = {
-                        from: "WillGive <willgiveplatform@gmail.com>", // sender address
-                        to: req.user.email, // list of receivers
-                        subject: "Thanks for the donation for WillGive", // Subject line
-                        html: constants.emails.donationEmail.replace('{FirstName}', req.user.firstName).replace('{ConfirmationCode}', confirmationCode) // html body
-                    };
-                    emailUtil.sendEmail(mailOptions, function (err, results) {
-                        if (err) {
-                            logger.error(err);
-                        }
-                        logger.info("successfully sending emails");
-                        return;
-                    });
-                });
 
 
-            }
+                }
+
+            });
+
 
 
             console.dir("end invoking feed /payment/stripePayment");
