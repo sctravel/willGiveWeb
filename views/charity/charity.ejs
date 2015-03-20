@@ -293,83 +293,102 @@
               existingUserById = '/services/payment/stripePayment/queryUser/';
 
               var stripId;
-
-              var r = confirm("Are you sure to donate $" + jQuery("#amount").val() + " to "  + charity.name + " ?" );
-              if (r == true) {
-                  $.get(existingUserById, {userId: <%=user.userId%>}, function (result) {
-                      console.dir("userId on UI: <%=user.userId%>");
-                      if (!result || result == "failed") {
-                          console.dir("failed to get results");
-                          disableCheckout();
-                          return;
-                      }
-                      //alert("currentResults:"+ result);
-                      stripeCustomerId = result;
-                      console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
-                      if (stripeCustomerId != null)
-                          console.dir("current stripCustomerId:" + stripeCustomerId);
-                      else
-                          console.dir("current stripCustomerId: null");
-
-                      if ($.trim(stripeCustomerId)) {
-                          jQuery("#stripeCustomerId").val(stripeCustomerId);
-
-                          console.dir("before submission");
-
-                          console.dir("before submission" + jQuery("#stripeCustomerId").val());
-
-                          $.post("/services/payment/stripePayment", {
-                                      amount: jQuery("#amount").val(),
-                                      notes: jQuery("#notes").val(),
-                                      receipientId: jQuery("#receipientId").val(),
-                                      stripeCustomerId: jQuery("#stripeCustomerId").val(),
-                                      stripeTokenInput: jQuery("#stripeTokenInput").val()
-                                  }
-                          ).done(function (msg) {
-                                      console.dir("after submission succeed");
-                                  })
-                                  .fail(function (xhr, textStatus, errorThrown) {
-                                      alert(xhr.responseText);
-                                  });
-                          disableCheckout();
-
-                          return;
-
-                      }
+              var perTimeCheck;
+              var dailyCheck
 
 
-                      $('#stripeTokenInput').val('');
 
-                      var token = function (res) {
+              if( jQuery("#amount").val() > userPref.maxAmountPerTime){
 
-                          $('#stripeTokenInput').val(res.id);
-                          $('form').submit();
-                      };
-                      var payAmount = jQuery("#paymentAmount").val();
+                  alert("Your donation exceeds your limit: $" + userPref.maxAmountPerTime + " ." +
 
-                      StripeCheckout.open({
-                          key: 'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
-                          address: true,
-                          amount: payAmount * 100,//scale in cents instead of dollar
-                          currency: 'usd',
-                          name: 'User:' + '<%=user.firstName%>',
-                          description: 'Will Give Checkout',
-                          panelLabel: 'Checkout',
-                          token: token
-                      });
+                  "Please update your limitation for single transaction in profile before donation " );
 
+                  return;
 
-                      disableCheckout();
-
-                      return false;
-
-                  });
               }
 
-               else {
-                      return;
-                  }
-              
+
+
+              if( parseInt(dailyAmount) + parseInt(jQuery("#amount").val()) > userPref.maxAmountPerDay){
+                  alert("You have donated more than " + userPref.maxAmountPerDay+ " today." + " Please update your profile settings before donation.");
+                  return;
+
+              }
+                    var r = confirm("Are you sure to donate $" + jQuery("#amount").val() + " to " + charity.name + " ?");
+
+                      if (r == true) {
+                          $.get(existingUserById, {userId: <%=user.userId%>}, function (result) {
+                              console.dir("userId on UI: <%=user.userId%>");
+                              if (!result || result == "failed") {
+                                  console.dir("failed to get results");
+                                  disableCheckout();
+                                  return;
+                              }
+                              //alert("currentResults:"+ result);
+                              stripeCustomerId = result;
+                              console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
+                              if (stripeCustomerId != null)
+                                  console.dir("current stripCustomerId:" + stripeCustomerId);
+                              else
+                                  console.dir("current stripCustomerId: null");
+
+                              if ($.trim(stripeCustomerId)) {
+                                  jQuery("#stripeCustomerId").val(stripeCustomerId);
+
+                                  console.dir("before submission");
+
+                                  console.dir("before submission" + jQuery("#stripeCustomerId").val());
+
+                                  $.post("/services/payment/stripePayment", {
+                                              amount: jQuery("#amount").val(),
+                                              notes: jQuery("#notes").val(),
+                                              receipientId: jQuery("#receipientId").val(),
+                                              stripeCustomerId: jQuery("#stripeCustomerId").val(),
+                                              stripeTokenInput: jQuery("#stripeTokenInput").val()
+                                          }
+                                  ).done(function (msg) {
+                                              console.dir("after submission succeed");
+                                          })
+                                          .fail(function (xhr, textStatus, errorThrown) {
+                                              alert(xhr.responseText);
+                                          });
+                                  disableCheckout();
+
+                                  return;
+
+                              }
+
+
+                              $('#stripeTokenInput').val('');
+
+                              var token = function (res) {
+
+                                  $('#stripeTokenInput').val(res.id);
+                                  $('form').submit();
+                              };
+                              var payAmount = jQuery("#paymentAmount").val();
+
+                              StripeCheckout.open({
+                                  key: 'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
+                                  address: true,
+                                  amount: payAmount * 100,//scale in cents instead of dollar
+                                  currency: 'usd',
+                                  name: 'User:' + '<%=user.firstName%>',
+                                  description: 'Will Give Checkout',
+                                  panelLabel: 'Checkout',
+                                  token: token
+                              });
+
+
+                              disableCheckout();
+
+                              return false;
+
+                          });
+
+
+              }
           <% } %>
               });
 
@@ -398,6 +417,30 @@
                 document.getElementById("img" + rid).src = "/images/fav.png";
             $.get("/services/user/setFavoriteCharity?rid=" + rid + "&value=" + newValue,function(data){});
             lock = false;
+        }
+
+        function getUserSettings(userId) {
+
+            var getUserSettingsUrl = '/services/payment/userSettings/' + userId;
+
+               $.get(getUserSettingsUrl, function(data){
+                   userPref = data[0];
+
+            });
+        }
+
+        function getDailyAmount(userId) {
+
+            var getUserSettingsUrl = '/services/payment/dailyAmount/' + userId;
+
+            $.get(getUserSettingsUrl, function(data){
+
+                if(typeof(data[0])!='undefined'){
+                    
+                    console.log(data);
+                dailyAmount = data[0].dailyAmount;
+                } else{dailyAmount = 0;}
+            });
         }
 
         function getCharityById(){
@@ -510,7 +553,12 @@
         }
         $(document).ready(function(){
             getCharityById();
+
             getTransactionsByCharityId();
+
+            getUserSettings($('#userId').html());
+
+            getDailyAmount($('#userId').html());
             //$('#fbShareButton').attr('href', document.URL);
             if(recipientId == $('#userId').html()) {
                 $('#editMyPageDiv').show();

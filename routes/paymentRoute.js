@@ -55,6 +55,40 @@ module.exports = function(app) {
 
     });
 
+
+    app.get('/services/payment/userSettings/:userId', function(req, res) {
+
+            var userId =req.params.userId;
+
+            billingUtil.getUserSettings(userId, function(err, results){
+
+                       a = results;
+                if(err) {
+                    console.error(err);
+                    res.send(constants.services.CALLBACK_FAILED);
+                    return;
+                }
+                res.send(results);
+            })
+    });
+
+    app.get('/services/payment/dailyAmount/:userId', function(req, res) {
+
+        var userId =req.params.userId;
+
+        billingUtil.getDailyAmount(userId, function(err, results){
+
+            a = results;
+            if(err) {
+                console.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            res.send(results);
+        })
+    });
+
+
     app.post('/services/payment/pledge', isLoggedIn, function(req, res) {
         var userPledge = {};
         userPledge.amount = req.body.amount;
@@ -71,6 +105,25 @@ module.exports = function(app) {
             res.send(constants.services.CALLBACK_SUCCESS);
         })
     });
+
+    app.post('/services/payment/pledge', isLoggedIn, function(req, res) {
+        var userPledge = {};
+        userPledge.amount = req.body.amount;
+        userPledge.userId = req.user.userId;
+        userPledge.recipientId = req.body.recipientId;
+        userPledge.notes = req.body.notes ? req.body.notes : '';
+
+        billingUtil.insertUserPledge(userPledge, function(err, results){
+            if(err) {
+                console.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            res.send(constants.services.CALLBACK_SUCCESS);
+        })
+    });
+
+
 
 
     app.get('/services/payment/stripePayment/queryPledge/', function (req, res) {
