@@ -70,7 +70,7 @@
                 .replace("{ein}",transaction.ein)
                 .replace("{Address}",transaction.address+', '+transaction.city+', '+transaction.state+', '+transaction.zipCode)
                 .replace("{RecipientId}", transaction.recipientId)
-                .replace("{ImagePath}", transaction.imagePath)
+                .replace("{ImagePath}", transaction.imagePath+'_medium')
 		        .replace("{State}",transaction.state)
                 .replace("{Phone}",transaction.phone)
                 .replace("{Mission}",addMore(transaction.mission))

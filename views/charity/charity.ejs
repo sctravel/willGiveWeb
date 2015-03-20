@@ -453,7 +453,7 @@
                 charity = data;
                 var entireAddress = (charity.address.trim()+', '+charity.city.trim()+', '+charity.state.trim()+', '+charity.zipCode.trim());
                 $('#mission_content').html(charity.mission);
-                $('#charity_logo').attr('src', charity.imagePath);
+                $('#charity_logo').attr('src', charity.imagePath+'_large');
                 $('#orgName').html(charity.name);
                 $('#editMyPageLink').attr('href', '/charity/'+recipientId+'/edit');
                 $('#map').attr('src', mapPrefix+entireAddress.replace(/ /g,'+'));

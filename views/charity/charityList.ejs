@@ -23,7 +23,8 @@
         text = "<span id=s" + moreCount + ">" + text.substring(0, cut-7) + " <a style=\"color: #202090;cursor:hand; cursor:pointer\" onClick=\"unHide('" + moreCount + "')\">...(more)</a></span>"
 		+ "<span id=h"+moreCount + " style=\"display:none\">" + text + "</span>";
         return text;
-    }		
+    }
+
 	var lock = false;
 	function flipFav(rid)
 	{
@@ -35,8 +36,9 @@
 		{
 			document.getElementById("img" + rid).src = "/images/fav2.png";
 			newValue = "Y";
-		}else
+		} else {
 			document.getElementById("img" + rid).src = "/images/fav.png";
+        }
 		$.get("/services/user/setFavoriteCharity?rid=" + rid + "&value=" + newValue,function(data){});
 		lock = false;
 	}	
