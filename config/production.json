@@ -3,5 +3,7 @@
         "clientID" : "420297851460293",
         "clientSecret" : "dd643be55187ac4e76e6487ccd61e7a0",
         "callbackURL" : "/auth/facebook/callback"
-    }
+    },
+    "siteUrl" : "https://www.willgive.org"
+
 }

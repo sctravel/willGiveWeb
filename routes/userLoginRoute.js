@@ -53,13 +53,16 @@ module.exports = function(app) {
             userLogin.loginOrCreateAccountWithFacebook(fbUserData._json,function(err,results){
                 logger.debug(results);
                 if(err) {
+                    logger.error(err);
                     return done(null, false, { message: 'Facebook Login Error.' });
                 }
                 if(results.isAuthenticated == true ) {
                     logger.debug(results);
+                    logger.info("FB user successfully logged in");
                     return done(null,{provider:results.provider, email: results.email, userId :results.userId, sessionId: results.sessionId,
                         firstName: results.firstName, lastName: results.lastName, imageIconUrl: results.imageIconUrl});
                 } else {
+                    logger.error("user logged in with facebook, but isAuthenticated is false");
                     return done(null, false, { message: results.errorMessage });
                 }
             })
