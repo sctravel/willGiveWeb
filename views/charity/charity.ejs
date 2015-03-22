@@ -338,12 +338,28 @@
                       }
 
 
-                      $('#stripeTokenInput').val('');
+
 
                       var token = function (res) {
 
-                          $('#stripeTokenInput').val(res.id);
-                          $('form').submit();
+                          //$('#stripeTokenInput').val(res.id);
+                          //$('form').submit();
+                          $.post("/services/payment/stripePayment", {
+                                      amount: jQuery("#amount").val(),
+                                      notes: jQuery("#notes").val(),
+                                      receipientId: jQuery("#receipientId").val(),
+                                      stripeCustomerId: 0,
+                                      stripeToken: res.id
+                                  }
+                          ).done(function (msg) {
+                                      $('#stripeTokenInput').val('');
+                                      console.dir("after submission succeed");
+                                  })
+                                  .fail(function (xhr, textStatus, errorThrown) {
+                                      $('#stripeTokenInput').val('');
+                                      alert(xhr.responseText);
+                                      console.dir("after submission failed");
+                                  });
                       };
                       var payAmount = jQuery("#paymentAmount").val();
 
