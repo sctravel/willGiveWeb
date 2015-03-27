@@ -164,8 +164,8 @@ module.exports = function(app) {
         var notes =req.body.notes;
         var stripe = require("stripe")("sk_test_zjF1XdDy0TZAYnuifaHR0iDf");
 
-// (Assuming you're using express - expressjs.com)
-// Get the credit card details submitted by the form
+        // (Assuming you're using express - expressjs.com)
+        // Get the credit card details submitted by the form
         var stripeToken = req.body.stripeToken;
         console.dir("stripeTokens:" + stripeToken);
 
@@ -217,7 +217,6 @@ module.exports = function(app) {
                                     // asynchronously called
                                 }
                             );
-
                             return;
                         }
 
@@ -238,11 +237,15 @@ module.exports = function(app) {
                                 logger.info("successfully sending emails");
 
                             });
+
                             var response = {
                                 status  : 200,
-                                success : 'Successful payment'
+                                success : 'Successful payment',
+                                confirmationCode: results
                             }
-
+                            console.log("before");
+                      //     res.redirect('/confirmation');
+                            console.log("done");
                             res.end(JSON.stringify(response));
                         });
                     });

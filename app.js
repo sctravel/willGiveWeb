@@ -150,6 +150,14 @@ app.get('/', function (req,res){
     res.render('index',{user: req.user});
 });
 
+app.get('/confirmation', function (req,res){
+    console.log(req.user);
+    req.session.lastPage = '/confirmation';
+
+    res.render('confirmation',{user: req.user});
+});
+
+
 
 app.get('/contactus', function (req,res){
     req.session.lastPage = '/contactus';
