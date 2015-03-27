@@ -80,7 +80,7 @@
         <%if( undefined == typeof user || user == null) {%>
             <div id="userId" style="display: none"></div>
         <%} else {%>
-            <div id="userId" style="display: none"><%=user.userId%></div
+            <div id="userId" style="display: none"><%=user.userId%></div>
         <%}%>
 
 
@@ -375,6 +375,10 @@
                   if ($.trim(stripeCustomerId)) {
                       jQuery("#stripeCustomerId").val(stripeCustomerId);
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 4d7ff3a5bf2c338e04ad1c4a54595276f4903a61
                       console.dir("before submission" + jQuery("#stripeCustomerId").val());
 
                       $.post("/services/payment/stripePayment", {
@@ -386,7 +390,9 @@
                               }
                       ).done(function (msg) {
                                   console.log(msg);
+
                                  window.location.href="/confirmation?code=" + JSON.parse(msg).confirmationCode ;
+
                                   //    console.dir("after submission succeed");
                               })
                               .fail(function (xhr, textStatus, errorThrown) {
@@ -394,9 +400,12 @@
                               });
                       disableCheckout();
 
+
                       return;
 
                   }
+
+
 
               }
               <% } %>
