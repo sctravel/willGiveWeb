@@ -133,7 +133,7 @@ module.exports = function(app) {
         userId = req.user.userId;
 
         console.dir("isPledge:" + req.body.isPledge);
-        var isPledge= req.body.isPledge;
+        var isPledge = req.body.isPledge;
 
         //logic for customers already has StripeCustomerIDs
 
@@ -147,7 +147,6 @@ module.exports = function(app) {
                 // asynchronously called
                 //need to store in transaction history table as well
                 //exports.insertTransactionHistroy = function(transactionId,amount,userId,recipientId, status,notes,stripeToken, callback)
-
                 var newTransactionId="Stripe_RecurrentPayment" + new Date().getTime() ;
 
                 console.error('@@@@@@@isPledge--'+isPledge);
@@ -165,11 +164,8 @@ module.exports = function(app) {
                                 }
                             );
 
-
-
                             return;
                         }
-                        //res.send(constants.services.CALLBACK_SUCCESS);
 
                         billingUtil.getConfirmationCode(newTransactionId, function (err, results) {
 
@@ -198,15 +194,11 @@ module.exports = function(app) {
                     });
                 }
                 else {
-
                     billingUtil.updateTransactionHistroy(confirmationCode, function (err, results) {
                         if (err) {
                             console.error(err);
-                            //res.send(constants.services.CALLBACK_FAILED);
                             return;
                         }
-                        //res.send(constants.services.CALLBACK_SUCCESS);
-
                         var mailOptions = {
                             from: "WillGive <willgiveplatform@gmail.com>", // sender address
                             to: req.user.email, // list of receivers
@@ -221,13 +213,8 @@ module.exports = function(app) {
                             return;
                         });
                     });
-
-
                 }
-
             });
-
-
 
             console.dir("end invoking feed /payment/stripePayment");
 
@@ -245,10 +232,6 @@ module.exports = function(app) {
 
             console.dir("using customerId:" + customer.id);
             console.dir("creating customers");
-
-            //update customerId into for payment method table
-
-
 
             billingUtil.updatePaymentMethodStripeId(userId, customer.id, function (err, results) {
                 if (err) {
@@ -286,10 +269,7 @@ module.exports = function(app) {
             });
 
             console.dir("end saving charges");
-
-
             console.warn("end payment process");
-
         })
 
 
