@@ -348,7 +348,9 @@
                                               stripeTokenInput: jQuery("#stripeTokenInput").val()
                                           }
                                   ).done(function (msg) {
-                                              console.dir("after submission succeed");
+                                              console.log(msg);
+                                             window.location.href="/confirmation?code=" + JSON.parse(msg).confirmationCode ;
+                                              //    console.dir("after submission succeed");
                                           })
                                           .fail(function (xhr, textStatus, errorThrown) {
                                               alert(xhr.responseText);

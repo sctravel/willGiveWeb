@@ -99,13 +99,14 @@
                         jQuery("#listResult").jqGrid({
                             datatype: "local",
                             data: transactions,
-                            colNames: ['Transaction ID', 'Amount', 'First Name','Last Name','Recipient ID', 'Date Time', 'Notes'],
+                            colNames: ['Transaction ID', 'Amount', 'First Name','Last Name','Recipient ID','Recipient Name', 'Date Time', 'Notes'],
                             colModel: [
                                 {name: 'transactionId', index: 'Transaction ID', align: "center", editable: true, sortable: true},
                                 {name: 'amount', index: 'Amount', align: "center", editable: true, sortable: true},
                                 {name: 'firstName', index: 'First Name', align: "center", editable: true, sortable: true},
                                 {name: 'lastName', index: 'Last Name', align: "center", editable: true, sortable: true},
                                 {name: 'recipientId', index: 'Recipient ID', align: "center", editable: true, sortable: true},
+                                {name: 'name', index: 'Recipient Name', align: "center", editable: true, sortable: true},
                                 {name: 'dateTime', index: 'Date Time', align: "center", editable: true, sortable: true},
                                 {name: 'notes', index: 'Notes', align: "center", editable: true, sortable: true}
                             ],
