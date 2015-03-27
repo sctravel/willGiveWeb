@@ -80,7 +80,7 @@
         <%if( undefined == typeof user || user == null) {%>
             <div id="userId" style="display: none"></div>
         <%} else {%>
-            <div id="userId" style="display: none"><%=user.userId%></div
+            <div id="userId" style="display: none"><%=user.userId%></div>
         <%}%>
 
 
@@ -404,39 +404,35 @@
                   });
 
 
-
-                              if ($.trim(stripeCustomerId)) {
-                                  jQuery("#stripeCustomerId").val(stripeCustomerId);
-
+                  if ($.trim(stripeCustomerId)) {
+                      jQuery("#stripeCustomerId").val(stripeCustomerId);
 
 
-                                  console.dir("before submission" + jQuery("#stripeCustomerId").val());
+                      console.dir("before submission" + jQuery("#stripeCustomerId").val());
 
-                                  $.post("/services/payment/stripePayment", {
-                                              amount: jQuery("#amount").val(),
-                                              notes: jQuery("#notes").val(),
-                                              receipientId: jQuery("#receipientId").val(),
-                                              stripeCustomerId: jQuery("#stripeCustomerId").val(),
-                                              stripeTokenInput: jQuery("#stripeTokenInput").val()
-                                          }
-                                  ).done(function (msg) {
-                                              console.log(msg);
-                                             window.location.href="/confirmation?code=" + JSON.parse(msg).confirmationCode ;
-                                              //    console.dir("after submission succeed");
-                                          })
-                                          .fail(function (xhr, textStatus, errorThrown) {
-                                              alert(xhr.responseText);
-                                          });
-                                  disableCheckout();
-
-                                  return;
-
+                      $.post("/services/payment/stripePayment", {
+                                  amount: jQuery("#amount").val(),
+                                  notes: jQuery("#notes").val(),
+                                  receipientId: jQuery("#receipientId").val(),
+                                  stripeCustomerId: jQuery("#stripeCustomerId").val(),
+                                  stripeTokenInput: jQuery("#stripeTokenInput").val()
                               }
+                      ).done(function (msg) {
+                                  console.log(msg);
+                                  window.location.href = "/confirmation?code=" + JSON.parse(msg).confirmationCode;
+                                  //    console.dir("after submission succeed");
+                              })
+                              .fail(function (xhr, textStatus, errorThrown) {
+                                  alert(xhr.responseText);
+                              });
+                      disableCheckout();
+
+                      return;
+
+                  }
 
 
-                              $('#stripeTokenInput').val('');
-
-                              var token = function (res) {
+                  $('#stripeTokenInput').val('');
 
               }
               <% } %>
