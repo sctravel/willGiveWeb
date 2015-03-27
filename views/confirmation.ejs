@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <title>Will Give
+           </title>
+        <script src="/jquery/dist/jquery.min.js"></script>
+        <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/jquery-validation/dist/jquery.validate.js"></script>
+        <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
+        <script src="https://checkout.stripe.com/v2/checkout.js"></script>
+
+        <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
+        <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+        <%include layout/navbar.ejs%>
+    </head>
+    <body>
+        <div class="container">
+            <div class="col-md-12" style="padding-top: 50px">
+                <div id ="conf" style="background:#66CDAA ;width:80%; margin:0 auto;height:500px;color:#fff;"></div>
+            </div>
+        </div>
+<script type="text/javascript">
+
+    function request(paras)
+    {
+        var url = location.href;
+        var paraString = url.substring(url.indexOf("?")+1,url.length).split("&");
+        var paraObj = {}
+        for (i=0; j=paraString[i]; i++){
+            paraObj[j.substring(0,j.indexOf("=")).toLowerCase()] = j.substring(j.indexOf("=")+1,j.length);
+        }
+        var returnValue = paraObj[paras.toLowerCase()];
+        if(typeof(returnValue)=="undefined"){
+            return "";
+        }else{
+            return returnValue;
+        }
+    }
+
+
+</script>
+        <script type="text/javascript">
+
+            $(document).ready(function(){
+
+
+                $.get("/services/user/getTransactionHistory/" + request("code"), function(result){
+                    va = result;
+                    $("#conf").append('<div style = \'margin: auto; padding-top: 200px; padding-bottom: 100px; padding-left: 240px\'><p><b>Your donation of $' + result[0].amount + ' to ' + result[0].name +  ' succeeds.</b></p>' +
+
+                                      '<p><b>' + 'Conformation code is ' + request("code") + '.' + '</b></p>' +
+
+                                      '<p><b>' + 'A conformation Email has been sent to ' + result[0].email + '.' + '</b></p>' +
+                                        "<a href = '/charity/" + result[0].recipientId + " '> " + "               <<<<< Return to " + result[0].name + " page" + "</a>"  +
+                            '</div>'
+
+
+
+
+                    ) ;
+                });
+
+
+            });
+
+
+
+        </script>
+
+
+    <%include layout/footer.ejs%>
+    </body>
+</html>
