@@ -23,7 +23,6 @@ module.exports = function(app) {
     var facebookCredentials = config.get('facebookCredentials');
 
     logger.info("#########app env: "+app.get('env')+". ##############");
-    logger.info(facebookCredentials);
     ///////////////////////////////////////////////////////////////////////
     // Passport - Login methods setup
     ///////////////////////////////////////////////////////////////////////

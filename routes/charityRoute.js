@@ -148,6 +148,21 @@ module.exports = function(app) {
         })
     });
 
+    app.get('services/transactionSummaryByCharityId/:id', function(req, res){
+        var recipientId = req.params.id;
+        var duration = req.body.duration;
+
+        charityOps.getTransactionSummaryByCharityId(recipientId, duration, function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            logger.debug(results);
+            //verifyImagePath(results);
+            res.json(results);
+        })
+    });
 
 
 
@@ -190,7 +205,7 @@ module.exports = function(app) {
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            logger.debug(results);
+            //logger.debug(results);
             res.send(results);
         })
     })
