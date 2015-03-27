@@ -101,6 +101,7 @@ var tls = require('tls');
 var fs = require('fs');
 var serverOptions = {
     key: fs.readFileSync('./my_key.pem'),
+    ca:  fs.readFileSync('./intermediate.pem'),
     cert: fs.readFileSync('./my_cert.pem')
 };
 
