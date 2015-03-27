@@ -563,9 +563,7 @@
         }
         $(document).ready(function(){
             getCharityById();
-
             getTransactionsByCharityId();
-
             getUserSettings($('#userId').html());
 
             getDailyAmount($('#userId').html());
@@ -576,7 +574,6 @@
             $('#maptab').bind('onClick', function() {
                 google.maps.event.trigger($('#map'), 'resize');
             });
-
         })
 
     </script>
