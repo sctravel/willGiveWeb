@@ -287,7 +287,7 @@
 
           $('#confirm').click(function(){
               <%if ( undefined==user || user.provider=='recipient' ) {%>
-                    window.location.href='/login/signin';
+              window.location.href='/login/signin';
               <%} else {%>
 
               existingUserById = '/services/payment/stripePayment/queryUser/';
@@ -302,7 +302,7 @@
 
                   alert("Your donation exceeds your limit: $" + userPref.maxAmountPerTime + " ." +
 
-                  "Please update your limitation for single transaction in profile before donation " );
+                          "Please update your limitation for single transaction in profile before donation " );
 
                   return;
 
@@ -315,28 +315,100 @@
                   return;
 
               }
-                    var r = confirm("Are you sure to donate $" + jQuery("#amount").val() + " to " + charity.name + " ?");
+              var r = confirm("Are you sure to donate $" + jQuery("#amount").val() + " to " + charity.name + " ?");
 
-                      if (r == true) {
-                          $.get(existingUserById, {userId: <%=user.userId%>}, function (result) {
-                              console.dir("userId on UI: <%=user.userId%>");
-                              if (!result || result == "failed") {
-                                  console.dir("failed to get results");
-                                  disableCheckout();
-                                  return;
-                              }
-                              //alert("currentResults:"+ result);
-                              stripeCustomerId = result;
-                              console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
-                              if (stripeCustomerId != null)
-                                  console.dir("current stripCustomerId:" + stripeCustomerId);
-                              else
-                                  console.dir("current stripCustomerId: null");
+              if (r == true) {
+                  $.get(existingUserById, {userId: <%=user.userId%>}, function (result) {
+                      console.dir("userId on UI: <%=user.userId%>");
+                      if (!result || result == "failed") {
+                          console.dir("failed to get results");
+                          disableCheckout();
+                          return;
+                      }
+                      //alert("currentResults:"+ result);
+                      stripeCustomerId = result;
+                      console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
+                      if (stripeCustomerId != null)
+                          console.dir("current stripCustomerId:" + stripeCustomerId);
+                      else
+                          console.dir("current stripCustomerId: null");
+
+                      if ($.trim(stripeCustomerId)) {
+                          jQuery("#stripeCustomerId").val(stripeCustomerId);
+
+                          console.dir("before submission");
+
+                          console.dir("before submission" + jQuery("#stripeCustomerId").val());
+
+                          $.post("/services/payment/stripePayment", {
+                                      amount: jQuery("#amount").val(),
+                                      notes: jQuery("#notes").val(),
+                                      receipientId: jQuery("#receipientId").val(),
+                                      stripeCustomerId: jQuery("#stripeCustomerId").val(),
+                                      stripeTokenInput: jQuery("#stripeTokenInput").val()
+                                  }
+                          ).done(function (msg) {
+                                      console.dir("after submission succeed");
+                                  })
+                                  .fail(function (xhr, textStatus, errorThrown) {
+                                      alert(xhr.responseText);
+                                  });
+                          disableCheckout();
+
+                          return;
+
+                      }
+
+
+                      $('#stripeTokenInput').val('');
+
+                      var token = function (res) {
+
+                          //$('#stripeTokenInput').val(res.id);
+                          //$('form').submit();
+                          $.post("/services/payment/stripePayment", {
+                                      amount: jQuery("#amount").val(),
+                                      notes: jQuery("#notes").val(),
+                                      receipientId: jQuery("#receipientId").val(),
+                                      stripeCustomerId: 0,
+                                      stripeToken: res.id
+                                  }
+                          ).done(function (msg) {
+                                      $('#stripeTokenInput').val('');
+                                      console.dir("after submission succeed");
+                                  })
+                                  .fail(function (xhr, textStatus, errorThrown) {
+                                      $('#stripeTokenInput').val('');
+                                      alert(xhr.responseText);
+                                      console.dir("after submission failed");
+                                  });
+                      };
+                      var payAmount = jQuery("#paymentAmount").val();
+
+                      StripeCheckout.open({
+                          key: 'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
+                          address: true,
+                          amount: payAmount * 100,//scale in cents instead of dollar
+                          currency: 'usd',
+                          name: 'User:' + '<%=user.firstName%>',
+                          description: 'Will Give Checkout',
+                          panelLabel: 'Checkout',
+                          token: token
+                      });
+
+
+                      disableCheckout();
+
+                      return false;
+
+                  });
+
+
 
                               if ($.trim(stripeCustomerId)) {
                                   jQuery("#stripeCustomerId").val(stripeCustomerId);
 
-                                  console.dir("before submission");
+
 
                                   console.dir("before submission" + jQuery("#stripeCustomerId").val());
 
@@ -366,36 +438,19 @@
 
                               var token = function (res) {
 
-                                  $('#stripeTokenInput').val(res.id);
-                                  $('form').submit();
-                              };
-                              var payAmount = jQuery("#paymentAmount").val();
-
-                              StripeCheckout.open({
-                                  key: 'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
-                                  address: true,
-                                  amount: payAmount * 100,//scale in cents instead of dollar
-                                  currency: 'usd',
-                                  name: 'User:' + '<%=user.firstName%>',
-                                  description: 'Will Give Checkout',
-                                  panelLabel: 'Checkout',
-                                  token: token
-                              });
-
-
-                              disableCheckout();
-
-                              return false;
-
-                          });
-
-
               }
-          <% } %>
-              });
+              <% } %>
+          });
+
 
 
       </script>
+
+
+
+
+
+
 
     <%include ../layout/footer.ejs%>
     <script language="JavaScript">

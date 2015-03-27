@@ -153,7 +153,7 @@ module.exports = function(app) {
 
         //'stripeToken
         console.dir("requset body:" + req.body);
-        console.dir("stripeTokens:" + req.body.stripeToken);
+
 
         console.dir("receipientId: " + req.body.receipientId);
 
@@ -167,6 +167,7 @@ module.exports = function(app) {
         // (Assuming you're using express - expressjs.com)
         // Get the credit card details submitted by the form
         var stripeToken = req.body.stripeToken;
+        console.dir("stripeTokens:" + stripeToken);
 
         var amount = req.body.amount;
         var url = req.url;
@@ -203,7 +204,7 @@ module.exports = function(app) {
 
                 var newTransactionId="Stripe_RecurrentPayment" + new Date().getTime() ;
 
-                console.error('@@@@@@@isPledge--'+isPledge);
+                console.dir('@@@@@@@isPledge--'+isPledge);
                 if(isPledge == undefined || isPledge== null|| !isPledge) {
                     billingUtil.insertTransactionHistroy(newTransactionId, amount, userId, recipientId, constants.paymentStatus.PAID, notes, stripeToken, function (err, results) {
                         if (err) {
@@ -257,6 +258,20 @@ module.exports = function(app) {
                         if (err) {
                             console.error(err);
                             //res.send(constants.services.CALLBACK_FAILED);
+
+                            var mailOptions = {
+                                from: "WillGive <willgiveplatform@gmail.com>", // sender address
+                                to: req.user.email, // list of receivers
+                                subject: "Thanks for the donation for WillGive", // Subject line
+                                html: "payment failure and willGive is investigating"+ err // html body
+                            };
+                            emailUtil.sendEmail(mailOptions, function (err, results) {
+                                if (err) {
+                                    logger.error(err);
+                                }
+                                logger.info("successfully sending emails");
+
+                            });
                             return;
                         }
                         //res.send(constants.services.CALLBACK_SUCCESS);
@@ -302,31 +317,52 @@ module.exports = function(app) {
 
             //update customerId into for payment method table
 
-
-
-            billingUtil.updatePaymentMethodStripeId(userId, customer.id, function (err, results) {
-                if (err) {
-                    console.error(err);
-                    res.send(constants.services.CALLBACK_FAILED);
-                    return;
-                }
-                //res.send(results);
-            });
-
-            console.dir("end saving customers");
-
             var charge = stripe.charges.create({
                 amount: amount*100, // amount in cents, again
                 currency: "usd",
-                card: stripeToken,
+                //card: stripeToken,
+                customer: customer.id,
                 description: "payinguser@example.com"
                 //customer: customer.id
             }, function (err, charge) {
-                if (err && err.type === 'StripeCardError') {
+                console.dir("payment err"+ err);
+                if (err) {
                     // The card has been declined
+                    var mailOptions = {
+                        from: "WillGive <willgiveplatform@gmail.com>", // sender address
+                        to: "WillGive <willgiveplatform@gmail.com>", // list of receivers
+                        subject: "Thanks for the donation for WillGive", // Subject line
+                        html: "payment failure and willGive is investigating"+ err // html body
+                    };
+                    emailUtil.sendEmail(mailOptions, function (err, results) {
+                        if (err) {
+                            logger.error(err);
+                        }
+                        logger.info("successfully sending emails");
+
+                    });
+
+                    console.dir("payment get declined ");
+                    return;
                 }
 
                 console.dir("recipientId: " + recipientId);
+                //card https://stripe.com/docs/api#create_charge
+                //console.dir("last four of credit card: " + charge.source.last4);
+
+                console.dir("charge object of credit card: " + JSON.stringify(charge, null, 4 ));
+
+                console.dir("last4: " + charge.source.last4);
+
+                billingUtil.updatePaymentMethodStripeId(userId, customer.id, charge.source.last4,function (err, results) {
+                    if (err) {
+                        console.error(err);
+                        res.send(constants.services.CALLBACK_FAILED);
+                        return;
+                    }
+                    //res.send(results);
+                });
+
                 //"Stripe_RecurrentPayment" + new Date().getTime(), amount, userId, recipientId, "Processed", notes, stripeToken,
                 billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, userId, recipientId, constants.paymentStatus.PAID, notes,stripeToken, function (err, results) {
                     if (err) {
@@ -338,6 +374,13 @@ module.exports = function(app) {
                 });
 
             });
+
+
+
+
+            console.dir("end saving customers");
+
+
 
             console.dir("end saving charges");
 
