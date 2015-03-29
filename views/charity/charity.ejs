@@ -264,7 +264,23 @@
               //alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
               jQuery("#paymentAmount").val(0);
           }
+
+          $(document).ready(function() {
+
+              var intRegex = /^\d+$/;
+              $('#paymentAmount').bind('keyup', function(){
+                  //alert("start validating");
+                 // alert(jQuery("#paymentAmount").val());
+                  if(!intRegex.test(jQuery("#paymentAmount").val())) {
+                    alert("Please input valid integer");
+                      jQuery("#paymentAmount").val("");
+                  }
+
+              });
+          });
       </script>
+
+
 
       <script>
 
@@ -274,6 +290,12 @@
               <%} else {%>
 
               existingUserById = '/services/payment/stripePayment/queryUser/';
+
+              if( jQuery("#amount").val() > userPref.maxAmountPerTime){
+                  alert("Your donation exceeds your limit: $" + userPref.maxAmountPerTime + " ." +
+                          "Please update your limitation for single transaction in profile before donation " );
+                  return;
+              }
 
               var stripId;
               var perTimeCheck;
@@ -299,8 +321,12 @@
                           disableCheckout();
                           return;
                       }
-                      //alert("currentResults:"+ result);
-                      stripeCustomerId = result;
+                      // alert("current stripeCustomerId:"+ result.stripeCustomerId);
+                      var ans = confirm("Here is the default credit card with last 4 digits:  " + result.last4 + "  are you sure want to proceed? with this credit card");
+
+                      if (ans == true){
+                      //alert("proceed to payment");
+                      stripeCustomerId = result.stripeCustomerId;
                       console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
                       if (stripeCustomerId != null)
                           console.dir("current stripCustomerId:" + stripeCustomerId);
@@ -313,6 +339,7 @@
                           console.dir("before submission");
 
                           console.dir("before submission" + jQuery("#stripeCustomerId").val());
+                          //alert("before submission" + jQuery("#stripeCustomerId").val());
 
                           $.post("/services/payment/stripePayment", {
                                       amount: jQuery("#amount").val(),
@@ -330,6 +357,9 @@
                           disableCheckout();
                           return;
                       }
+
+                          return;
+                  }
 
 
                       $('#stripeTokenInput').val('');
@@ -372,34 +402,6 @@
                   });
 
 
-                  if ($.trim(stripeCustomerId)) {
-                      jQuery("#stripeCustomerId").val(stripeCustomerId);
-
-                      console.dir("before submission" + jQuery("#stripeCustomerId").val());
-
-                      $.post("/services/payment/stripePayment", {
-                                  amount: jQuery("#amount").val(),
-                                  notes: jQuery("#notes").val(),
-                                  receipientId: jQuery("#receipientId").val(),
-                                  stripeCustomerId: jQuery("#stripeCustomerId").val(),
-                                  stripeTokenInput: jQuery("#stripeTokenInput").val()
-                              }
-                      ).done(function (msg) {
-                                  console.log(msg);
-
-                                 window.location.href="/confirmation?code=" + JSON.parse(msg).confirmationCode ;
-
-                                  //    console.dir("after submission succeed");
-                              })
-                              .fail(function (xhr, textStatus, errorThrown) {
-                                  alert(xhr.responseText);
-                              });
-                      disableCheckout();
-
-
-                      return;
-
-                  }
 
 
 

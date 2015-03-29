@@ -41,15 +41,15 @@ module.exports = function(app) {
 
         var userId = req.query.userId;
 
-        console.dir("app userId:" + userId);
+        console.dir("start calling feed: /services/payment/stripePayment/queryUser/ userId:" + userId);
 
         billingUtil.queryExistingStripCustomers(userId, function (err, customerToken) {
             if (err) {
-                console.error(err);
+                console.error("end calling feed: /services/payment/stripePayment/queryUser/"+err);
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            console.dir("query results: " + customerToken);
+            console.dir("end calling feed: /services/payment/stripePayment/queryUser/ userId:query results: " + customerToken);
             res.send(customerToken);
         });
 
@@ -146,20 +146,20 @@ module.exports = function(app) {
     app.post('/services/payment/stripePayment', function (req, res) {
 
         console.dir("begin invoking feed /payment/stripePayment");
-        console.dir("UserId in passport: " + req.user.userId);
+        console.dir("/services/payment/stripePayment: UserId in passport: " + req.user.userId);
 
-        console.dir("app.js billing charityId: " + req.params.id);
+        console.dir("/services/payment/stripePayment: app.js billing charityId: " + req.params.id);
         console.warn("start payment process");
 
         //'stripeToken
-        console.dir("requset body:" + req.body);
+        console.dir("/services/payment/stripePayment requset body:" + req.body);
 
 
-        console.dir("receipientId: " + req.body.receipientId);
+        console.dir("/services/payment/stripePayment receipientId: " + req.body.receipientId);
 
-        console.dir("stripeCustomerId: " + req.body.stripeCustomerId);
+        console.dir("/services/payment/stripePayment stripeCustomerId: " + req.body.stripeCustomerId);
 
-        console.dir("payment Notes: " + req.body.notes);
+        console.dir("/services/payment/stripePayment payment Notes: " + req.body.notes);
 
         var notes =req.body.notes;
         var stripe = require("stripe")("sk_test_zjF1XdDy0TZAYnuifaHR0iDf");
@@ -174,24 +174,24 @@ module.exports = function(app) {
 
         var recipientId = req.body.receipientId;
 
-        console.dir("url:" + url);
-        console.dir("amount:" + amount);
+        console.dir("/services/payment/stripePayment url:" + url);
+        console.dir("/services/payment/stripePayment amount:" + amount);
         //save transaction history into database
 
         var stripeCustomerId = req.body.stripeCustomerId;
 
         var confirmationCode  = req.body.confirmationCode;
-        console.dir("confirmationCode:" + confirmationCode);
+        console.dir("/services/payment/stripePayment confirmationCode:" + confirmationCode);
 
-        console.dir("UserId in passport: " + req.user.userId);
+        console.dir("/services/payment/stripePayment UserId in passport: " + req.user.userId);
         userId = req.user.userId;
 
-        console.dir("isPledge:" + req.body.isPledge);
+        console.dir("/services/payment/stripePayment isPledge:" + req.body.isPledge);
         var isPledge = req.body.isPledge;
 
         //logic for customers already has StripeCustomerIDs
 
-        console.dir("stripeCustomerId in app.js:" + stripeCustomerId);
+        console.dir("/services/payment/stripePayment stripeCustomerId in app.js:" + stripeCustomerId);
         if (stripeCustomerId && stripeCustomerId != 0) {
             stripe.charges.create({
                 amount: amount * 100, // amount in cents, again
