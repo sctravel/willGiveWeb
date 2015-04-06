@@ -322,9 +322,7 @@
                           return;
                       }
                       // alert("current stripeCustomerId:"+ result.stripeCustomerId);
-                      var ans = confirm("Here is the default credit card with last 4 digits:  " + result.last4 + "  are you sure want to proceed? with this credit card");
 
-                      if (ans == true){
                       //alert("proceed to payment");
                       stripeCustomerId = result.stripeCustomerId;
                       console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
@@ -334,32 +332,37 @@
                           console.dir("current stripCustomerId: null");
 
                       if ($.trim(stripeCustomerId)) {
-                          jQuery("#stripeCustomerId").val(stripeCustomerId);
 
-                          console.dir("before submission");
+                          var ans = confirm("Here is the default credit card with last 4 digits:  " + result.last4 + "  are you sure want to proceed? with this credit card");
 
-                          console.dir("before submission" + jQuery("#stripeCustomerId").val());
-                          //alert("before submission" + jQuery("#stripeCustomerId").val());
+                          if (ans == true) {
+                              jQuery("#stripeCustomerId").val(stripeCustomerId);
 
-                          $.post("/services/payment/stripePayment", {
-                                      amount: jQuery("#amount").val(),
-                                      notes: jQuery("#notes").val(),
-                                      receipientId: jQuery("#receipientId").val(),
-                                      stripeCustomerId: jQuery("#stripeCustomerId").val(),
-                                      stripeTokenInput: jQuery("#stripeTokenInput").val()
-                                  }
-                          ).done(function (msg) {
-                                      console.dir("after submission succeed");
-                                  })
-                                  .fail(function (xhr, textStatus, errorThrown) {
-                                      alert(xhr.responseText);
-                                  });
-                          disableCheckout();
-                          return;
+                              console.dir("before submission");
+
+                              console.dir("before submission" + jQuery("#stripeCustomerId").val());
+                              //alert("before submission" + jQuery("#stripeCustomerId").val());
+
+                              $.post("/services/payment/stripePayment", {
+                                          amount: jQuery("#amount").val(),
+                                          notes: jQuery("#notes").val(),
+                                          receipientId: jQuery("#receipientId").val(),
+                                          stripeCustomerId: jQuery("#stripeCustomerId").val(),
+                                          stripeTokenInput: jQuery("#stripeTokenInput").val()
+                                      }
+                              ).done(function (msg) {
+                                          console.dir("after submission succeed");
+                                      })
+                                      .fail(function (xhr, textStatus, errorThrown) {
+                                          alert(xhr.responseText);
+                                      });
+                              disableCheckout();
+                              return;
+                          }
                       }
 
-                          return;
-                  }
+                          //return;
+
 
 
                       $('#stripeTokenInput').val('');
