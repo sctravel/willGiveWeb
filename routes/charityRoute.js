@@ -14,12 +14,40 @@ module.exports = function(app) {
     var isLoggedInAsRecipient = require('../app').isLoggedInAsRecipient;
 
 
-    app.get('/services/charityByEIN/:id', function(req, res) {
-        var id = req.params.id;
+    //TODO: This might be a duplicate to /c/:id, need to confirm
+    app.get('/services/scanCharity/:id', function(req, res){
+        var id = req.params.id; // currently this is recipientId
+        var latitude = req.query.latitude;
+        var longitude = req.query.longitude;
         var userId = null;
         if(req.user) {
             userId = req.user.userId;
         }
+
+        //Log user scan information
+        charityOps.logQRScanHistory(userId, id, latitude, longitude, function(err, result) {
+            if(err) {
+                logger.error(err);
+            }
+            logger.info("userId: "+ userId +", id: "+id +", latitude: "+latitude+", longitude: "+longitude);
+        })
+
+        //This function might be changed, if the id is not recipientId
+        charityOps.charityById (id, userId, function(err, results){
+            if(err) {
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            verifyImagePath([results]);
+            logger.debug(results);
+            res.json(results);
+        });
+
+    })
+    app.get('/services/charityByEIN/:id', function(req, res) {
+        var id = req.params.id;
+
         charityOps.charityByEIN (id, userId, function(err, results){
             if(err) {
                 logger.error(err);
