@@ -251,6 +251,7 @@ module.exports = function(app) {
                     });
                 }
                 else {
+                    console.info("start updating transaction histroy for pledge");
                     billingUtil.updateTransactionHistroy(confirmationCode, function (err, results) {
                         if (err) {
                             console.error(err);
