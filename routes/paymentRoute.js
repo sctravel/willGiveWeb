@@ -138,7 +138,7 @@ module.exports = function(app) {
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            console.dir("query results: " + PledgeInfo);
+            console.dir("queryPledge results: " + PledgeInfo);
             res.send(PledgeInfo);
         });
 
