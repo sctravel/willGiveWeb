@@ -55,7 +55,7 @@
                         <thead>
                         <tr>
                             <th>Confirmation #</th>
-                            <th>Date/Time</th>
+                            <th>SettleTime</th>
                             <th>Amount($)</th>
                             <th>Contribute To</th>
                             <th>Status</th>
@@ -95,7 +95,7 @@
 
     function replaceHtml(transaction){
         return defaultHTML.replace("{Id}",transaction.confirmationCode)
-                .replace("{Date}",dateTimeDisplayFormatter(transaction.dateTime))
+                .replace("{Date}",dateDisplayFormatter(transaction.settleTime))
                 .replace("{Amount}",transaction.amount)
                 .replace("{Recipient}",'<a href="/charity/'+transaction.recipientId+'" style="color: #202090">'+transaction.name+'</a>')
                 .replace("{Status}",transaction.status)

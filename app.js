@@ -150,7 +150,7 @@ app.get('/', function (req,res){
     res.render('index',{user: req.user});
 });
 
-app.get('/confirmation', function (req,res){
+app.get('/confirmation', isLoggedIn, function (req,res){
     console.log(req.user);
     req.session.lastPage = '/confirmation';
 
@@ -201,9 +201,6 @@ app.get('/services/getConfirmPic',  function(req,res){
 
 //charge known customer
 app.post('/payment/stripePaymentWithStripeId/',function(req,res) {
-
-
-
 
 
 });

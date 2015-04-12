@@ -48,6 +48,7 @@
       <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
       <script src="/bootstrap-modal/js/bootstrap-modal.js"></script>
       <script src="/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+      <script src="/assets/js/messageReporter.js"></script>
 
       <script src="/jquery-validation/dist/jquery.validate.js"></script>
       <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
@@ -213,44 +214,45 @@
 
                                 <div class="modal-body">
 
-                                        <div class="form-group" >
-                                            <label class="control-label col-xs-4" for="paymentAmount" >Amount($):
-                                            </label>
-                                            <div class="input-group col-xs-7"  >
-                                                <input type="text" id="paymentAmount"  name="paymentAmount" class="form-control" placeholder="Amount" required>
+                                    <div id="paymentConfirmReporter" style="padding-bottom: 2%"></div>
+
+                                    <div class="form-group" >
+                                        <label class="control-label col-xs-4" for="paymentAmount" >Amount($):
+                                        </label>
+                                        <div class="input-group col-xs-7"  >
+                                            <input type="text" id="paymentAmount"  name="paymentAmount" class="form-control" placeholder="Amount" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" >
+                                        <label class="control-label col-xs-4" for="paymentNotes" >Note:
+                                        </label>
+                                        <div class="input-group col-xs-7"  >
+                                            <textarea id="paymentNotes" name="paymentNotes" class="form-control" maxlength="1000" rows="3" placeholder="Notes" style="height:auto; resize:none">
+                                            </textarea>
+
+                                        </div>
+                                    </div>
+
+                                    <div id="existingPaymentMethod" class="form-group" style="display:none">
+                                        <label class="control-label col-xs-4" style="padding-bottom: 2%"> Payment:</label>
+                                        <div class="control-group input-group row">
+
+                                            <div class="controls input-group">
+                                                <label class="radio">
+                                                    <input type="radio" name="payment[role]" id="existingCard" value="existing" checked>
+                                                    <div id="cardNumber">Visa: xxxx-xxxx-xxxx </div>
+                                                </label>
+                                                <label class="radio">
+                                                    <input type="radio" name="payment[role]" id="otherMethod" value="other">
+                                                    <div id="otherMethod">Use Other Payment</div>
+                                                </label>
                                             </div>
                                         </div>
-                                        <div class="form-group" >
-                                            <label class="control-label col-xs-4" for="paymentNotes" >Note:
-                                            </label>
-                                            <div class="input-group col-xs-7"  >
-                                                <textarea id="paymentNotes" name="paymentNotes" class="form-control" maxlength="1000" rows="3" placeholder="Notes" style="height:auto; resize:none">
-                                                </textarea>
 
-                                            </div>
-                                        </div>
-
-                                        <div id="existingPaymentMethod" class="form-group" style="display:none">
-                                            <label class="control-label col-xs-4" style="padding-bottom: 2%"> Payment:</label>
-                                            <div class="control-group input-group row">
-
-                                                <div class="controls input-group">
-                                                    <label class="radio">
-                                                        <input type="radio" name="payment[role]" id="existingCard" value="existing" checked>
-                                                        <div id="cardNumber">Visa: xxxx-xxxx-xxxx </div>
-                                                    </label>
-                                                    <label class="radio">
-                                                        <input type="radio" name="payment[role]" id="otherMethod" value="other">
-                                                        <div id="otherMethod">Use Other Payment</div>
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                        <div class="checkbox form-group" id="rememberPaymentMethodCheckbox" >
-                                            <label><input type="checkbox" id="rememberPaymentMethod"  name="rememberPaymentMethod" >Remember my payment information.</label>
-                                        </div>
-
+                                    </div>
+                                    <div class="checkbox form-group" id="rememberPaymentMethodCheckbox" >
+                                        <label><input type="checkbox" id="rememberPaymentMethod"  name="rememberPaymentMethod" >Remember my payment information.</label>
+                                    </div>
 
                                 </div>
                                 <div class="modal-footer">
@@ -298,7 +300,15 @@
       <%include ../layout/footer.ejs%>
 
 
-      <script>
+    <script>
+
+       var recipientId = document.URL.split('/').slice(-1)[0].replace(/\D/g,'');
+       var mapPrefix = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD3J5wXDD6SbCrUPZoYHYwOjV3RJE7OaZU&q=';
+       var charity = {};
+       var transactions=[];
+
+       var reporter = new MessageReporter("paymentConfirmReporter");
+       reporter.clear();
 
           $('#existingCard').click(function(){
               $('#rememberPaymentMethodCheckbox').hide();
@@ -307,34 +317,28 @@
               $('#rememberPaymentMethodCheckbox').show();
           })
 
+          //Pop up confirm dialog, input payment amount and notes
           function checkExistingPaymentMethod() {
               <%if ( undefined==user || user.provider=='recipient' ) {%>
                 window.location.href='/login/signin';
               <%} else {%>
-
+                reporter.clear();
                 existingStripeCustomerById = '/services/payment/stripePayment/queryUser/';
                 $.get(existingStripeCustomerById, {userId: <%=user.userId%>}, function (result) {
-                  console.dir("userId on UI: <%=user.userId%>");
                   console.dir(result);
                   if (!result || result == "failed") {
                       //TODO show error message
                       console.dir("failed to get results");
-                      //disableCheckout();
                       return;
                   }
 
-                  stripeCustomerId = result.stripeCustomerId;
-                  console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
-                  if (stripeCustomerId != null)
-                      console.dir("current stripCustomerId:" + stripeCustomerId);
-                  else
-                      console.dir("current stripCustomerId: null");
-
-                  if ($.trim(stripeCustomerId)) {
+                  var stripeCustomerId = result.stripeCustomerId;
+                  if (stripeCustomerId != null) {
 
                       $('#existingPaymentMethod').show();
                       $('#rememberPaymentMethodCheckbox').hide();
                       $('#cardNumber').html('Visa: xxxx-xxxx-xxxx-'+result.last4);
+                      $("#stripeCustomerId").val(stripeCustomerId);
 
                   }
                });
@@ -342,58 +346,62 @@
           }
 
           $('#confirm').click(function(){
+              //redirect to login page if not logged in as an user
+              <%if ( undefined==user || user.provider=='recipient' ) {%>
+                  window.location.href='/login/signin';
+              <%} else {%>
+              reporter.clear();
 
+              //Validate the paymentAmountForm
               if (!$("#paymentAmountForm").valid()) {
                   console.log("paymentAmount form is not valid!");
                   return;
               }
 
-              <%if ( undefined==user || user.provider=='recipient' ) {%>
-                window.location.href='/login/signin';
-              <%} else {%>
-
-
-              if( jQuery("#amount").val() > userPref.maxAmountPerTime){
-                  alert("Your donation exceeds your limit: $" + userPref.maxAmountPerTime + " ." +
-                          "Please update your limitation for single transaction in profile before donation " );
-                  return;
-              }
-
+              //Check the amount exceeds the maximum amount per time or daily maximum,
+              // if so, refused to pay until user change their settings
               var stripId;
               var perTimeCheck;
-              var dailyCheck
+              var dailyCheck;
 
-              if( jQuery("#amount").val() > userPref.maxAmountPerTime){
-                  alert("Your donation exceeds your limit: $" + userPref.maxAmountPerTime + " ." +
-                          "Please update your limitation for single transaction in profile before donation " );
+              //TODO: change alert to error message
+              console.log("userPref.maxAmountPerTime -- " + userPref.maxAmountPerTime);
+              console.log("userPref.maxAmountPerDay -- " + userPref.maxAmountPerDay);
+              console.dir(userPref);
+              if( $("#paymentAmount").val() > userPref.maxAmountPerTime){
+                  reporter.errorStatus("Your donation exceeds your limit: $" + userPref.maxAmountPerTime + " ." +
+                          "Please update your limitation for single transaction in profile before donation ");
+                  reporter.render();
+                  console.log("maxAmountPerTime error");
                   return;
               }
 
-              if( parseInt(dailyAmount) + parseInt(jQuery("#amount").val()) > userPref.maxAmountPerDay){
-                  alert("You have donated more than " + userPref.maxAmountPerDay+ " today." + " Please update your profile settings before donation.");
+              if( parseInt(dailyAmount) + parseInt(jQuery("#paymentAmount").val()) > userPref.maxAmountPerDay){
+                  reporter.errorStatus("You have donated more than " + userPref.maxAmountPerDay+ " today." + " Please update your profile settings before donation.");
+                  reporter.render();
                   return;
               }
 
               var useExistingCard = $("#existingCard").prop('checked');
               if (useExistingCard == true) {
-                  jQuery("#stripeCustomerId").val(stripeCustomerId);
 
-                  console.dir("before submission");
-
-                  console.dir("before submission" + jQuery("#stripeCustomerId").val());
-                  //alert("before submission" + jQuery("#stripeCustomerId").val());
+                  console.dir("before submission" + $("#stripeCustomerId").val());
 
                   $.post("/services/payment/stripePayment", {
-                              amount: jQuery("#paymentAmount").val(),
-                              notes: jQuery("#paymentNotes").val(),
-                              recipientId: <%=pageId%>,
-                              stripeCustomerId: jQuery("#stripeCustomerId").val(),
-                              stripeTokenInput: jQuery("#stripeTokenInput").val()
+                              amount: $("#paymentAmount").val(),
+                              notes: $("#paymentNotes").val(),
+                              recipientId: recipientId,
+                              stripeCustomerId: $("#stripeCustomerId").val(),
+                              stripeTokenInput: $("#stripeTokenInput").val()
                           }
                   ).done(function (msg) {
-                              console.dir("after submission succeed");
+
+                              console.dir("after submission succeed -- go to ");
+                              window.location.href = '/confirmation';
+                              //go to confirm page
                           })
                           .fail(function (xhr, textStatus, errorThrown) {
+                              //TODO change to error message
                               alert(xhr.responseText);
                           });
 
@@ -410,23 +418,25 @@
                       $.post("/services/payment/stripePayment", {
                           amount: jQuery("#paymentAmount").val(),
                           notes: jQuery("#paymentNotes").val(),
-                          recipientId: <%=pageId%>,
+                          recipientId: recipientId,
                           stripeCustomerId: 0,
                           stripeToken: res.id
                       }).done(function (msg) {
                                   $('#stripeTokenInput').val('');
-                                  console.dir("after submission succeed");
+                                  console.dir("after submission succeed -- go to ");
+                                  //go to confirm page
+                                  window.location.href = '/confirmation';
                               })
                               .fail(function (xhr, textStatus, errorThrown) {
                                   $('#stripeTokenInput').val('');
-                                  alert(xhr.responseText);
+                                  //TODO change to error message
                                   console.dir("after submission failed");
                               });
                   };
                   var payAmount = jQuery("#paymentAmount").val();
 
                   StripeCheckout.open({
-                      key: 'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
+                      key: 'pk_test_iJPmMQMGarAHRE7oUcM5iBxO', //TODO: make this not visiable
                       address: true,
                       amount: payAmount * 100,//scale in cents instead of dollar
                       currency: 'usd',
@@ -443,14 +453,7 @@
               <% } %>
           });
 
-      </script>
 
-    <script language="JavaScript">
-
-        var recipientId = document.URL.split('/').slice(-1)[0].replace(/\D/g,'');
-        var mapPrefix = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD3J5wXDD6SbCrUPZoYHYwOjV3RJE7OaZU&q=';
-        var charity = {};
-        var transactions=[];
         var lock = false;
         function flipFav(rid)
         {
@@ -639,7 +642,7 @@
 
         })
 
-    </script>
+     </script>
 
 
   </body>

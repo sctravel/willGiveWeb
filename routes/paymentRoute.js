@@ -10,12 +10,14 @@ module.exports = function(app) {
     var constants = require('../lib/common/constants');
     var charityOps = require('../lib/db/charityOperation');
     var emailUtil = require('../lib/utils/emailUtil');
+    var config = require('config');
 
     var isLoggedIn = require('../app').isLoggedIn;
     var logger = require('../app').logger;
 
     this.name = 'paymentRoute';
 
+    var stripeKey = config.get('stripeKey');
 
     app.get('/services/user/getTransactionHistory/:confirmationCode', function(req, res){
 
@@ -151,10 +153,6 @@ module.exports = function(app) {
         console.dir("/services/payment/stripePayment: app.js billing charityId: " + req.params.id);
         console.warn("start payment process");
 
-        //'stripeToken
-        console.dir("/services/payment/stripePayment requset body:" + req.body);
-
-
         console.dir("/services/payment/stripePayment recipientId: " + req.body.recipientId);
 
         console.dir("/services/payment/stripePayment stripeCustomerId: " + req.body.stripeCustomerId);
@@ -162,7 +160,7 @@ module.exports = function(app) {
         console.dir("/services/payment/stripePayment payment Notes: " + req.body.notes);
 
         var notes =req.body.notes;
-        var stripe = require("stripe")("sk_test_zjF1XdDy0TZAYnuifaHR0iDf");
+        var stripe = require("stripe")(stripeKey);
 
         // (Assuming you're using express - expressjs.com)
         // Get the credit card details submitted by the form
