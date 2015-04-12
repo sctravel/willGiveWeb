@@ -11,7 +11,7 @@
       <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
       <link href="/assets/css/style.css" rel="stylesheet" />
       <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
-
+      <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
       <link rel="stylesheet" href="/assets/css/simplePagination.css" >
 
       <style>
@@ -46,6 +46,9 @@
 
       <script src="/jquery/dist/jquery.min.js"></script>
       <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+      <script src="/bootstrap-modal/js/bootstrap-modal.js"></script>
+      <script src="/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+
       <script src="/jquery-validation/dist/jquery.validate.js"></script>
       <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
       <script src="https://checkout.stripe.com/v2/checkout.js"></script>
@@ -154,7 +157,7 @@
                             <a href='' class="col-xs-8" id="websiteInfo"></a>
 
                         </div>
-                        <div class="row" style="padding-top: 2%">
+                        <div class="row" id="facebookInfo" style="padding-top: 2%">
                             <div class="col-xs-4"><strong>Facebook: </strong></div>
                             <a href='' class="col-xs-8" id="facebookPageInfo"></a>
                         </div>
@@ -192,29 +195,72 @@
 
             <div id="main_right" class="col-lg-4">
 
-
-
                 <!-- contribute button-->
+                <!-- Button trigger modal -->
+                <button type="contribute_button" onClick="checkExistingPaymentMethod()" class="btn btn-block btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                    Contribute
+                </button>
+                <!-- Modal -->
+                <div class="modal modal-wide fade " id="myModal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="width : 30%">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title text-center" id="myModalTitle">WillGive</h4>
 
-                <form action="javascript:void(0);" method="post" id="example-form" style="display: block;">
+                            </div>
+                            <form id="paymentAmountForm" class="form-row" method="post" style="padding-top: 0%">
 
-                    <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:block;" onClick="enableCheckout()">
-                        Contribute
-                    </button>
+                                <div class="modal-body">
 
-                    <div id = "paymentAmountForm" class="form-row"  style="display:none;">
-                        <div>
-                        <label>Amount</label>
-                        <input id="paymentAmount" type="text" maxlength="20" autocomplete="off" class="required" />
+                                        <div class="form-group" >
+                                            <label class="control-label col-xs-4" for="paymentAmount" >Amount($):
+                                            </label>
+                                            <div class="input-group col-xs-7"  >
+                                                <input type="text" id="paymentAmount"  name="paymentAmount" class="form-control" placeholder="Amount" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" >
+                                            <label class="control-label col-xs-4" for="paymentNotes" >Note:
+                                            </label>
+                                            <div class="input-group col-xs-7"  >
+                                                <textarea id="paymentNotes" name="paymentNotes" class="form-control" maxlength="1000" rows="3" placeholder="Notes" style="height:auto; resize:none">
+                                                </textarea>
+
+                                            </div>
+                                        </div>
+
+                                        <div id="existingPaymentMethod" class="form-group" style="display:none">
+                                            <label class="control-label col-xs-4" style="padding-bottom: 2%"> Payment:</label>
+                                            <div class="control-group input-group row">
+
+                                                <div class="controls input-group">
+                                                    <label class="radio">
+                                                        <input type="radio" name="payment[role]" id="existingCard" value="existing" checked>
+                                                        <div id="cardNumber">Visa: xxxx-xxxx-xxxx </div>
+                                                    </label>
+                                                    <label class="radio">
+                                                        <input type="radio" name="payment[role]" id="otherMethod" value="other">
+                                                        <div id="otherMethod">Use Other Payment</div>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="checkbox form-group" id="rememberPaymentMethodCheckbox" >
+                                            <label><input type="checkbox" id="rememberPaymentMethod"  name="rememberPaymentMethod" >Remember my payment information.</label>
+                                        </div>
+
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                    <button id="confirm" type="button" class="btn btn-primary">Confirm</button>
+                                </div>
+                            </form>
                         </div>
-                        <div>
-                        <label>Notes</label>
-                        <input id="paymentNotes" type="text" maxlength="1000" autocomplete="off" class="required" />
-                        </div>
-                        <button id = "confirm" type="submit" name="submit-button" onClick="enableCheckout()">Confirm</button>
                     </div>
-
-                </form>
+                </div>
                 <hr/>
                 <h4 class="text-center">QR Code</h4>
                 <div id="img_slides" class="carousel slide">
@@ -244,51 +290,68 @@
       <form id="form" action="/services/payment/stripePayment" method="POST" style="display:none;">
           <input id="amount"  name="amount" value="0">
           <input id="notes"  name="notes" value="0">
-          <input id="receipientId"  name="receipientId" value="0">
+          <input id="recipientId"  name="recipientId" value="0">
           <input id="stripeCustomerId"  name="stripeCustomerId" value="0">
           <input id= stripeTokenInput type=hidden name=stripeToken />
       </form>
 
-      <script>
-          function enableCheckout() {
-              document.getElementById("contribute_button").style.display="none";
-              document.getElementById("paymentAmountForm").style.display="block";
-              jQuery("#amount").val(jQuery("#paymentAmount").val());
-              jQuery("#notes").val(jQuery("#paymentNotes").val());
-              jQuery("#receipientId").val(<%=pageId%>);
-          }
-          function disableCheckout() {
-              document.getElementById("contribute_button").style.display="block";
-              document.getElementById("paymentAmountForm").style.display="none";
-              //alert("Please confirm you will pay the following amount: "+ jQuery("#paymentAmount").val());
-              jQuery("#paymentAmount").val(0);
-          }
-
-          $(document).ready(function() {
-
-              var intRegex = /^\d+$/;
-              $('#paymentAmount').bind('keyup', function(){
-                  //alert("start validating");
-                 // alert(jQuery("#paymentAmount").val());
-                  if(!intRegex.test(jQuery("#paymentAmount").val())) {
-                    alert("Please input valid integer");
-                      jQuery("#paymentAmount").val("");
-                  }
-
-              });
-          });
-      </script>
-
+      <%include ../layout/footer.ejs%>
 
 
       <script>
 
-          $('#confirm').click(function(){
+          $('#existingCard').click(function(){
+              $('#rememberPaymentMethodCheckbox').hide();
+          })
+          $('#otherMethod').click(function(){
+              $('#rememberPaymentMethodCheckbox').show();
+          })
+
+          function checkExistingPaymentMethod() {
               <%if ( undefined==user || user.provider=='recipient' ) {%>
                 window.location.href='/login/signin';
               <%} else {%>
 
-              existingUserById = '/services/payment/stripePayment/queryUser/';
+                existingStripeCustomerById = '/services/payment/stripePayment/queryUser/';
+                $.get(existingStripeCustomerById, {userId: <%=user.userId%>}, function (result) {
+                  console.dir("userId on UI: <%=user.userId%>");
+                  console.dir(result);
+                  if (!result || result == "failed") {
+                      //TODO show error message
+                      console.dir("failed to get results");
+                      //disableCheckout();
+                      return;
+                  }
+
+                  stripeCustomerId = result.stripeCustomerId;
+                  console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
+                  if (stripeCustomerId != null)
+                      console.dir("current stripCustomerId:" + stripeCustomerId);
+                  else
+                      console.dir("current stripCustomerId: null");
+
+                  if ($.trim(stripeCustomerId)) {
+
+                      $('#existingPaymentMethod').show();
+                      $('#rememberPaymentMethodCheckbox').hide();
+                      $('#cardNumber').html('Visa: xxxx-xxxx-xxxx-'+result.last4);
+
+                  }
+               });
+              <%}%>
+          }
+
+          $('#confirm').click(function(){
+
+              if (!$("#paymentAmountForm").valid()) {
+                  console.log("paymentAmount form is not valid!");
+                  return;
+              }
+
+              <%if ( undefined==user || user.provider=='recipient' ) {%>
+                window.location.href='/login/signin';
+              <%} else {%>
+
 
               if( jQuery("#amount").val() > userPref.maxAmountPerTime){
                   alert("Your donation exceeds your limit: $" + userPref.maxAmountPerTime + " ." +
@@ -310,110 +373,78 @@
                   alert("You have donated more than " + userPref.maxAmountPerDay+ " today." + " Please update your profile settings before donation.");
                   return;
               }
-              var r = confirm("Are you sure to donate $" + jQuery("#amount").val() + " to " + charity.name + " ?");
 
-              if (r == true) {
-                  $.get(existingUserById, {userId: <%=user.userId%>}, function (result) {
-                      console.dir("userId on UI: <%=user.userId%>");
-                      if (!result || result == "failed") {
-                          console.dir("failed to get results");
-                          disableCheckout();
-                          return;
-                      }
-                      // alert("current stripeCustomerId:"+ result.stripeCustomerId);
+              var useExistingCard = $("#existingCard").prop('checked');
+              if (useExistingCard == true) {
+                  jQuery("#stripeCustomerId").val(stripeCustomerId);
 
-                      //alert("proceed to payment");
-                      stripeCustomerId = result.stripeCustomerId;
-                      console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
-                      if (stripeCustomerId != null)
-                          console.dir("current stripCustomerId:" + stripeCustomerId);
-                      else
-                          console.dir("current stripCustomerId: null");
+                  console.dir("before submission");
 
-                      if ($.trim(stripeCustomerId)) {
+                  console.dir("before submission" + jQuery("#stripeCustomerId").val());
+                  //alert("before submission" + jQuery("#stripeCustomerId").val());
 
-                          var ans = confirm("Here is the default credit card with last 4 digits:  " + result.last4 + "  are you sure want to proceed? with this credit card");
-
-                          if (ans == true) {
-                              jQuery("#stripeCustomerId").val(stripeCustomerId);
-
-                              console.dir("before submission");
-
-                              console.dir("before submission" + jQuery("#stripeCustomerId").val());
-                              //alert("before submission" + jQuery("#stripeCustomerId").val());
-
-                              $.post("/services/payment/stripePayment", {
-                                          amount: jQuery("#amount").val(),
-                                          notes: jQuery("#notes").val(),
-                                          receipientId: jQuery("#receipientId").val(),
-                                          stripeCustomerId: jQuery("#stripeCustomerId").val(),
-                                          stripeTokenInput: jQuery("#stripeTokenInput").val()
-                                      }
-                              ).done(function (msg) {
-                                          console.dir("after submission succeed");
-                                      })
-                                      .fail(function (xhr, textStatus, errorThrown) {
-                                          alert(xhr.responseText);
-                                      });
-                              disableCheckout();
-                              return;
+                  $.post("/services/payment/stripePayment", {
+                              amount: jQuery("#paymentAmount").val(),
+                              notes: jQuery("#paymentNotes").val(),
+                              recipientId: <%=pageId%>,
+                              stripeCustomerId: jQuery("#stripeCustomerId").val(),
+                              stripeTokenInput: jQuery("#stripeTokenInput").val()
                           }
-                      }
-
-                          //return;
-
-
-
-                      $('#stripeTokenInput').val('');
-
-                      var token = function (res) {
-                          //$('#stripeTokenInput').val(res.id);
-                          //$('form').submit();
-                          $.post("/services/payment/stripePayment", {
-                              amount: jQuery("#amount").val(),
-                              notes: jQuery("#notes").val(),
-                              receipientId: jQuery("#receipientId").val(),
-                              stripeCustomerId: 0,
-                              stripeToken: res.id
-                          }).done(function (msg) {
-                              $('#stripeTokenInput').val('');
+                  ).done(function (msg) {
                               console.dir("after submission succeed");
                           })
                           .fail(function (xhr, textStatus, errorThrown) {
-                              $('#stripeTokenInput').val('');
                               alert(xhr.responseText);
-                              console.dir("after submission failed");
                           });
-                      };
-                      var payAmount = jQuery("#paymentAmount").val();
 
-                      StripeCheckout.open({
-                          key: 'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
-                          address: true,
-                          amount: payAmount * 100,//scale in cents instead of dollar
-                          currency: 'usd',
-                          name: 'User:' + '<%=user.firstName%>',
-                          description: 'Will Give Checkout',
-                          allowRememberMe: false,
-                          panelLabel: 'Checkout',
-                          token: token
-                      });
 
-                      disableCheckout();
-                      return false;
+              } else {
+
+                  var rememberPaymentMethod = $("#rememberPaymentMethod").prop('checked');
+
+                  $('#stripeTokenInput').val('');
+
+                  var token = function (res) {
+                      //$('#stripeTokenInput').val(res.id);
+                      //$('form').submit();
+                      $.post("/services/payment/stripePayment", {
+                          amount: jQuery("#paymentAmount").val(),
+                          notes: jQuery("#paymentNotes").val(),
+                          recipientId: <%=pageId%>,
+                          stripeCustomerId: 0,
+                          stripeToken: res.id
+                      }).done(function (msg) {
+                                  $('#stripeTokenInput').val('');
+                                  console.dir("after submission succeed");
+                              })
+                              .fail(function (xhr, textStatus, errorThrown) {
+                                  $('#stripeTokenInput').val('');
+                                  alert(xhr.responseText);
+                                  console.dir("after submission failed");
+                              });
+                  };
+                  var payAmount = jQuery("#paymentAmount").val();
+
+                  StripeCheckout.open({
+                      key: 'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
+                      address: true,
+                      amount: payAmount * 100,//scale in cents instead of dollar
+                      currency: 'usd',
+                      name: 'User:' + '<%=user.firstName%>',
+                      description: 'WillGive Checkout',
+                      allowRememberMe: false,
+                      panelLabel: 'Checkout',
+                      token: token
                   });
 
-
-
-
-
+                  return false;
               }
+
               <% } %>
           });
 
       </script>
 
-    <%include ../layout/footer.ejs%>
     <script language="JavaScript">
 
         var recipientId = document.URL.split('/').slice(-1)[0].replace(/\D/g,'');
@@ -474,6 +505,7 @@
                 $('#mission_content').html(charity.mission);
                 $('#charity_logo').attr('src', charity.imagePath+'_large');
                 $('#orgName').html(charity.name);
+                $('#myModalTitle').html('WillGive - '+charity.name);
                 $('#editMyPageLink').attr('href', '/charity/'+recipientId+'/edit');
                 $('#map').attr('src', mapPrefix+entireAddress.replace(/ /g,'+'));
                 $('#nameInfo').html(charity.name);
@@ -490,6 +522,8 @@
                 if(charity.facebookUrl) {
                     $('#facebookPageInfo').html(charity.facebookUrl.trim());
                     $('#facebookPageInfo').attr('href',charity.facebookUrl.trim());
+                } else {
+                    $('#facebookInfo').hide();
                 }
 
                 <% if ( 'undefined' == typeof user || user.provider=='recipient') { %>
@@ -570,6 +604,28 @@
             });
 
         }
+
+        var formValidateParams = {
+            errorClass: "my-error-class",
+            rules: {
+                paymentAmount: {
+                    required: true,
+                    number: true
+                    //remote: "users.php"
+                }
+            },
+            messages: {
+                paymentAmount: {
+                    required: "Required.",
+                    number: "Please enter a valid number"
+                }
+            }
+        };
+        $("#paymentAmountForm").validate(
+                formValidateParams
+        );
+
+
         $(document).ready(function(){
             getCharityById();
             getTransactionsByCharityId();
@@ -580,9 +636,7 @@
             if(recipientId == $('#userId').html()) {
                 $('#editMyPageDiv').show();
             }
-            $('#maptab').bind('onClick', function() {
-                google.maps.event.trigger($('#map'), 'resize');
-            });
+
         })
 
     </script>

@@ -155,7 +155,7 @@ module.exports = function(app) {
         console.dir("/services/payment/stripePayment requset body:" + req.body);
 
 
-        console.dir("/services/payment/stripePayment receipientId: " + req.body.receipientId);
+        console.dir("/services/payment/stripePayment recipientId: " + req.body.recipientId);
 
         console.dir("/services/payment/stripePayment stripeCustomerId: " + req.body.stripeCustomerId);
 
@@ -172,7 +172,7 @@ module.exports = function(app) {
         var amount = req.body.amount;
         var url = req.url;
 
-        var recipientId = req.body.receipientId;
+        var recipientId = req.body.recipientId;
 
         console.dir("/services/payment/stripePayment url:" + url);
         console.dir("/services/payment/stripePayment amount:" + amount);
