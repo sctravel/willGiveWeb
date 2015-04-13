@@ -37,14 +37,11 @@ module.exports = function(app) {
     })
 
 
-
     app.get('/services/payment/stripePayment/queryUser/', function (req, res) {
-
 
         var userId = req.query.userId;
 
         console.dir("start calling feed: /services/payment/stripePayment/queryUser/ userId:" + userId);
-
         billingUtil.queryExistingStripCustomers(userId, function (err, customerToken) {
             if (err) {
                 console.error("end calling feed: /services/payment/stripePayment/queryUser/"+err);
@@ -57,7 +54,7 @@ module.exports = function(app) {
 
     });
 
-
+    //TODO: why we have it here? we already have it in userProfiles, remove this one
     app.get('/services/payment/userSettings/:userId', function(req, res) {
 
             var userId =req.params.userId;
@@ -108,26 +105,6 @@ module.exports = function(app) {
         })
     });
 
-    app.post('/services/payment/pledge', isLoggedIn, function(req, res) {
-        var userPledge = {};
-        userPledge.amount = req.body.amount;
-        userPledge.userId = req.user.userId;
-        userPledge.recipientId = req.body.recipientId;
-        userPledge.notes = req.body.notes ? req.body.notes : '';
-
-        billingUtil.insertUserPledge(userPledge, function(err, results){
-            if(err) {
-                console.error(err);
-                res.send(constants.services.CALLBACK_FAILED);
-                return;
-            }
-            res.send(constants.services.CALLBACK_SUCCESS);
-        })
-    });
-
-
-
-
     app.get('/services/payment/stripePayment/queryPledge/', function (req, res) {
 
         var confirmationCode = req.query.confirmationCode;
@@ -142,71 +119,57 @@ module.exports = function(app) {
             res.send(PledgeInfo);
         });
 
-
     });
 
-    app.post('/services/payment/stripePayment', function (req, res) {
-
-        console.dir("begin invoking feed /payment/stripePayment");
-        console.dir("/services/payment/stripePayment: UserId in passport: " + req.user.userId);
-
-        console.dir("/services/payment/stripePayment: app.js billing charityId: " + req.params.id);
-        console.warn("start payment process");
-
-        console.dir("/services/payment/stripePayment recipientId: " + req.body.recipientId);
-
-        console.dir("/services/payment/stripePayment stripeCustomerId: " + req.body.stripeCustomerId);
-
-        console.dir("/services/payment/stripePayment payment Notes: " + req.body.notes);
-
-        var notes =req.body.notes;
+    app.post('/services/payment/stripePayment', isLoggedIn, function (req, res) {
         var stripe = require("stripe")(stripeKey);
 
         // (Assuming you're using express - expressjs.com)
         // Get the credit card details submitted by the form
         var stripeToken = req.body.stripeToken;
-        console.dir("stripeTokens:" + stripeToken);
-
         var amount = req.body.amount;
-        var url = req.url;
-
         var recipientId = req.body.recipientId;
-
-        console.dir("/services/payment/stripePayment url:" + url);
-        console.dir("/services/payment/stripePayment amount:" + amount);
-        //save transaction history into database
-
+        var notes =req.body.notes;
+        var rememberMe = req.body.rememberMe;
         var stripeCustomerId = req.body.stripeCustomerId;
-
         var confirmationCode  = req.body.confirmationCode;
-        console.dir("/services/payment/stripePayment confirmationCode:" + confirmationCode);
-
-        console.dir("/services/payment/stripePayment UserId in passport: " + req.user.userId);
-        userId = req.user.userId;
-
-        console.dir("/services/payment/stripePayment isPledge:" + req.body.isPledge);
         var isPledge = req.body.isPledge;
 
-        //logic for customers already has StripeCustomerIDs
+        var url = req.url;
+        var userId = req.user.userId;
 
+        console.dir("/services/payment/stripePayment amount:" + amount);
+        //save transaction history into database
+        console.dir("/services/payment/stripePayment confirmationCode:" + confirmationCode);
+        console.dir("/services/payment/stripePayment isPledge:" + req.body.isPledge);
+        //logic for customers already has StripeCustomerIDs
         console.dir("/services/payment/stripePayment stripeCustomerId in app.js:" + stripeCustomerId);
-        if (stripeCustomerId && stripeCustomerId != 0) {
+
+        //If the customer has binding payment information
+        if (stripeCustomerId && stripeCustomerId.length > 10) { //stripeCustomerId is always more than 10 letters
             stripe.charges.create({
                 amount: amount * 100, // amount in cents, again
                 currency: "usd",
                 customer: stripeCustomerId
             },function(err, charge) {
+                if(err) {
+                    logger.error(err);
+                    res.send(constants.services.CALLBACK_SUCCESS);
+                    return;
+                }
                 // asynchronously called
                 //need to store in transaction history table as well
                 //exports.insertTransactionHistroy = function(transactionId,amount,userId,recipientId, status,notes,stripeToken, callback)
+                //TODO: use constant here for "Stripe_RecurrentPayment"
                 var newTransactionId="Stripe_RecurrentPayment" + new Date().getTime() ;
 
                 console.dir('@@@@@@@isPledge--'+isPledge);
-                if(isPledge == undefined || isPledge== null|| !isPledge) {
+                //Actual payment happening here
+                if(isPledge == undefined || isPledge== null || !isPledge) {
                     billingUtil.insertTransactionHistroy(newTransactionId, amount, userId, recipientId, constants.paymentStatus.PAID, notes, stripeToken, function (err, results) {
                         if (err) {
                             console.error(" error"+ err);
-                            //res.send(constants.services.CALLBACK_FAILED);
+                            //TODO why we need to refund in the logic, fix it
                             //create refund in case of DB error
                             stripe.charges.createRefund(
                                 charge,
@@ -215,9 +178,13 @@ module.exports = function(app) {
                                     // asynchronously called
                                 }
                             );
+                            res.send(constants.services.CALLBACK_SUCCESS);
+
                             return;
                         }
 
+                        //TODO: ?? Why we need the confirmation code here ??????
+                        // we can get it when we do the db insert
                         billingUtil.getConfirmationCode(newTransactionId, function (err, results) {
 
                             console.dir("Confirmation Code: " + results);
@@ -236,38 +203,20 @@ module.exports = function(app) {
 
                             });
 
-                            var response = {
-                                status  : 200,
-                                success : 'Successful payment',
-                                confirmationCode: results
-                            }
-                            console.log("before");
-                      //     res.redirect('/confirmation');
                             console.log("done");
-                            res.end(JSON.stringify(response));
+                            res.send(constants.services.CALLBACK_SUCCESS);
+                            return;
                         });
                     });
                 }
+                //pledge is happening here
                 else {
-                    console.info("start updating transaction histroy for pledge");
+                    console.info("start updating transaction history for pledge");
                     billingUtil.updateTransactionHistroy(confirmationCode, function (err, results) {
                         if (err) {
                             console.error(err);
-                            //res.send(constants.services.CALLBACK_FAILED);
-
-                            var mailOptions = {
-                                from: "WillGive <willgiveplatform@gmail.com>", // sender address
-                                to: req.user.email, // list of receivers
-                                subject: "Thanks for the donation for WillGive", // Subject line
-                                html: "payment failure and willGive is investigating"+ err // html body
-                            };
-                            emailUtil.sendEmail(mailOptions, function (err, results) {
-                                if (err) {
-                                    logger.error(err);
-                                }
-                                logger.info("successfully sending emails");
-
-                            });
+                            res.send(constants.services.CALLBACK_FAILED);
+                            //We don't send email when payment fails
                             return;
                         }
                         var mailOptions = {
@@ -281,109 +230,80 @@ module.exports = function(app) {
                                 logger.error(err);
                             }
                             logger.info("successfully sending emails");
-                            return;
                         });
+
+                        res.send(constants.services.CALLBACK_SUCCESS);
+                        return;
                     });
                 }
             });
-
-            console.dir("end invoking feed /payment/stripePayment");
-
-            return;
         }
-
-
         //logic for customers don't have StripeCustomerIDs, need to create new ones
+        else {
 
-        console.dir("start saving customers");
-        stripe.customers.create({
-            card: stripeToken,
-            description: 'payinguser@example.com'
-        }).then(function (customer) {
+            stripe.customers.create({
+                card: stripeToken,
+                description: 'payinguser@example.com' // what is this?
+            }).then(function (customer) {
 
-            console.dir("using customerId:" + customer.id);
-            console.dir("creating customers");
+                console.dir("using customerId:" + customer.id);
 
-            billingUtil.updatePaymentMethodStripeId(userId, customer.id, function (err, results) {
-                if (err) {
-                    console.error(err);
-                    res.send(constants.services.CALLBACK_FAILED);
-                    return;
-                }
-                //res.send(results);
-            });
-
-            console.dir("end saving customers");
-
-            var charge = stripe.charges.create({
-                amount: amount*100, // amount in cents, again
-                currency: "usd",
-                //card: stripeToken,
-                customer: customer.id,
-                description: "payinguser@example.com"
-                //customer: customer.id
-            }, function (err, charge) {
-                console.dir("payment err"+ err);
-                if (err) {
-                    // The card has been declined
-                    var mailOptions = {
-                        from: "WillGive <willgiveplatform@gmail.com>", // sender address
-                        to: "WillGive <willgiveplatform@gmail.com>", // list of receivers
-                        subject: "Thanks for the donation for WillGive", // Subject line
-                        html: "payment failure and willGive is investigating"+ err // html body
-                    };
-                    emailUtil.sendEmail(mailOptions, function (err, results) {
-                        if (err) {
-                            logger.error(err);
-                        }
-                        logger.info("successfully sending emails");
-
-                    });
-
-                    console.dir("payment get declined ");
-                    return;
-                }
-
-                console.dir("recipientId: " + recipientId);
-                //card https://stripe.com/docs/api#create_charge
-                //console.dir("last four of credit card: " + charge.source.last4);
-
-                console.dir("charge object of credit card: " + JSON.stringify(charge, null, 4 ));
-
-                console.dir("last4: " + charge.source.last4);
-
-                billingUtil.updatePaymentMethodStripeId(userId, customer.id, charge.source.last4,function (err, results) {
+                var charge = stripe.charges.create({
+                    amount: amount*100, // amount in cents, again
+                    currency: "usd",
+                    //card: stripeToken,
+                    customer: customer.id,
+                    description: "payinguser@example.com"
+                    //customer: customer.id
+                }, function (err, charge) {
                     if (err) {
-                        console.error(err);
+                        logger.error(err);
+                        logger.error("payment get declined ");
+
                         res.send(constants.services.CALLBACK_FAILED);
                         return;
                     }
-                    //res.send(results);
-                });
+                    //card https://stripe.com/docs/api#create_charge
+                    //console.dir("last four of credit card: " + charge.source.last4);
 
-                //"Stripe_RecurrentPayment" + new Date().getTime(), amount, userId, recipientId, "Processed", notes, stripeToken,
-                billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, userId, recipientId, constants.paymentStatus.PAID, notes,stripeToken, function (err, results) {
-                    if (err) {
-                        console.error(err);
-                        //res.send(constants.services.CALLBACK_FAILED);
-                        return;
+
+
+                    //TODO: We need to insert transaction first then do the charge!!!
+                    //"Stripe_RecurrentPayment" + new Date().getTime(), amount, userId, recipientId, "Processed", notes, stripeToken,
+                    billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, userId, recipientId, constants.paymentStatus.PAID, notes,stripeToken, function (err, results) {
+                        if (err) {
+                            console.error(err);
+                            //res.send(constants.services.CALLBACK_FAILED);
+                            return;
+                        }
+                        // res.send(constants.services.CALLBACK_SUCCESS);
+                    });
+
+                    console.dir("rememberMe: " + rememberMe+ "; last4: " + charge.source.last4 + "; brand: "+ charge.source.brand +"; funding: "+charge.source.funding);
+
+                    //We save customer payment information only when
+                    // customer check the remember checkbox
+                    if(rememberMe) {
+                        console.dir("start saving customers");
+
+                        billingUtil.updatePaymentMethodStripeId(userId, customer.id, charge.source, function (err, results) {
+                            if (err) {
+                                logger.error(err);
+                                // If saving customer payment method fails, it doesn't hurt.
+                                // We should ingore the failure, just log it
+                                //res.send(constants.services.CALLBACK_FAILED);
+                                //return;
+                            }
+                            console.dir("end saving customers");
+                            res.send(constants.services.CALLBACK_SUCCESS);
+                            return;
+                        });
                     }
-                    // res.send(constants.services.CALLBACK_SUCCESS);
+
+
                 });
 
-            });
-
-
-
-
-            console.dir("end saving customers");
-
-
-
-            console.dir("end saving charges");
-            console.warn("end payment process");
-        })
-
-
+            })
+        }
     });
 }

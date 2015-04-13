@@ -239,11 +239,11 @@
 
                                             <div class="controls input-group">
                                                 <label class="radio">
-                                                    <input type="radio" name="payment[role]" id="existingCard" value="existing" checked>
+                                                    <input type="radio" name="payment[role]" id="existingCard" value="existing" >
                                                     <div id="cardNumber">Visa: xxxx-xxxx-xxxx </div>
                                                 </label>
                                                 <label class="radio">
-                                                    <input type="radio" name="payment[role]" id="otherMethod" value="other">
+                                                    <input type="radio" name="payment[role]" id="otherMethod" value="other" checked>
                                                     <div id="otherMethod">Use Other Payment</div>
                                                 </label>
                                             </div>
@@ -256,7 +256,7 @@
 
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                    <button id="cancalModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                                     <button id="confirm" type="button" class="btn btn-primary">Confirm</button>
                                 </div>
                             </form>
@@ -337,7 +337,8 @@
 
                       $('#existingPaymentMethod').show();
                       $('#rememberPaymentMethodCheckbox').hide();
-                      $('#cardNumber').html('Visa: xxxx-xxxx-xxxx-'+result.last4);
+                      $("#existingCard").attr('checked',true);
+                      $('#cardNumber').html(result.funding.toUpperCase()+' (' + result.type+'):'+ '<br>'+ 'xxxx-xxxx-xxxx-'+result.last4);
                       $("#stripeCustomerId").val(stripeCustomerId);
 
                   }
@@ -392,7 +393,8 @@
                               notes: $("#paymentNotes").val(),
                               recipientId: recipientId,
                               stripeCustomerId: $("#stripeCustomerId").val(),
-                              stripeTokenInput: $("#stripeTokenInput").val()
+                              stripeTokenInput: $("#stripeTokenInput").val(),
+                              rememberMe: false
                           }
                   ).done(function (msg) {
 
@@ -420,7 +422,8 @@
                           notes: jQuery("#paymentNotes").val(),
                           recipientId: recipientId,
                           stripeCustomerId: 0,
-                          stripeToken: res.id
+                          stripeToken: res.id,
+                          rememberMe: $("#rememberPaymentMethod").prop('checked')
                       }).done(function (msg) {
                                   $('#stripeTokenInput').val('');
                                   console.dir("after submission succeed -- go to ");
@@ -434,7 +437,6 @@
                               });
                   };
                   var payAmount = jQuery("#paymentAmount").val();
-
                   StripeCheckout.open({
                       key: 'pk_test_iJPmMQMGarAHRE7oUcM5iBxO', //TODO: make this not visiable
                       address: true,
@@ -446,8 +448,8 @@
                       panelLabel: 'Checkout',
                       token: token
                   });
+                  $('#cancalModal').click();
 
-                  return false;
               }
 
               <% } %>
