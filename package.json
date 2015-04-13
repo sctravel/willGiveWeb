@@ -24,6 +24,8 @@
     "connect-flash":"*",
     "log4js":"*",
     "qr-image":"*",
-    "request":"*"
+    "request":"*",
+    "msexcel-builder":"*"
+
   }
 }
