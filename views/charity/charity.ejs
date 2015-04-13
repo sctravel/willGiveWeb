@@ -103,7 +103,6 @@
             <div id="wrapper" class="container-fluid" >
             <div id="main_left" class="col-lg-8">
                 <!--Gallery Slides-->
-
                 <div id="img_slides" class="carousel slide">
                     <div class="carousel-inner">
                         <div class="item active">
@@ -361,13 +360,6 @@
 
               //Check the amount exceeds the maximum amount per time or daily maximum,
               // if so, refused to pay until user change their settings
-              var stripId;
-              var perTimeCheck;
-              var dailyCheck;
-
-              //TODO: change alert to error message
-              console.log("userPref.maxAmountPerTime -- " + userPref.maxAmountPerTime);
-              console.log("userPref.maxAmountPerDay -- " + userPref.maxAmountPerDay);
               console.dir(userPref);
               if( $("#paymentAmount").val() > userPref.maxAmountPerTime){
                   reporter.errorStatus("Your donation exceeds your limit: $" + userPref.maxAmountPerTime + " ." +
@@ -397,14 +389,13 @@
                               rememberMe: false
                           }
                   ).done(function (msg) {
-
-                              console.dir("after submission succeed -- go to ");
                               window.location.href = '/confirmation';
-                              //go to confirm page
                           })
                           .fail(function (xhr, textStatus, errorThrown) {
                               //TODO change to error message
-                              alert(xhr.responseText);
+                              reporter.errorStatus(xhr.responseText);
+                              reporter.render();
+                              return;
                           });
 
 
@@ -426,7 +417,6 @@
                           rememberMe: $("#rememberPaymentMethod").prop('checked')
                       }).done(function (msg) {
                                   $('#stripeTokenInput').val('');
-                                  console.dir("after submission succeed -- go to ");
                                   //go to confirm page
                                   window.location.href = '/confirmation';
                               })
@@ -449,9 +439,7 @@
                       token: token
                   });
                   $('#cancalModal').click();
-
               }
-
               <% } %>
           });
 
@@ -630,7 +618,6 @@
                 formValidateParams
         );
 
-
         $(document).ready(function(){
             getCharityById();
             getTransactionsByCharityId();
@@ -641,7 +628,6 @@
             if(recipientId == $('#userId').html()) {
                 $('#editMyPageDiv').show();
             }
-
         })
 
      </script>

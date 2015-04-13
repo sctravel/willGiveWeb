@@ -196,15 +196,6 @@ app.get('/services/getConfirmPic',  function(req,res){
     res.end(conf[1]);
 })
 
-
-
-
-//charge known customer
-app.post('/payment/stripePaymentWithStripeId/',function(req,res) {
-
-
-});
-
 //https://stripe.com/docs/tutorials/forms
 
 
