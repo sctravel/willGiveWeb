@@ -43,8 +43,8 @@ module.exports = function(app) {
             logger.debug(results);
             res.json(results);
         });
-
     })
+
     app.get('/services/charityByEIN/:id', function(req, res) {
         var id = req.params.id;
 

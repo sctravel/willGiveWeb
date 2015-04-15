@@ -22,5 +22,7 @@
         }
     },
 
-    "siteUrl" : "localhost:3000"
+    "siteUrl" : "localhost:3000",
+
+    "stripeKey" : "sk_test_zjF1XdDy0TZAYnuifaHR0iDf"
 }

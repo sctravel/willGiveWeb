@@ -65,14 +65,14 @@
                 </div>
 
                 <hr/>
-                <h3 id="emailNotification">Privacy Settings</h3>
+                <h3 id="privacySettings">Privacy Settings</h3>
                 <div class="input-group col-xs-6">
                     <label class="checkbox-inline"><input id="allowContributionPublic" type="checkbox" value="" checked>
                         Allow Contributions Public
                     </label>
                 </div>
                 <hr/>
-                <h3 id="emailNotification">Payment Options Settings</h3>
+                <h3 id="paymentOptions">Payment Options Settings</h3>
                 <div class="form-group" style="padding-bottom: 1%">
                     <label class="control-label col-xs-4" for="defaultAmountPerTime">Default Amount Per Time</label>
                     <div class="input-group col-xs-5"  >
@@ -100,6 +100,24 @@
                         <input type="number" id="maxAmountDaily" name="maxAmountDaily" class="form-control" placeholder="">
                     </div>
                 </div>
+
+                <h3 id="paymentMethod">Payment Method</h3>
+                <div class="form-group" >
+                    <label class="control-label col-xs-4" for="cardInfo">Funding</label>
+                    <div id="paymentFunding" class="input-group col-xs-5"  >
+                    </div>
+                </div>
+                <div class="form-group" >
+                    <label class="control-label col-xs-4" for="cardInfo">Brand</label>
+                    <div id="paymentBrand" class="input-group col-xs-5"  >
+                    </div>
+                </div>
+                <div class="form-group" >
+                    <label class="control-label col-xs-4" for="cardInfo">Funding</label>
+                    <div id="paymentCardNumber" class="input-group col-xs-5"  >
+                    </div>
+                </div>
+                </hr>
                 <div class="col-xs-6" style="padding-top: 1%; padding-bottom: 2%;float: left">
                     <button id="submitUpdateProfilePasswordButton" class="btn btn-primary btn-block" type="submit" >Save All Setting</button>
                 </div>
@@ -224,8 +242,26 @@
 
     });
 
+    function getPaymentInformation() {
+        var existingStripeCustomerById = '/services/payment/stripePayment/queryUser/';
+        $.get(existingStripeCustomerById, {userId: <%=user.userId%>}, function (result) {
+            console.dir(result);
+            if (!result || result == "failed") {
+                //TODO show error message
+                console.dir("failed to get results");
+                return;
+            }
+
+            if (result.last4 != null) {
+                $('#paymentFunding').html(result.funding.toUpperCase());
+                $('#paymentBrand').html(result.type);
+                $('#paymentCardNumber').html('xxxx-xxxx-xxxx-'+result.last4);
+            }
+        });
+    }
     $( document ).ready(function() {
         getUserSettings();
+        getPaymentInformation();
     });
 </script>
 </body>
