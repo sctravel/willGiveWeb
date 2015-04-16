@@ -74,7 +74,7 @@
                 <hr/>
                 <h3 id="paymentOptions">Payment Options Settings</h3>
                 <div class="form-group" style="padding-bottom: 1%">
-                    <label class="control-label col-xs-4" for="defaultAmountPerTime">Default Amount Per Time</label>
+                    <label class="control-label col-xs-4" for="defaultAmountPerTime">Default Amount Per Time:</label>
                     <div class="input-group col-xs-5"  >
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-usd"></span>
@@ -83,7 +83,7 @@
                     </div>
                 </div>
                 <div class="form-group" style="padding-bottom: 1%">
-                    <label class="control-label col-xs-4" for="maxAmountPerTime">Max Amount Per Time</label>
+                    <label class="control-label col-xs-4" for="maxAmountPerTime">Max Amount Per Time:</label>
                     <div class="input-group col-xs-5"  >
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-usd"></span>
@@ -92,7 +92,7 @@
                     </div>
                 </div>
                 <div class="form-group" style="padding-bottom: 1%">
-                    <label class="control-label col-xs-4" for="maxAmountDaily">Max Amount Daily</label>
+                    <label class="control-label col-xs-4" for="maxAmountDaily">Max Amount Daily:</label>
                     <div class="input-group col-xs-5"  >
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-usd"></span>
@@ -102,19 +102,24 @@
                 </div>
 
                 <h3 id="paymentMethod">Payment Method</h3>
-                <div class="form-group" >
-                    <label class="control-label col-xs-4" for="cardInfo">Funding</label>
-                    <div id="paymentFunding" class="input-group col-xs-5"  >
-                    </div>
+                <div id="noPaymentMethod" style="display: none">
+                    <p style="margin-top: 0px; text-align: center;font-style:italic;"><strong>You have no binding payment method.</strong></p><br>
                 </div>
-                <div class="form-group" >
-                    <label class="control-label col-xs-4" for="cardInfo">Brand</label>
-                    <div id="paymentBrand" class="input-group col-xs-5"  >
+                <div id="hasPaymentMethod">
+                    <div class="form-group" >
+                        <label class="control-label col-xs-4" for="cardInfo">Funding:</label>
+                        <div id="paymentFunding" class="input-group col-xs-5"  >
+                        </div>
                     </div>
-                </div>
-                <div class="form-group" >
-                    <label class="control-label col-xs-4" for="cardInfo">Funding</label>
-                    <div id="paymentCardNumber" class="input-group col-xs-5"  >
+                    <div class="form-group" >
+                        <label class="control-label col-xs-4" for="cardInfo">Brand:</label>
+                        <div id="paymentBrand" class="input-group col-xs-5"  >
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <label class="control-label col-xs-4" for="cardInfo">Card:</label>
+                        <div id="paymentCardNumber" class="input-group col-xs-5"  >
+                        </div>
                     </div>
                 </div>
                 </hr>
@@ -256,6 +261,9 @@
                 $('#paymentFunding').html(result.funding.toUpperCase());
                 $('#paymentBrand').html(result.type);
                 $('#paymentCardNumber').html('xxxx-xxxx-xxxx-'+result.last4);
+            } else {
+                $('#hasPaymentMethod').hide();
+                $('#noPaymentMethod').show();
             }
         });
     }
