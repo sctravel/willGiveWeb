@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
     <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
+    <link rel="stylesheet" href="/assets/css/colorStyle.css">
 
     <script src="/jquery/dist/jquery.js"></script>
     <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -28,27 +29,27 @@
             <div class="row">
                 <div class="col-md-2"><label for="name">Your Name</label></div>
                 <% if ( undefined == typeof user || user == null) {%>
-                <div class="col-md-8"><input type="text" id="name" name="name" class="form-control" placeholder="Your Name" required="true"/></div>
+                <div class="col-md-8"><input type="text" id="name" name="name" class="greenBorder form-control" placeholder="Your Name" required="true"/></div>
                 <%} else {%>
-                <div class="col-md-8"><input type="text" id="name" name="name" class="form-control" placeholder="Your Name" value="<%=user.firstName%> <%=user.lastName%>" required="true"/></div>
+                <div class="col-md-8"><input type="text" id="name" name="name" class="greenBorder form-control" placeholder="Your Name" value="<%=user.firstName%> <%=user.lastName%>" required="true"/></div>
                 <% } %>
             </div>
             <br />
             <div class="row">
                 <div class="col-md-2"><label for="email">Your Email</label></div>
                 <% if ( undefined == typeof user || user == null) {%>
-                <div class="col-md-8"><input type="email" id="email" name="email" class="form-control" placeholder="Your email" required="true"/></div>
+                <div class="col-md-8"><input type="email" id="email" name="email" class="greenBorder form-control" placeholder="Your email" required="true"/></div>
                 <%} else {%>
-                <div class="col-md-8"><input type="email" id="email" name="email" class="form-control" value="<%=user.email%>"placeholder="Your email" required="true"/></div>
+                <div class="col-md-8"><input type="email" id="email" name="email" class="greenBorder form-control" value="<%=user.email%>"placeholder="Your email" required="true"/></div>
                 <% } %>
             </div>
             <br />
             <div class="row">
                 <div class="col-md-2"><label>What's up?</label></div>
-                <div class="col-md-8"><textarea name="content" id="content" rows="3" class="form-control" required="true"></textarea></div>
+                <div class="col-md-8"><textarea name="content" id="content" rows="3" class="greenBorder form-control" required="true"></textarea></div>
             </div>
             <div class="row" style="padding-top: 2%">
-                <button type="button" id="submitContactUsButton" class="btn btn-lg btn-primary center-block">Contact Us</button>
+                <button type="button" id="submitContactUsButton" class="btn btn-lg btn-primary center-block greenButton">Contact Us</button>
             </div>
         </form>
         <div id="contactUsSuccessMessage" class="form-group" style="padding-bottom: 1%; padding-top: 1%;display : none">
