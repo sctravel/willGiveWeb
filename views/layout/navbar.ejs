@@ -3,18 +3,31 @@
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <%
     var menuClass = new Array("#", "#","#","#","#","#", "#", "#", "#");
-    if(activeMenu == "Home") menuClass[0] = "active";
-    if(activeMenu == "Charities") menuClass[1] = "active";
-    if(activeMenu == "Enquiry") menuClass[2] = "active";
-    if(activeMenu == "SignIn") menuClass[3] = "active";
-    if(activeMenu == "SignUp") menuClass[4] = "active";
-    if(activeMenu == "MyAccount") menuClass[5] = "active";
+    if(activeMenu == "Home") menuClass[0] = "";
+    if(activeMenu == "Charities") menuClass[1] = "";
+    if(activeMenu == "Enquiry") menuClass[2] = "";
+    if(activeMenu == "SignIn") menuClass[3] = "";
+    if(activeMenu == "SignUp") menuClass[4] = "";
+    if(activeMenu == "MyAccount") menuClass[5] = "";
 
     %>
+<style>
 
+    .navbar-inverse .navbar-nav  .open  a:focus {
+        background-color: #ffffff;
+
+    }
+
+
+    .navbar-nav  li  a{
+
+        padding-top: 10%;
+    }
+</style>
     <div class="container-fluid" style="background: #ffffff">
 
         <div class="container">
+            <!--
             <div class="row">
             <img src="/images/testLogo.png" />
             <% if ( 'undefined' == typeof user || user == null ) { %>
@@ -64,30 +77,75 @@
 
 
 
-            </div>
+            </div>-->
         </div>
 
 
     </div>
-    <div class="container-fluid">
+    <div class="container-fluid" style="background-color: #ffffff; display: block">
 
 
         <div class="container" id="exampleNavbarCollapse">
             <ul class="nav navbar-nav">
-                <li class="<%=menuClass[0]%>"><a href="/">WillGive</a></li>
-                <li class="<%=menuClass[1]%>"><a href="/charities/listCharities">Charities</a></li>
-                <li class="<%=menuClass[2]%>"><a href="/search">Donation Tracking</a></li>
+                <li><a href="/" style="padding-top:10px"><img src="/images/testLogo.png" /></a></li>
+           <!--     <li ><a href="/charities/listCharities">Charities</a></li> -->
+             <li>
+                 <form class="nav navbar-nav navbar-form " action="/charities/searchCharities" method="get" role="search">
+                     <div class="input-group">
+                         <input type="text" class="form-control" placeholder="Search Charities" name="keyword" id="narbarKeyword">
+                         <div class="input-group-btn">
+                             <button class="btn btn-default" type="submit" style="background-color:#ffb900;"><i class="glyphicon glyphicon-search"></i></button>
+                         </div>
+                     </div>
+                 </form>
+             </li>
             </ul>
 
+            <% if ( 'undefined' == typeof user || user == null ) { %>
 
-            <form class="nav navbar-nav navbar-form navbar-right" action="/charities/searchCharities" method="get" role="search">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search Charities" name="keyword" id="narbarKeyword">
-                    <div class="input-group-btn">
-                        <button class="btn btn-default" type="submit" style="background-color:#ffb900;"><i class="glyphicon glyphicon-search"></i></button>
-                    </div>
-                </div>
-            </form>
+            <ul class="nav navbar-nav navbar-right" style="padding-right:5px;padding-top: 0px ! important">
+                <li ><a href="/charities/listCharities" style="padding-top:15px; color:black">Charities</a></li>
+                <li class="<%=menuClass[3]%>"><a href="/login/signin"><img src="/images/login.png" /></a></li>
+                <li class="<%=menuClass[4]%>"><a href="/login/signup"><img src="/images/join.png" /></a></li>
+            </ul>
+            <% } else if( 'recipient' != user.provider ){ %>
+            <ul class="nav navbar-nav navbar-right"  style="padding-right:15px;padding-top: 0px ! important">
+                <li class="dropdown">
+                    <a href="" data-toggle="dropdown" class="dropdown-toggle">
+                        <img src="<%=user.imageIconUrl%>" height="25" width="25"/>
+                        &nbsp;<%=user.firstName%>
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <% if ( 'admin@admin.com' == user.email) { %>
+                        <li><a href="/tools/adminTools" target='_blank'>Admin Tools</a></li>
+                        <% } %>
+                        <li><a href="/users/account">Edit Profile</a></li>
+                        <li><a href="/users/settings">Settings</a></li>
+                        <li><a href="/users/contribution">My Contributions</a></li>
+                        <li><a href="/users/pledge">My Pledges</a></li>
+                        <li><a href="/users/collections">My Favorites</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/login/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <% } else {%>
+            <ul class="nav navbar-nav navbar-right" style="padding-right:15px; padding-top: 0px ! important;">
+                <li class="dropdown" class="<%=menuClass[5]%>" >
+                    <a href="" data-toggle="dropdown" class="dropdown-toggle"  >
+                        My Account
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/charity/<%=user.userId%>">My Profile</a></li>
+                        <li><a href="/charity/<%=user.userId%>">Reports</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/recipient/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <% } %>
 
 
 
@@ -97,6 +155,3 @@
 </nav>
 
 
-<div style="padding-bottom: 30px">
-    &nbsp;
-</div>
