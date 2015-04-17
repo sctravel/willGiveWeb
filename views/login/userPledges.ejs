@@ -13,7 +13,7 @@
 <body>
     <%activeMenu = "SignUp"%>
     <%include ../layout/navbar.ejs%>
-<div class="container sidebar-content" style="height:auto; min-height: 90%;">
+<div class="container sidebar-content" style="height:auto; min-height: 90%; padding-top: 5%">
     <div class="row row-offcanvas row-offcanvas-left">
 
         <!-- sidebar -->
@@ -71,7 +71,7 @@
             </div>
             <div id="botPage" style="float: left"></div>
             <div id="noresult" style="display: none" >
-                <h3>Sorry, you have no pledges yet</h3>
+                <h3>Sorry, you have no pledge yet</h3>
             </div>
 
             <!-- We  need to be able to let user to choose payment method when approving pledges-->
@@ -128,6 +128,17 @@
 </div><!--/.container-->
 
 
+    <form id="form" action="/services/payment/stripePayment" method="POST" style="display:none;">
+        <input id="amount"  name="amount" value="0">
+        <input id="notes"  name="notes" value="0">
+        <input id="receipientId"  name="receipientId" value="0">
+        <input id="stripeCustomerId"  name="stripeCustomerId" value="0">
+        <input id= stripeTokenInput type=hidden name=stripeToken />
+        <input id= confirmationCode type=hidden name=confirmationCode />
+        <input id="isPledge"  name="isPledge" value=false>
+
+    </form>
+
 
 <%include ../layout/footer.ejs%>
 <script src="/jquery/dist/jquery.min.js"></script>
@@ -138,14 +149,9 @@
 <script>
     var transactionHistory=[];
 
-
-    //stripeCustomerId = result.stripeCustomerId;
-
-
     function approvePledge(pb) {
 
         var queryPledgeByConfirmationCode = '/services/payment/stripePayment/queryPledge/';
-
         var existingUserById = '/services/payment/stripePayment/queryUser/';
 
         console.dir("confirmationId: " + pb.id);//
@@ -153,106 +159,96 @@
         $.get(queryPledgeByConfirmationCode, { confirmationCode: pb.id}, function (result) {
             console.dir("queryPledgeByConfirmationCode: " + pb.id);
 
-                //update transaction histroy and mark status as complete
+            //update transaction histroy and mark status as complete
 
             console.dir("current amount:" + result.amount);
             console.dir("current recipientId:" + result.recipientId);
             console.dir("current stripeCustomerId:" + result.stripeCustomerId);
 
-                var amount = result.amount;
-                var recipientId = result.recipientId;
+            var amount = result.amount;
+            var recipientId = result.recipientId;
 
-                var stripeCustomerId = result.stripeCustomerId;
+            var stripeCustomerId = result.stripeCustomerId;
+
+            jQuery("#amount").val(amount);
+            jQuery("#stripeCustomerId").val(stripeCustomerId);
+            jQuery("#receipientId").val(recipientId);
+            jQuery("#isPledge").val(true);
+            jQuery("#confirmationCode").val(pb.id);
+
+            console.dir("hiding: " + pb.id + "tr");
+            jQuery("#" + pb.id + "tr").hide();
 
 
+            console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
 
+            console.dir(" isPledge .val " + jQuery("#isPledge").val());
 
+            //if stripCustomerId not null, then post to the payment page automatically
+            if (stripeCustomerId != 'undefined' && $.trim(stripeCustomerId)) {
+                console.dir("existing customers");
 
-                jQuery("#amount").val(amount);
                 jQuery("#stripeCustomerId").val(stripeCustomerId);
-                jQuery("#receipientId").val(recipientId);
-                jQuery("#isPledge").val(true);
-                jQuery("#confirmationCode").val(pb.id);
+                /*
+                 $('form').submit().done( function(msg) { console.dir("after submission succeed"); } )
+                 .fail( function(xhr, textStatus, errorThrown) {
+                 alert(xhr.responseText);
+                 });*/
 
-                console.dir("hiding: " + pb.id + "tr");
-                jQuery("#" + pb.id + "tr").hide();
-
-
-                console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
-
-                console.dir(" isPledge .val " + jQuery("#isPledge").val());
-
-                //if stripCustomerId not null, then post to the payment page automatically
-                if (stripeCustomerId != 'undefined' && $.trim(stripeCustomerId)) {
-                    console.dir("existing customers");
-
-                    jQuery("#stripeCustomerId").val(stripeCustomerId);
-                    /*
-                     $('form').submit().done( function(msg) { console.dir("after submission succeed"); } )
-                     .fail( function(xhr, textStatus, errorThrown) {
-                     alert(xhr.responseText);
-                     });*/
-
-                    $.post("/services/payment/stripePayment", {amount: jQuery("#amount").val(), notes: jQuery("#notes").val(),
-                                receipientId: jQuery("#receipientId").val(), stripeCustomerId: jQuery("#stripeCustomerId").val(),
-                                stripeTokenInput: jQuery("#stripeTokenInput").val(), isPledge: jQuery("#isPledge").val(),
-                                confirmationCode: jQuery("#confirmationCode").val()
-                            }
-                    ).done(function (msg) {
-                                console.dir("after submission succeed");
-                            })
-                            .fail(function (xhr, textStatus, errorThrown) {
-                                alert(xhr.responseText);
-                            });
-                    ;
-                    console.dir("Pledge payment successfully made ");
-                    //return;
-                }
-                else {
-                    console.dir("now start paying");
-                    console.dir("amount" + jQuery("#amount").val());
-                    var token = function (res) {
-                        //$('#stripeTokenInput').val(res.id);
-                        //$('form').submit();
-                        $.post("/services/payment/stripePayment", {
-                            amount: jQuery("#amount").val(),
-                            notes: jQuery("#notes").val(),
-                            receipientId: jQuery("#receipientId").val(),
-                            stripeCustomerId: 0,
-                            stripeToken: res.id
-                        }).done(function (msg) {
-                            $('#stripeTokenInput').val('');
+                $.post("/services/payment/stripePayment", {amount: jQuery("#amount").val(), notes: jQuery("#notes").val(),
+                            receipientId: jQuery("#receipientId").val(), stripeCustomerId: jQuery("#stripeCustomerId").val(),
+                            stripeTokenInput: jQuery("#stripeTokenInput").val(), isPledge: jQuery("#isPledge").val(),
+                            confirmationCode: jQuery("#confirmationCode").val()
+                        }
+                ).done(function (msg) {
                             console.dir("after submission succeed");
                         })
-                                .fail(function (xhr, textStatus, errorThrown) {
-                                    $('#stripeTokenInput').val('');
-                                    alert(xhr.responseText);
-                                    console.dir("after submission failed");
-                                });
-                    };
-                    var payAmount = jQuery("#amount").val();
-
-                    StripeCheckout.open({
-                        key: 'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
-                        address: true,
-                        amount: payAmount * 100,//scale in cents instead of dollar
-                        currency: 'usd',
-                        name: 'User:' + '<%=user.firstName%>',
-                        description: 'Will Give Checkout',
-                        allowRememberMe: false,
-                        panelLabel: 'Checkout',
-                        token: token
+                        .fail(function (xhr, textStatus, errorThrown) {
+                            alert(xhr.responseText);
+                        });
+                ;
+                console.dir("Pledge payment successfully made ");
+                //return;
+            }
+            else {
+                console.dir("now start paying");
+                console.dir("amount" + jQuery("#amount").val());
+                var token = function (res) {
+                    //$('#stripeTokenInput').val(res.id);
+                    //$('form').submit();
+                    $.post("/services/payment/stripePayment", {
+                        amount: jQuery("#amount").val(),
+                        notes: jQuery("#notes").val(),
+                        receipientId: jQuery("#receipientId").val(),
+                        stripeCustomerId: 0,
+                        stripeToken: res.id
+                    }).done(function (msg) {
+                        $('#stripeTokenInput').val('');
+                        console.dir("after submission succeed");
+                    })
+                    .fail(function (xhr, textStatus, errorThrown) {
+                        $('#stripeTokenInput').val('');
+                        alert(xhr.responseText);
+                        console.dir("after submission failed");
                     });
+                };
+                var payAmount = jQuery("#amount").val();
 
-                    return false;
+                StripeCheckout.open({
+                    key: 'pk_test_iJPmMQMGarAHRE7oUcM5iBxO',
+                    address: true,
+                    amount: payAmount * 100,//scale in cents instead of dollar
+                    currency: 'usd',
+                    name: 'User:' + '<%=user.firstName%>',
+                    description: 'Will Give Checkout',
+                    allowRememberMe: false,
+                    panelLabel: 'Checkout',
+                    token: token
+                });
 
-
-                }
-
-
+                return false;
+            }
         });
-
-
     }
 
     var defaultHTML =
@@ -261,7 +257,7 @@
             ' <td class="text-center"> {Amount} </td> ' +
             ' <td> {Recipient} </td> ' +
             ' <td> {Status} </td> ' +
-            ' <td> <button type="button" id={ConfirmationId} class=\'donateButton\' onclick=\'approvePledge(this);\'>Approve</button></td>'
+            ' <td> <button type="button" id={ConfirmationId} data-toggle="modal" data-target="#myModal" class=\'donateButton\' onclick=\'approvePledge(this);\'>Approve</button></td>'
     ' </tr> ';
 
     function replaceHtml(transaction) {
@@ -313,17 +309,6 @@
 
 </script>
 
-    <form id="form" action="/services/payment/stripePayment" method="POST" style="display:none;">
-        <input id="amount"  name="amount" value="0">
-        <input id="notes"  name="notes" value="0">
-        <input id="receipientId"  name="receipientId" value="0">
-        <input id="stripeCustomerId"  name="stripeCustomerId" value="0">
-        <input id= stripeTokenInput type=hidden name=stripeToken />
-        <input id= confirmationCode type=hidden name=confirmationCode />
-        <input id="isPledge"  name="isPledge" value=false>
-
-    </form>
-
 
 
 
@@ -352,7 +337,7 @@
                return;
            }
            if(data.length>0) {
-               console.dir(data);
+               //console.dir(data);
                transactionHistory = data;
                initResultPage(data);
            }

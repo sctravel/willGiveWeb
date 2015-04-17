@@ -89,7 +89,7 @@
 
 
         <div class="row">
-            <div class="text-center" style="padding-bottom: 2%;padding-top: 2%">
+            <div class="text-center" style="padding-bottom: 3%;padding-top: 4%">
                 <h2 id="orgName" class="text-center" style=" "></h2>
                 <div class="row">
                     <div id="fblike"><fb:like show-faces="false" class="fb-like-button" id="fbLikeButton" layout="button_count"></fb:like></div>
@@ -195,12 +195,7 @@
 
             <div id="main_right" class="col-lg-4">
 
-                <!-- contribute button-->
-                <!-- Button trigger modal -->
-                <button type="contribute_button" onClick="checkExistingPaymentMethod()" class="btn btn-block btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-                    Contribute
-                </button>
-                <!-- Modal -->
+
                 <div class="modal modal-wide fade " id="myModal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog" style="width : 30%">
                         <div class="modal-content">
@@ -239,7 +234,10 @@
                                             <div class="controls input-group">
                                                 <label class="radio">
                                                     <input type="radio" name="payment[role]" id="existingCard" value="existing" >
-                                                    <div id="cardNumber">Visa: xxxx-xxxx-xxxx </div>
+
+                                                        <img  id="cardIcon" alt="card" style="">
+                                                    <div id="cardNumber">xxxx-xxxx-xxxx </div>
+
                                                 </label>
                                                 <label class="radio">
                                                     <input type="radio" name="payment[role]" id="otherMethod" value="other" checked>
@@ -256,33 +254,40 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button id="cancalModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                    <button id="confirm" type="button" class="btn btn-primary">Confirm</button>
+                                    <button id="confirm" type="button" class="btn btn-primary">Pay</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
+
+                <!-- contribute button-->
+                <!-- Button trigger modal -->
+                <button style="font-size: 24px" type="contribute_button" onClick="checkExistingPaymentMethod()" class="btn btn-block btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                    CONTRIBUTE
+                </button>
                 <hr/>
-                <h4 class="text-center">QR Code</h4>
-                <div id="img_slides" class="carousel slide">
-                    <div class="carousel-inner">
-                        <div class="item active">
-                            <img id ="qrCode" src="" width="100%" alt="">
-                        </div>
-                    </div>
-                </div>
-                <hr/>
+
+                <!-- Modal -->
               <!-- progress bar-->
               <!--facebook of current login user -->
               <!--recent donor -->
                 <div id="rec_don">
-                    <h3>Contributions</h3>
+                    <h4>Contributions</h4>
                     <div id="transactionHistory">
 
                     </div><hr/>
                     <div id="botPage" style="float: left"></div>
                     <hr/>
 
+                </div>
+                <hr/>
+                <div id="img_slides" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <img id ="qrCode" src="" width="100%" alt="">
+                        </div>
+                    </div>
                 </div>
           </div>
         </div>
@@ -305,6 +310,16 @@
        var mapPrefix = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD3J5wXDD6SbCrUPZoYHYwOjV3RJE7OaZU&q=';
        var charity = {};
        var transactions=[];
+
+       var cardsToIcons = {
+           'Visa' : '/images/creditcards/visa.png',
+           'American Express' : '/images/creditcards/amex.png',
+           'MasterCard' : '/images/creditcards/mastercard.png',
+           'Discover' : '/images/creditcards/discover.png',
+           'JCB' : '/images/creditcards/jcb.png',
+           'Diners Club' : '/images/creditcards/diners.png',
+           'Unknown' : '/images/creditcards/credit.png'
+       }
 
        var reporter = new MessageReporter("paymentConfirmReporter");
        reporter.clear();
@@ -337,7 +352,9 @@
                       $('#existingPaymentMethod').show();
                       $('#rememberPaymentMethodCheckbox').hide();
                       $("#existingCard").attr('checked',true);
-                      $('#cardNumber').html(result.funding.toUpperCase()+' (' + result.type+'):'+ '<br>'+ 'xxxx-xxxx-xxxx-'+result.last4);
+
+                      $('#cardIcon').attr('src', cardsToIcons[result.type]);
+                      $('#cardNumber').html(result.funding + ': xxxx-xxxx-xxxx-'+result.last4);
                       $("#stripeCustomerId").val(stripeCustomerId);
 
                   }
