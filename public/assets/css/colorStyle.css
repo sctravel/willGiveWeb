@@ -16,3 +16,9 @@
 .grayBackground {
     background:#f0f0f0;
 }
+
+hr.greenLine  {
+    background-color: #78DC96;
+    height: 1px;
+    border: 0;
+}
