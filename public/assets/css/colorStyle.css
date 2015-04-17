@@ -1,0 +1,18 @@
+.greenButton {
+    background: #78DC96 ;
+    border-color: #78DC96;
+}
+.greenButton:hover, .greenButton:focus, .greenButton:active,.greenButton:disabled{
+    background: #78DC96;
+}
+.greenBorder {
+    border-color: #78DC96;
+}
+
+.greenText {
+    color : #78DC96;
+}
+
+.grayBackground {
+    background:#f0f0f0;
+}
