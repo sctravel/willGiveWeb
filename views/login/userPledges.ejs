@@ -74,6 +74,54 @@
                 <h3>Sorry, you have no pledges yet</h3>
             </div>
 
+            <!-- We  need to be able to let user to choose payment method when approving pledges-->
+            <!-- Modal -->
+            <div class="modal modal-wide fade " id="myModal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="width : 30%">
+                    <div class="modal-content">
+                        <div class="modal-header" >
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title text-center" id="myModalTitle">WillGive</h4>
+
+                        </div>
+                        <form id="pledgePaymentForm" class="form-row" method="post" style="padding-top: 0%">
+
+                            <div class="modal-body" >
+
+                                <div id="pledgePaymentReporter" style="padding-bottom: 2%"></div>
+
+                                <div id="existingPaymentMethod" class="form-group">
+                                    <label class="control-label col-xs-4" style="padding-bottom: 2%"> Payment Method:</label>
+                                    <div class="control-group input-group row">
+
+                                        <div class="controls input-group">
+                                            <label class="radio">
+                                                <input type="radio" name="payment[role]" id="existingCard" value="existing" >
+                                                <div id="cardNumber">Visa: xxxx-xxxx-xxxx </div>
+                                            </label>
+                                            <label class="radio">
+                                                <input type="radio" name="payment[role]" id="otherMethod" value="other" checked>
+                                                <div id="otherMethod">Use Other Payment</div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="checkbox form-group" id="rememberPaymentMethodCheckbox" >
+                                    <label><input type="checkbox" id="rememberPaymentMethod"  name="rememberPaymentMethod" >Remember my payment information.</label>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button id="cancalModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button id="confirm" type="button" class="btn btn-primary">Confirm</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
         </div><!-- /.col-xs-12 main -->
 
     </div><!--/.row-->
