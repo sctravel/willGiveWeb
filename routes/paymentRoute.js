@@ -147,16 +147,7 @@ module.exports = function(app) {
 
         //If the customer has binding payment information
         if (stripeCustomerId && stripeCustomerId.length > 10) { //stripeCustomerId is always more than 10 letters
-            stripe.charges.create({
-                amount: amount * 100, // amount in cents, again
-                currency: "usd",
-                customer: stripeCustomerId
-            },function(err, charge) {
-                if(err) {
-                    logger.error(err);
-                    res.send(constants.services.CALLBACK_SUCCESS);
-                    return;
-                }
+
                 // asynchronously called
                 //need to store in transaction history table as well
                 //exports.insertTransactionHistroy = function(transactionId,amount,userId,recipientId, status,notes,stripeToken, callback)
@@ -169,21 +160,45 @@ module.exports = function(app) {
                     billingUtil.insertTransactionHistroy(newTransactionId, amount, userId, recipientId, constants.paymentStatus.PAID, notes, stripeToken, function (err, results) {
                         if (err) {
                             console.error(" error"+ err);
-                            //TODO why we need to refund in the logic, fix it
-                            //create refund in case of DB error
-                            stripe.charges.createRefund(
-                                charge,
-                                { },
-                                function(err, refund) {
-                                    // asynchronously called
-                                }
-                            );
+
                             res.send(constants.services.CALLBACK_SUCCESS);
 
                             return;
                         }
 
-                        //TODO: ?? Why we need the confirmation code here ??????
+                        stripe.charges.create({
+                                amount: amount * 100, // amount in cents, again
+                                currency: "usd",
+                                customer: stripeCustomerId
+                            },function(err, charge) {
+                                if(err) {
+                                    //if not working, rollback transactions
+                                    billingUtil.updateTransactionHistroy(constants.paymentStatus.CANCELLED, confirmationCode, function (err, results) {
+
+                                        var mailOptions = {
+                                            from: "WillGive <willgiveplatform@gmail.com>", // sender address
+                                            to: req.user.email, // list of receivers
+                                            subject: "Thanks for the donation for WillGive", // Subject line
+                                            html: "transaction failed, payment not successfully made" // html body
+                                        };
+                                        emailUtil.sendEmail(mailOptions, function (err, results) {
+                                            if (err) {
+                                                logger.error(err);
+                                            }
+                                            logger.info("successfully sending emails");
+
+                                        });
+
+                                        console.log("done");
+                                        res.send(constants.services.CALLBACK_SUCCESS);
+                                        return;
+                                    });;
+                                    return;
+                                }
+                            }
+                        );
+
+                        //TODO: ?? Why we need the confirmation code here ?????? Note: retrieve confirmation
                         // we can get it when we do the db insert
                         billingUtil.getConfirmationCode(newTransactionId, function (err, results) {
 
@@ -212,7 +227,7 @@ module.exports = function(app) {
                 //pledge is happening here
                 else {
                     console.info("start updating transaction history for pledge");
-                    billingUtil.updateTransactionHistroy(confirmationCode, function (err, results) {
+                    billingUtil.updateTransactionHistroy(constants.paymentStatus.PAID,confirmationCode, function (err, results) {
                         if (err) {
                             console.error(err);
                             res.send(constants.services.CALLBACK_FAILED);
@@ -236,7 +251,7 @@ module.exports = function(app) {
                         return;
                     });
                 }
-            });
+
         }
         //logic for customers don't have StripeCustomerIDs, need to create new ones
         else {
