@@ -256,69 +256,64 @@ module.exports = function(app) {
         //logic for customers don't have StripeCustomerIDs, need to create new ones
         else {
 
-            stripe.customers.create({
-                card: stripeToken,
-                description: 'payinguser@example.com' // what is this?
-            }).then(function (customer) {
+            billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, userId, recipientId, constants.paymentStatus.PAID, notes,stripeToken, function (err, results) {
+                if (err) {
+                    console.error(err);
+                    //res.send(constants.services.CALLBACK_FAILED);
+                    return;
+                }
 
-                console.dir("using customerId:" + customer.id);
+                stripe.customers.create({
+                    card: stripeToken,
+                    description: 'payinguser@example.com' // what is this?
+                }).then(function (customer) {
 
-                var charge = stripe.charges.create({
-                    amount: amount*100, // amount in cents, again
-                    currency: "usd",
-                    //card: stripeToken,
-                    customer: customer.id,
-                    description: "payinguser@example.com"
-                    //customer: customer.id
-                }, function (err, charge) {
-                    if (err) {
-                        logger.error(err);
-                        logger.error("payment get declined ");
+                    console.dir("using customerId:" + customer.id);
 
-                        res.send(constants.services.CALLBACK_FAILED);
-                        return;
-                    }
-                    //card https://stripe.com/docs/api#create_charge
-                    //console.dir("last four of credit card: " + charge.source.last4);
-
-
-
-                    //TODO: We need to insert transaction first then do the charge!!!
-                    //"Stripe_RecurrentPayment" + new Date().getTime(), amount, userId, recipientId, "Processed", notes, stripeToken,
-                    billingUtil.insertTransactionHistroy("Stripe_" + stripeToken, amount, userId, recipientId, constants.paymentStatus.PAID, notes,stripeToken, function (err, results) {
+                    var charge = stripe.charges.create({
+                        amount: amount*100, // amount in cents, again
+                        currency: "usd",
+                        //card: stripeToken,
+                        customer: customer.id,
+                        description: "payinguser@example.com"
+                        //customer: customer.id
+                    }, function (err, charge) {
                         if (err) {
-                            console.error(err);
-                            //res.send(constants.services.CALLBACK_FAILED);
+                            logger.error(err);
+                            logger.error("payment get declined ");
+
+                            res.send(constants.services.CALLBACK_FAILED);
                             return;
                         }
-                        // res.send(constants.services.CALLBACK_SUCCESS);
+                        //card https://stripe.com/docs/api#create_charge
+                        //console.dir("last four of credit card: " + charge.source.last4);
+
+                        console.dir("rememberMe: " + rememberMe+ "; last4: " + charge.source.last4 + "; brand: "+ charge.source.brand +"; funding: "+charge.source.funding);
+
+                        //We save customer payment information only when
+                        // customer check the remember checkbox
+                        if(rememberMe) {
+                            console.dir("start saving customers");
+
+                            billingUtil.updatePaymentMethodStripeId(userId, customer.id, charge.source, function (err, results) {
+                                if (err) {
+                                    logger.error(err);
+                                    // If saving customer payment method fails, it doesn't hurt.
+                                    // We should ingore the failure, just log it
+                                    //res.send(constants.services.CALLBACK_FAILED);
+                                    //return;
+                                }
+                                console.dir("end saving customers");
+                                res.send(constants.services.CALLBACK_SUCCESS);
+                                return;
+                            });
+                        }
+
+
                     });
 
-                    console.dir("rememberMe: " + rememberMe+ "; last4: " + charge.source.last4 + "; brand: "+ charge.source.brand +"; funding: "+charge.source.funding);
-
-                    //We save customer payment information only when
-                    // customer check the remember checkbox
-                    if(rememberMe) {
-                        console.dir("start saving customers");
-
-                        billingUtil.updatePaymentMethodStripeId(userId, customer.id, charge.source, function (err, results) {
-                            if (err) {
-                                logger.error(err);
-                                // If saving customer payment method fails, it doesn't hurt.
-                                // We should ingore the failure, just log it
-                                //res.send(constants.services.CALLBACK_FAILED);
-                                //return;
-                            }
-                            console.dir("end saving customers");
-                            res.send(constants.services.CALLBACK_SUCCESS);
-                            return;
-                        });
-                    }
-
-
-                });
-
             })
+            });
         }
     });
 }
