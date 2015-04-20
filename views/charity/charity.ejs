@@ -388,6 +388,13 @@
                   return;
               }
 
+              if( $("#paymentAmount").val() <1){
+                  reporter.errorStatus("Your one time donation must larger than 1 dollar");
+                  reporter.render();
+                  console.log("Min payment error");
+                  return;
+              }
+
               if( parseInt(dailyAmount) + parseInt(jQuery("#paymentAmount").val()) > userPref.maxAmountPerDay){
                   reporter.errorStatus("You have donated more than " + userPref.maxAmountPerDay+ " today." + " Please update your profile settings before donation.");
                   reporter.render();
