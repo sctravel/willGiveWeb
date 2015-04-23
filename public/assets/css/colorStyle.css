@@ -1,16 +1,16 @@
 .greenButton {
-    background: #78DC96 ;
-    border-color: #78DC96;
+    background: #99CC01 ;
+    border-color: #99CC01;
 }
 .greenButton:hover, .greenButton:focus, .greenButton:active,.greenButton:disabled{
-    background: #78DC96;
+    background: #99CC01;
 }
 .greenBorder {
-    border-color: #78DC96;
+    border-color: #99CC01;
 }
 
 .greenText {
-    color : #78DC96;
+    color : #99CC01;
 }
 
 .grayBackground {
@@ -18,7 +18,38 @@
 }
 
 hr.greenLine  {
-    background-color: #78DC96;
+    background-color: #99CC01;
     height: 1px;
     border: 0;
 }
+
+.navbar-nav  li a:hover{
+    color: #99CC01
+}
+
+.navbar-inverse .navbar-nav  .open  a:focus {
+    background-color: #ffffff;
+}
+#wrapper{
+    background-color: white;
+}
+#main
+{
+    border-color: black;
+}
+.my-error-class {
+    color:#FF0000;  /* red */
+}
+.my-valid-class {
+    color:#00CC00; /* green */
+}
+.navbar-inverse .navbar-nav  li  a:hover, .navbar-inverse .navbar-nav  li  a:focus{
+
+    color: #99CC01;
+}
+
+.navbar-nav > .open  a:hover, .navbar-inverse .navbar-nav  .open  a:focus {
+
+    color: #99CC01;
+}
+
