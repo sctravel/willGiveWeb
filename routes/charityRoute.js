@@ -126,7 +126,8 @@ module.exports = function(app) {
     });
 
     app.get('/charity/:id', function (req,res){
-        var id = req.params.id;
+        var id = (req.params.id).substring(0,10);
+        console.log(req.params.id+'!!!!!!!trimed id - '+id);
         req.session.lastPage = '/charity/'+id;
         res.render('charity/charity',{user: req.user, pageId: id});
     });
@@ -159,7 +160,7 @@ module.exports = function(app) {
     // Currently charity == recipient
     app.get('/services/charityById/:id', function(req,res){
 
-        var recipientId = req.params.id;
+        var recipientId = (req.params.id).substring(0,10);
         var userId = null;
         if(req.user) {
             userId = req.user.userId;

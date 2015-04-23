@@ -45,6 +45,8 @@
 
         <!-- main area -->
         <div class="col-xs-12 col-sm-9" data-spy="scroll" style="padding-left: 5%" data-target="#sidebar-nav">
+            <div id="pledgePageReporter" style="padding-bottom: 2%"></div>
+
             <h2 class="sub-header">My Pledges</h2>
             <div id="page" ></div>
 
@@ -90,19 +92,22 @@
 
                                 <div id="pledgePaymentReporter" style="padding-bottom: 2%"></div>
 
-                                <div id="existingPaymentMethod" class="form-group">
-                                    <label class="control-label col-xs-4" style="padding-bottom: 2%"> Payment Method:</label>
-                                    <div class="control-group input-group row">
+                                <div id="existingPaymentMethod" class="form-group" style="display:none">
+                                    <label class="control-label row" style="padding-bottom: 2%; padding-left: 6%"> Payment:</label>
+                                    <div class="control-group input-group" style="padding-left: 20%">
 
-                                        <div class="controls input-group">
-                                            <label class="radio">
+                                        <div class="controls ">
+                                            <div class="radio">
                                                 <input type="radio" name="payment[role]" id="existingCard" value="existing" >
-                                                <div id="cardNumber">Visa: xxxx-xxxx-xxxx </div>
-                                            </label>
-                                            <label class="radio">
+
+                                                <img height="25" width="40" id="cardIcon" alt="card" style="float: left">
+                                                <p class="row" style="white-space: nowrap;padding-right: 1%;" id="cardNumber">ending in xxxx </p>
+
+                                            </div>
+                                            <div class="radio ">
                                                 <input type="radio" name="payment[role]" id="otherMethod" value="other" checked>
-                                                <div id="otherMethod">Use Other Payment</div>
-                                            </label>
+                                                <div id="otherMethod">Use Other Payment       </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -114,7 +119,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button id="cancalModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                <button id="confirm" type="button" class="btn btn-primary">Confirm</button>
+                                <button id="approvePledge" type="button" class="btn btn-primary greenButton">Confirm</button>
                             </div>
                         </form>
                     </div>
@@ -146,8 +151,13 @@
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
 <script src="/assets/js/jquery.simplePagination.js"></script>
 <script src="https://checkout.stripe.com/v2/checkout.js"></script>
-<script>
+<script src="/assets/js/messageReporter.js"></script>
+
+    <script>
     var transactionHistory=[];
+    var pledgePaymentReporter = new MessageReporter("pledgePaymentReporter");
+    var pledgePageReporter = new MessageReporter("pledgePageReporter");
+
 
     function approvePledge(pb) {
 
@@ -257,7 +267,7 @@
             ' <td class="text-center"> {Amount} </td> ' +
             ' <td> {Recipient} </td> ' +
             ' <td> {Status} </td> ' +
-            ' <td> <button type="button" id={ConfirmationId} data-toggle="modal" data-target="#myModal" class=\'donateButton\' onclick=\'approvePledge(this);\'>Approve</button></td>'
+            ' <td> <button type="button" id={ConfirmationId} data-toggle="modal" data-target="#myModal" class="donateButton greenButton" onclick=\'approvePledge(this);\'>Approve</button></td>'
     ' </tr> ';
 
     function replaceHtml(transaction) {

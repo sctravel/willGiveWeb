@@ -40,8 +40,6 @@
               background-color: white;
           }
 
-
-
       </style>
       <%include ../layout/navbar.ejs%>
 
@@ -88,6 +86,7 @@
             <div id="userId" style="display: none"><%=user.userId%></div>
         <%}%>
 
+        <div id="charityPageReporter" style="padding-bottom: 2%"></div>
 
         <div class="row">
             <div class="text-center" style="padding-bottom: 3%;padding-top: 4%">
@@ -171,7 +170,6 @@
                         </div>
                     </div>
                     <hr class="greenLine">
-
                     <h3>
                         Map and Reviews
                     </h3>
@@ -199,16 +197,16 @@
 
 
                 <div class="modal modal-wide fade " id="myModal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" style="width : 30%">
+                    <div class="modal-dialog greenBorder" style="width : 30%">
                         <div class="modal-content">
-                            <div class="modal-header" >
+                            <div class="modal-header greenBorder" >
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                 <h4 class="modal-title text-center" id="myModalTitle">WillGive</h4>
 
                             </div>
                             <form id="paymentAmountForm" class="form-row" method="post" style="padding-top: 0%">
 
-                                <div class="modal-body" >
+                                <div class="modal-body greenBorder" >
 
                                     <div id="paymentConfirmReporter" style="padding-bottom: 2%"></div>
 
@@ -229,22 +227,23 @@
                                         </div>
                                     </div>
 
+                                    <hr class="greenLine">
                                     <div id="existingPaymentMethod" class="form-group" style="display:none">
-                                        <label class="control-label col-xs-4" style="padding-bottom: 2%"> Payment:</label>
-                                        <div class="control-group input-group row">
+                                        <label class="control-label row" style="padding-bottom: 2%; padding-left: 6%"> Payment:</label>
+                                        <div class="control-group input-group" style="padding-left: 20%">
 
-                                            <div class="controls input-group">
-                                                <label class="radio">
+                                            <div class="controls ">
+                                                <div class="radio">
                                                     <input type="radio" name="payment[role]" id="existingCard" value="existing" >
 
-                                                        <img  id="cardIcon" alt="card" style="">
-                                                    <div id="cardNumber">xxxx-xxxx-xxxx </div>
+                                                    <img height="25" width="40" id="cardIcon" alt="card" style="float: left">
+                                                    <p class="row" style="white-space: nowrap;padding-right: 1%;" id="cardNumber">ending in xxxx </p>
 
-                                                </label>
-                                                <label class="radio">
+                                                </div>
+                                                <div class="radio ">
                                                     <input type="radio" name="payment[role]" id="otherMethod" value="other" checked>
-                                                    <div id="otherMethod">Use Other Payment</div>
-                                                </label>
+                                                    <div id="otherMethod">Use Other Payment       </div>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -254,8 +253,9 @@
                                     </div>
 
                                 </div>
-                                <div class="modal-footer" style="background: #f0f0f0">
-                                    <button id="cancalModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+
+                                <div class="modal-footer greenBorder" style="background: #f0f0f0">
+                                    <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                                     <button id="confirm" type="button" class="btn btn-primary greenButton">Confirm</button>
                                 </div>
                             </form>
@@ -282,7 +282,7 @@
                     <div id="botPage" style="float: left"></div>
 
                 </div>
-                <br>
+                <br><br>
                 <hr class="greenLine">
                 <div id="img_slides" class="carousel slide">
                     <div class="carousel-inner">
@@ -308,7 +308,7 @@
 
     <script>
 
-       var recipientId = document.URL.split('/').slice(-1)[0].replace(/\D/g,'');
+       var recipientId = document.URL.split('/').slice(-1)[0].substring(0,10);
        var mapPrefix = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD3J5wXDD6SbCrUPZoYHYwOjV3RJE7OaZU&q=';
        var charity = {};
        var transactions=[];
@@ -324,7 +324,9 @@
        }
 
        var reporter = new MessageReporter("paymentConfirmReporter");
+       var pageReporter = new MessageReporter("charityPageReporter");
        reporter.clear();
+       pageReporter.clear();
 
           $('#existingCard').click(function(){
               $('#rememberPaymentMethodCheckbox').hide();
@@ -338,8 +340,10 @@
               <%if ( undefined==user || user.provider=='recipient' ) {%>
                 window.location.href='/login/signin';
               <%} else {%>
-                reporter.clear();
-                existingStripeCustomerById = '/services/payment/stripePayment/queryUser/';
+              reporter.clear();
+              pageReporter.clear();
+
+              existingStripeCustomerById = '/services/payment/stripePayment/queryUser/';
                 $.get(existingStripeCustomerById, {userId: <%=user.userId%>}, function (result) {
                   console.dir(result);
                   if (!result || result == "failed") {
@@ -356,7 +360,7 @@
                       $("#existingCard").attr('checked',true);
 
                       $('#cardIcon').attr('src', cardsToIcons[result.type]);
-                      $('#cardNumber').html(result.funding + ': xxxx-xxxx-xxxx-'+result.last4);
+                      $('#cardNumber').html("  "+result.type + ' ending in '+result.last4);
                       $("#stripeCustomerId").val(stripeCustomerId);
 
                   }
@@ -370,7 +374,7 @@
                   window.location.href='/login/signin';
               <%} else {%>
               reporter.clear();
-
+              pageReporter.clear();
               //Validate the paymentAmountForm
               if (!$("#paymentAmountForm").valid()) {
                   console.log("paymentAmount form is not valid!");
@@ -438,10 +442,13 @@
                                   $('#stripeTokenInput').val('');
                                   //go to confirm page
                                   window.location.href = '/confirmation';
+
                               })
                               .fail(function (xhr, textStatus, errorThrown) {
                                   $('#stripeTokenInput').val('');
                                   //TODO change to error message
+                                  pageReporter.errorStatus('Payment failure caused by internal error. Please try it again');
+                                  pageReporter.render();
                                   console.dir("after submission failed");
                               });
                   };
@@ -457,7 +464,7 @@
                       panelLabel: 'Checkout',
                       token: token
                   });
-                  $('#cancalModal').click();
+                  $('#cancelModal').click();
               }
               <% } %>
           });
