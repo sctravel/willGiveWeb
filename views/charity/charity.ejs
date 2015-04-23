@@ -36,9 +36,6 @@
               margin-top: 2%;
           }
 
-          #wrapper{
-              background-color: white;
-          }
 
       </style>
       <%include ../layout/navbar.ejs%>
@@ -389,6 +386,13 @@
                           "Please update your limitation for single transaction in profile before donation ");
                   reporter.render();
                   console.log("maxAmountPerTime error");
+                  return;
+              }
+
+              if( $("#paymentAmount").val() <1){
+                  reporter.errorStatus("Your one time donation must larger than 1 dollar");
+                  reporter.render();
+                  console.log("Min payment error");
                   return;
               }
 
