@@ -8,11 +8,13 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
+    <link rel="stylesheet" href="/assets/css/colorStyle.css" >
+
 </head>
 <body>
     <%activeMenu = "SignUp"%>
     <%include ../layout/navbar.ejs%>
-<div class="container sidebar-content" style="height:auto; min-height: 90%; ">
+<div class="container sidebar-content" style="height:auto; min-height: 90%; padding-top: 5%">
     <div class="row row-offcanvas row-offcanvas-left">
 
         <!-- sidebar -->
@@ -52,7 +54,6 @@
                     <h3 style="margin-top: 0px; float: left;color: red">Updating user settings failed. Please try again.</h3>
                 </div>
                 <h3 id="emailNotification">Email Settings</h3>
-                <hr/>
                 <div class="input-group col-xs-6">
                     <label class="checkbox-inline"><input id="receiveEmailUpdate" type="checkbox" value="" checked>
                         Receive Email Updates From WillGive
@@ -64,44 +65,69 @@
                     </label>
                 </div>
 
-                <hr/>
-                <h3 id="emailNotification">Privacy Settings</h3>
+                <hr class="greenLine">
+                <h3 id="privacySettings">Privacy Settings</h3>
                 <div class="input-group col-xs-6">
                     <label class="checkbox-inline"><input id="allowContributionPublic" type="checkbox" value="" checked>
                         Allow Contributions Public
                     </label>
                 </div>
-                <hr/>
-                <h3 id="emailNotification">Payment Options Settings</h3>
+
+                <hr class="greenLine">
+
+                <h3 id="paymentOptions">Payment Options Settings</h3>
                 <div class="form-group" style="padding-bottom: 1%">
-                    <label class="control-label col-xs-4" for="defaultAmountPerTime">Default Amount Per Time</label>
+                    <label class="control-label col-xs-4" for="defaultAmountPerTime">Default Amount Per Time:</label>
                     <div class="input-group col-xs-5"  >
-                                <span class="input-group-addon">
+                                <span class="input-group-addon greenBorder">
                                     <span class="glyphicon glyphicon-usd"></span>
                                 </span>
-                        <input type="number" id="defaultAmountPerTime" name="defaultAmountPerTime" class="form-control" placeholder="">
+                        <input type="number" id="defaultAmountPerTime" name="defaultAmountPerTime" class="greenBorder form-control" placeholder="">
                     </div>
                 </div>
                 <div class="form-group" style="padding-bottom: 1%">
-                    <label class="control-label col-xs-4" for="maxAmountPerTime">Max Amount Per Time</label>
+                    <label class="control-label col-xs-4" for="maxAmountPerTime">Max Amount Per Time:</label>
                     <div class="input-group col-xs-5"  >
-                                <span class="input-group-addon">
+                                <span class="input-group-addon greenBorder">
                                     <span class="glyphicon glyphicon-usd"></span>
                                 </span>
-                        <input type="number" id="maxAmountPerTime" name="maxAmountPerTime" class="form-control" placeholder="">
+                        <input type="number" id="maxAmountPerTime" name="maxAmountPerTime" class="greenBorder form-control" placeholder="">
                     </div>
                 </div>
                 <div class="form-group" style="padding-bottom: 1%">
-                    <label class="control-label col-xs-4" for="maxAmountDaily">Max Amount Daily</label>
+                    <label class="control-label col-xs-4" for="maxAmountDaily">Max Amount Daily:</label>
                     <div class="input-group col-xs-5"  >
-                                <span class="input-group-addon">
+                                <span class="input-group-addon greenBorder">
                                     <span class="glyphicon glyphicon-usd"></span>
                                 </span>
-                        <input type="number" id="maxAmountDaily" name="maxAmountDaily" class="form-control" placeholder="">
+                        <input type="number" id="maxAmountDaily" name="maxAmountDaily" class="greenBorder form-control" placeholder="">
+                    </div>
+                </div>
+                <hr class="greenLine">
+
+                <h3 id="paymentMethod">Payment Method</h3>
+                <div id="noPaymentMethod" style="display: none">
+                    <p style="margin-top: 0px; text-align: center;font-style:italic;"><strong>You have no binding payment method.</strong></p><br>
+                </div>
+                <div id="hasPaymentMethod">
+                    <div class="form-group" >
+                        <label class="control-label col-xs-4" for="cardInfo">Funding:</label>
+                        <div id="paymentFunding" class="input-group col-xs-5"  >
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <label class="control-label col-xs-4" for="cardInfo">Brand:</label>
+                        <div id="paymentBrand" class="input-group col-xs-5"  >
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <label class="control-label col-xs-4" for="cardInfo">Card:</label>
+                        <div id="paymentCardNumber" class="input-group col-xs-5"  >
+                        </div>
                     </div>
                 </div>
                 <div class="col-xs-6" style="padding-top: 1%; padding-bottom: 2%;float: left">
-                    <button id="submitUpdateProfilePasswordButton" class="btn btn-primary btn-block" type="submit" >Save All Setting</button>
+                    <button id="submitUpdateProfilePasswordButton" class="btn btn-primary btn-block greenButton" type="submit" >Save All Setting</button>
                 </div>
             </form>
         </div><!-- /.col-xs-12 main -->
@@ -224,8 +250,29 @@
 
     });
 
+    function getPaymentInformation() {
+        var existingStripeCustomerById = '/services/payment/stripePayment/queryUser/';
+        $.get(existingStripeCustomerById, {userId: <%=user.userId%>}, function (result) {
+            console.dir(result);
+            if (!result || result == "failed") {
+                //TODO show error message
+                console.dir("failed to get results");
+                return;
+            }
+
+            if (result.last4 != null) {
+                $('#paymentFunding').html(result.funding.toUpperCase());
+                $('#paymentBrand').html(result.type);
+                $('#paymentCardNumber').html('xxxx-xxxx-xxxx-'+result.last4);
+            } else {
+                $('#hasPaymentMethod').hide();
+                $('#noPaymentMethod').show();
+            }
+        });
+    }
     $( document ).ready(function() {
         getUserSettings();
+        getPaymentInformation();
     });
 </script>
 </body>

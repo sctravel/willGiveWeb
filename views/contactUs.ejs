@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
     <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
+    <link rel="stylesheet" href="/assets/css/colorStyle.css">
 
     <script src="/jquery/dist/jquery.js"></script>
     <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -17,7 +18,7 @@
     <%include layout/navbar.ejs%>
 </head>
 <body>
-<div class="container">
+<div class="container" style="padding-top: 5%">
     <div class="col-md-7 columns">
 
 
@@ -28,31 +29,31 @@
             <div class="row">
                 <div class="col-md-2"><label for="name">Your Name</label></div>
                 <% if ( undefined == typeof user || user == null) {%>
-                <div class="col-md-8"><input type="text" id="name" name="name" class="form-control" placeholder="Your Name" required="true"/></div>
+                <div class="col-md-8"><input type="text" id="name" name="name" class="greenBorder form-control" placeholder="Your Name" required="true"/></div>
                 <%} else {%>
-                <div class="col-md-8"><input type="text" id="name" name="name" class="form-control" placeholder="Your Name" value="<%=user.firstName%> <%=user.lastName%>" required="true"/></div>
+                <div class="col-md-8"><input type="text" id="name" name="name" class="greenBorder form-control" placeholder="Your Name" value="<%=user.firstName%> <%=user.lastName%>" required="true"/></div>
                 <% } %>
             </div>
             <br />
             <div class="row">
                 <div class="col-md-2"><label for="email">Your Email</label></div>
                 <% if ( undefined == typeof user || user == null) {%>
-                <div class="col-md-8"><input type="email" id="email" name="email" class="form-control" placeholder="Your email" required="true"/></div>
+                <div class="col-md-8"><input type="email" id="email" name="email" class="greenBorder form-control" placeholder="Your email" required="true"/></div>
                 <%} else {%>
-                <div class="col-md-8"><input type="email" id="email" name="email" class="form-control" value="<%=user.email%>"placeholder="Your email" required="true"/></div>
+                <div class="col-md-8"><input type="email" id="email" name="email" class="greenBorder form-control" value="<%=user.email%>"placeholder="Your email" required="true"/></div>
                 <% } %>
             </div>
             <br />
             <div class="row">
                 <div class="col-md-2"><label>What's up?</label></div>
-                <div class="col-md-8"><textarea name="content" id="content" rows="3" class="form-control" required="true"></textarea></div>
+                <div class="col-md-8"><textarea name="content" id="content" rows="3" class="greenBorder form-control" required="true"></textarea></div>
             </div>
             <div class="row" style="padding-top: 2%">
-                <button type="button" id="submitContactUsButton" class="btn btn-lg btn-primary center-block">Contact Us</button>
+                <button type="button" id="submitContactUsButton" class="btn btn-lg btn-primary center-block greenButton">Contact Us</button>
             </div>
         </form>
         <div id="contactUsSuccessMessage" class="form-group" style="padding-bottom: 1%; padding-top: 1%;display : none">
-            <p style="margin-top: 0px; float: left;color: green;font-style:italic">We've received your message, and will answer your questions as soon as possible.</p><br>
+            <p style="margin-top: 0px; float: left;color: #99CC01;font-style:italic">We've received your message, and will answer your questions as soon as possible.</p><br>
         </div>
         <div id="contactUsFailMessage" class="form-group" style="padding-bottom: 1%; display : none">
             <p style="margin-top: 0px; float: left;color: red; font-style: italic">Send contactUs message failed. Please try it again.</p><br>
@@ -63,10 +64,10 @@
         <h5>Map</h5>
         <!-- Clicking this placeholder fires the mapModal Reveal modal -->
         <p>
-            <a href="" data-toggle="modal" data-target="#myModal" style="color: #202090"> <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d42988.106131295346!2d-122.12157799999995!3d47.669723999999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54900cad2000ee23%3A0x5e0390eac5d804f2!2sRedmond%2C+WA!5e0!3m2!1sen!2sus!4v1420793309460" width="500" height="400" frameborder="0" style="border:0"></iframe><br />
+            <a href="" data-toggle="modal" data-target="#myModal" style="color: #99CC01"> <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d42988.106131295346!2d-122.12157799999995!3d47.669723999999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54900cad2000ee23%3A0x5e0390eac5d804f2!2sRedmond%2C+WA!5e0!3m2!1sen!2sus!4v1420793309460" width="500" height="400" frameborder="0" style="border:0"></iframe><br />
 
             </a><br />
-            <a href="" data-toggle="modal" data-target="#myModal" style="color: #202090">View Map</a>
+            <a href="" data-toggle="modal" data-target="#myModal" style="color: #99CC01">View Map</a>
         </p>
         <p>
             1000 WillGive way<br />

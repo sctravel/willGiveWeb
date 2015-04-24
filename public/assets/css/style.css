@@ -27,7 +27,7 @@ html, body {
 
 /* additional sections */
 #home {
-    background: url(/images/home.jpg) no-repeat center center fixed;
+    background: url(/images/homeNew.jpg) no-repeat center center ;
     display: table;
     height: 100%;
     position: relative;
@@ -36,17 +36,22 @@ html, body {
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+    margin-top: 56px;
 }
 
+.glyphicon-cloud,.glyphicon-leaf,.glyphicon-phone-alt,.glyphicon-bullhorn{
+
+    color: #99CC01
+}
 #about {
 }
 
 #services {
     background-color: #306d9f;
-    color: #ffffff;
+    color: grey;
 }
 #services .glyphicon {
-    border: 2px solid #FFFFFF;
+    border: 2px solid ;
     border-radius: 50%;
     display: inline-block;
     font-size: 60px;

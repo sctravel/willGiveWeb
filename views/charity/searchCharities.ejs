@@ -15,11 +15,11 @@
 <body>
 <% if(undefined == typeof keyword || !keyword) {keyword=""}%>
 
-<div class="container sidebar-content" style="height:auto; min-height: 90%; ">
+<div class="container sidebar-content" style="height:auto; min-height: 90%; padding-top: 7%; ">
     <div class="row row-offcanvas row-offcanvas-left">
 
         <!-- sidebar -->
-        <div class="col-xs-5 col-sm-3 sidebar-offcanvas"   id="sidebar" role="navigation"  >
+        <div class="col-xs-5 col-sm-3 sidebar-offcanvas"  id="sidebar" role="navigation"  >
             <div data-spy="affix" data-offset-top="15" data-offset-bottom="30">
                 <ul class="nav" style="color: #000000;" id="sidebar-nav">
                     <li class="sidebar-offcanvas" style="font-style: italic; font-size: 40px; padding-bottom: 10%" >
@@ -31,9 +31,6 @@
                     <li>
                         <a href="/charities/listCharities" style="color: #000000;">List A-Z</a>
                     </li>
-                    <li>
-                        <a href="/charities/hotCharities" style="color: #000000;">Recommended</a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -42,9 +39,9 @@
         <div class="col-xs-14 col-sm-9" data-spy="scroll" style="padding-left: 3%;" data-target="#sidebar-nav">
             <form method="get" role="search">
             <div id="page" class="input-group" style="width:70%;" >
-                    <input type="text" class="form-control" placeholder="Search" name="keyword" id="keyword" value="<%=keyword%>" required autofocus>
+                    <input type="text" class="form-control greenBorder" placeholder="Search" name="keyword" id="keyword" value="<%=keyword%>" required autofocus>
                     <div class="input-group-btn">
-                        <button class="btn btn-default" id="Search" type="button" style="background-color:#ffb900;"><i class="glyphicon glyphicon-search"></i></button>
+                        <button class="btn btn-default greenButton" id="Search" type="button"><i class="glyphicon glyphicon-search"></i></button>
                     </div>
 			</div>
 			</form>

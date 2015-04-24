@@ -153,7 +153,7 @@ module.exports = function(app) {
                 res.send(constants.services.CALLBACK_FAILED);
                 return;
             }
-            logger.debug(results);
+            //logger.debug(results);
             res.send(results);
         })
     })

@@ -9,16 +9,45 @@
     <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/css/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/css/simple-sidebar.css" >
-<style type="text/css">
+    <style type="text/css">
+        .panel-default > .panel-heading {
+            border-color: #f5f5f5;
+        }
+
+        .panel-title{
+
+            color: #99CC01;
+            font-size: 32px;
+        }
+        .col-sm-3{
+
+            width:23%
+        }
+        .info:hover{
+
+            background-color: #99CC01;
+        }
+
+        .info:hover .icon{
+
+            color: white;
+        }
 
 
-    .carousel-control {
-        padding-top:10%;
-        width:5%;
-    }
-</style>
+        #services {
+            background-color: #ffffff;
+
+        }
+        h4{
+            color: black;
+        }
+                .carousel-control {
+                    padding-top:10%;
+                    width:5%;
+                }
+    </style>
     <%activeMenu = "Home"%>
-    <%include layout/navbar.ejs%>
+
 </head>
 
 
@@ -28,70 +57,50 @@
 <!-- attach JavaScripts -->
 <!-- navigation panel -->
 
+<div style="display: block">
+    <%include layout/navbar.ejs%>
 
+
+</div>
 
 <!-- first section - Home -->
 <div id="home" class="home">
     <div class="text-vcenter">
         <h1 style="font-family: cursive; font-style: normal ">WILL GIVE</h1>
-        <h3>Donate A Lot</h3>
-        <a href="/recipient/signup" class="btn btn-default btn-lg">Charity Register</a>
+
+
     </div>
 </div>
 <!-- /first section -->
 
 <!-- second section - About -->
 
-<div id="about" class="pad-section">
 
-    <div class="container">
-        <div class="col-md-12">
-            <h1>HOTTEST CHARITIES</h1>
-
-            <div class="well">
-                <div id="myCarousel" class="carousel slide">
-
-                    <!-- Carousel items -->
-                    <div id="hotCharityWrapper" class="carousel-inner">
-
-
-                        <!--/item-->
-                    </div>
-                    <!--/carousel-inner--> <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
-
-                    <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
-                </div>
-                <!--/myCarousel-->
-            </div>
-            <!--/well-->
-        </div>
-    </div>
-</div>
 <!-- /second section -->
 
 
 <!-- third section - Services -->
 <div id="services" class="pad-section">
     <div class="container">
-        <h2 class="text-center">Our Services</h2> <hr />
-        <div class="row text-center">
-            <div class="col-sm-3 col-xs-6">
-                <i class="glyphicon glyphicon-cloud"> </i>
+
+        <div class="row text-center" style="padding-right: 50px">
+            <div class="col-sm-3 col-xs-6 info" style="border:2px solid gray;border-radius:10px;margin:11px ;height:300px;padding-top:20px ">
+                <i class="glyphicon glyphicon-cloud icon"> </i>
                 <h4>Service web</h4>
                 <p>You can donate through our website</p>
             </div>
-            <div class="col-sm-3 col-xs-6">
-                <i class="glyphicon glyphicon-leaf"> </i>
+            <div class="col-sm-3 col-xs-6 info" style="border:2px solid gray;border-radius:10px;margin:11px ;height:300px;padding-top:20px">
+                <i class="glyphicon glyphicon-leaf icon"> </i>
                 <h4>Service APP</h4>
                 <p>We have dedicated mobile apps on iphone and android for givers and receivers</p>
             </div>
-            <div class="col-sm-3 col-xs-6">
-                <i class="glyphicon glyphicon-phone-alt"> </i>
+            <div class="col-sm-3 col-xs-6 info" style="border:2px solid gray;border-radius:10px;margin:11px ;height:300px;padding-top:20px">
+                <i class="glyphicon glyphicon-phone-alt icon"> </i>
                 <h4>QR promotion</h4>
                 <p>We generate rich informational QR code for you to make an easy donation</p>
             </div>
-            <div class="col-sm-3 col-xs-6">
-                <i class="glyphicon glyphicon-bullhorn"> </i>
+            <div class="col-sm-3 col-xs-6 info" style="border:2px solid gray;border-radius:10px;margin:11px ;height:300px;padding-top:20px">
+                <i class="glyphicon glyphicon-bullhorn icon"> </i>
                 <h4>Easy payments</h4>
                 <p>We support all major credit cards. </p>
             </div>
@@ -107,24 +116,28 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-6">
-                <div class="panel panel-default">
+                <div class="panel panel-default" style="background-color: #f5f5f5; height:280px;">
                     <div class="panel-heading">
-                        <h2 class="panel-title">Why us?</h2>
+                        <h2 class="panel-title">WHY US?</h2>
                     </div>
-                    <div class="panel-body lead">
-                        <b>Charities</b> -- It is free to use our services and get access to our app users.
-                        <p><b>Donators</b> -- We verifiy every registered charity and make sure that they're not only eligible but also efficient. 100% of your donated money (except fees charged by credit card companies) directly go to the charities of your choice.
+                    <div class="panel-body lead" style="padding-top: 30px" >
+                        <p style="color:#000000">Charities</p>
+                        <p style="font-size: 14px;">It is free to use our services and get access to our app users.</P>
+                        <p style="color:#000000">Donators</p>
+                        <p style="font-size: 14px;"> We verifiy every registered charity and make sure that they're not only eligible but also efficient. 100% of your donated money (except fees charged by credit card companies) directly go to the charities of your choice.</p>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
-                <div class="panel panel-default">
+            <div class="col-sm-6" >
+                <div class="panel panel-default" style="background-color: #f5f5f5; height:280px;">
                     <div class="panel-heading">
                         <h2 class="panel-title">How to start?</h2>
                     </div>
-                    <div class="panel-body lead">
-                      <b>Charities</b> -- Register online or call our support line 1-800-296-GIVE
-	                  <p><b>Donators</b> -- Register online and download the app.
+                    <div class="panel-body lead" style="padding-top: 30px">
+                        <p style="color:#000000">Charities</p>
+                        <p style="font-size: 14px;"> Register online or call our support line 1-800-296-GIVE</p>
+                        <p style="color:#000000">Donators</p>
+                        <p style="font-size: 14px;">Register online and download the app.</p>
                     </div>
                 </div>
             </div>

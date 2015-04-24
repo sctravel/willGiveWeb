@@ -7,19 +7,20 @@
     <title>WillGive</title>
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
+    <link rel="stylesheet" href="/assets/css/colorStyle.css">
 
     <%activeMenu = "SignUp"%>
     <%include ../layout/navbar.ejs%>
 </head>
 <body>
 
-<div class="container" style="min-height: 70%; width:40%">
+<div class="container" style="padding-top:5%;min-height: 70%; width:40%">
     <div class="row">
         <h2 class="form-signin-heading text-center" style="padding-bottom: 2%">Step 2. Add Your Image</h2>
     </div>
     <p for="recipientProfileInput" class="">You haven't finished your page yet.<strong> Please upload your page picture below.</strong></p>
     <form action="/services/recipient/profilePictureUpload" id="profileIconUploadForm" method="post" enctype="multipart/form-data" onsubmit="return checkImageSize(1024)">
-        <div class="col-xs-12">
+        <div class="col-xs-12 greenBorder">
             <img id="previewProfilePicture" src="/resources/recipients/<%=user.userId%>/profilePicture" class="text-center" alt="" width="100%" height="20%"/>
         </div>
         <input type="hidden" name="MAX_FILE_SIZE" value="1024" />
@@ -30,8 +31,8 @@
     <div style="padding-bottom: 1%"> &nbsp</div>
     <form style="display: none" action="/services/recipient/profileVideoUrlUpload" id="profileVideoUrlUploadFrom" method="post" enctype="multipart/form-data" onsubmit="">
         <label for="signupVideoUrl" class="">Or paste a YouTube link here</label>
-        <input type="text" id="signupVideoUrl" name="signupVideoUrl" class="form-control" placeholder="http://">
-        <button id="submitVideoUrlUploadFormButton" class="btn btn-lg btn-primary btn-block" type="submit" >Upload</button>
+        <input type="text" id="signupVideoUrl" name="signupVideoUrl" class="greenBorder form-control" placeholder="http://">
+        <button id="submitVideoUrlUploadFormButton" class="btn btn-lg btn-primary btn-block greenButton" type="submit" >Upload</button>
     </form>
 </div>
 

@@ -8,13 +8,15 @@
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/assets/css/social-buttons.css">
     <link rel="stylesheet" href="/assets/css/customJqueryValidation.css">
+    <link rel="stylesheet" href="/assets/css/colorStyle.css" >
+
 </head>
-<body style="background:url('/images/background1.jpg') no-repeat -10px 0px">
+<body style="">
     <%activeMenu = "SignUp"%>
     <%include ../layout/navbar.ejs%>
-<div class="container" style="min-height: 70%">
+<div class="container" style="min-height: 70%; padding-top: 5%">
     <h2 class="form-signin-heading text-center">Join WillGive</h2>
-    <hr align="left" width="100%" background="0xff0000">
+    <hr class="greenLine">
     <form id="userSignupForm" class="form-signin col-xs-4 col-xs-offset-1"  method="post" style="padding-top: 2%">
         <div id="signUpReporter" style="padding-bottom: 2%"></div>
         <div class="row form-group-lg">
@@ -54,7 +56,7 @@
             <input type="password" id="signupPasswordConfirm" name="signupPasswordConfirm" class="form-control" placeholder="Confirm Password" equalTo="#signupPassword" minlength="8" required>
         </div>
         <div style="padding-bottom: 1%"> &nbsp;</div>
-        <button id="submitSignupFormButton" class="btn btn-lg btn-primary btn-block" type="submit" >Join WillGive</button>
+        <button id="submitSignupFormButton" class="btn btn-lg btn-primary btn-block greenButton" type="submit" >Join WillGive</button>
     </form>
     <div class="col-xs-2 text-center">
         &nbsp;<span style="vertical-align:-50px;"><h1>or</h1></span>
@@ -86,9 +88,7 @@
 </div>
 <%include ../layout/footer.ejs%>
 <script src="/jquery/dist/jquery.min.js"></script>
-<script src="/angular/angular.min.js"></script>
 <script src="/jquery-validation/dist/jquery.validate.js"></script>
-<script src="/angularJs/willGiveApp.js"></script>
 <script src="/assets/js/messageReporter.js"></script>
 
 <script>
