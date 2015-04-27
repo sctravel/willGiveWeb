@@ -215,10 +215,10 @@
                                         </div>
                                     </div>
                                     <div class="form-group" >
-                                        <label class="control-label col-xs-4" for="paymentNotes" >Note:
+                                        <label class="control-label col-xs-4" for="paymentNotes" >Notes:
                                         </label>
                                         <div class="input-group col-xs-7"  >
-                                            <textarea id="paymentNotes" name="paymentNotes" class="greenBorder form-control" maxlength="1000" rows="3" placeholder="Notes" style="height:auto; resize:none">
+                                            <textarea id="paymentNotes" name="paymentNotes" class="greenBorder form-control" maxlength="1000" rows="3" placeholder="Notes" >
                                             </textarea>
 
                                         </div>
@@ -309,6 +309,7 @@
        var mapPrefix = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD3J5wXDD6SbCrUPZoYHYwOjV3RJE7OaZU&q=';
        var charity = {};
        var transactions=[];
+       $('#paymentNotes').val('');
 
        var cardsToIcons = {
            'Visa' : '/images/creditcards/visa.png',
