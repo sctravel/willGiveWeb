@@ -172,6 +172,8 @@ module.exports = function(app) {
                                 customer: stripeCustomerId
                             },function(err, charge) {
                                 if(err) {
+
+                                    console.dir('Payment error out'+err);
                                     //if not working, rollback transactions
                                     billingUtil.updateTransactionHistroy(constants.paymentStatus.CANCELLED, confirmationCode, function (err, results) {
 
@@ -195,33 +197,41 @@ module.exports = function(app) {
                                     });;
                                     return;
                                 }
+
+                                //TODO: ?? Why we need the confirmation code here ?????? Note: retrieve confirmation
+                                // we can get it when we do the db insert
+                                //
+                                console.dir('getConfirmationCode based on transation ID'+newTransactionId);
+                                billingUtil.getConfirmationCode(newTransactionId, function (err, results) {
+
+                                    console.dir("Confirmation Code: " + results);
+
+                                    var mailOptions = {
+                                        from: "WillGive <willgiveplatform@gmail.com>", // sender address
+                                        to: req.user.email, // list of receivers
+                                        subject: "Thanks for the donation for WillGive", // Subject line
+                                        html: constants.emails.donationEmail.replace('{FirstName}', req.user.firstName).replace('{ConfirmationCode}', results) // html body
+                                    };
+                                    emailUtil.sendEmail(mailOptions, function (err, results) {
+                                        if (err) {
+                                            logger.error(err);
+                                        }
+                                        logger.info("successfully sending emails");
+
+                                    });
+
+                                    console.log("done");
+                                    res.send(constants.services.CALLBACK_SUCCESS);
+                                    return;
+                                });
+
+
                             }
+
+
                         );
 
-                        //TODO: ?? Why we need the confirmation code here ?????? Note: retrieve confirmation
-                        // we can get it when we do the db insert
-                        billingUtil.getConfirmationCode(newTransactionId, function (err, results) {
 
-                            console.dir("Confirmation Code: " + results);
-
-                            var mailOptions = {
-                                from: "WillGive <willgiveplatform@gmail.com>", // sender address
-                                to: req.user.email, // list of receivers
-                                subject: "Thanks for the donation for WillGive", // Subject line
-                                html: constants.emails.donationEmail.replace('{FirstName}', req.user.firstName).replace('{ConfirmationCode}', results) // html body
-                            };
-                            emailUtil.sendEmail(mailOptions, function (err, results) {
-                                if (err) {
-                                    logger.error(err);
-                                }
-                                logger.info("successfully sending emails");
-
-                            });
-
-                            console.log("done");
-                            res.send(constants.services.CALLBACK_SUCCESS);
-                            return;
-                        });
                     });
                 }
                 //pledge is happening here
