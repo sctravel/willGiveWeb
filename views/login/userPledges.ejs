@@ -79,34 +79,55 @@
             <!-- We  need to be able to let user to choose payment method when approving pledges-->
             <!-- Modal -->
             <div class="modal modal-wide fade " id="myModal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog" style="width : 30%">
+                <div class="modal-dialog greenBorder" style="width : 30%">
                     <div class="modal-content">
-                        <div class="modal-header" >
+                        <div class="modal-header greenBorder" >
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title text-center" id="myModalTitle">WillGive</h4>
 
                         </div>
                         <form id="pledgePaymentForm" class="form-row" method="post" style="padding-top: 0%">
 
-                            <div class="modal-body" >
+                            <div class="modal-body greenBorder" >
 
                                 <div id="pledgePaymentReporter" style="padding-bottom: 2%"></div>
+                                <input id="recipientId"  name="recipientId" value="0" style="display: none">
+                                <input id="stripeCustomerId"  name="stripeCustomerId" value="0" style="display: none">
+                                <input id= stripeTokenInput type=hidden name=stripeToken style="display: none"/>
+                                <input id= confirmationCode type=hidden name=confirmationCode style="display: none"/>
+                                <input id="isPledge"  name="isPledge" value=false style="display: none">
+                                <div class="form-group" >
+                                    <label class="control-label col-xs-4" for="paymentAmount" >Amount($):
+                                    </label>
+                                    <div class="input-group col-xs-7"  >
+                                        <input type="text" id="paymentAmount"  name="paymentAmount" class="greenBorder form-control" placeholder="Amount" readonly required>
+                                    </div>
+                                </div>
+                                <div class="form-group" >
+                                    <label class="control-label col-xs-4" for="paymentNotes" >Note:
+                                    </label>
+                                    <div class="input-group col-xs-7"  >
+                                        <textarea id="paymentNotes" name="paymentNotes" class="greenBorder form-control" maxlength="1000" rows="3" readonly placeholder="Notes" style="height:auto; resize:none">
+                                        </textarea>
 
+                                    </div>
+                                </div>
+                                <hr class="greenLine">
                                 <div id="existingPaymentMethod" class="form-group" style="display:none">
                                     <label class="control-label row" style="padding-bottom: 2%; padding-left: 6%"> Payment:</label>
                                     <div class="control-group input-group" style="padding-left: 20%">
 
                                         <div class="controls ">
                                             <div class="radio">
-                                                <input type="radio" name="payment[role]" id="existingCard" value="existing" >
+                                                <input type="radio" name="pledgePayment" id="existingCard" value="existing" >
 
                                                 <img height="25" width="40" id="cardIcon" alt="card" style="float: left">
                                                 <p class="row" style="white-space: nowrap;padding-right: 1%;" id="cardNumber">ending in xxxx </p>
 
                                             </div>
                                             <div class="radio ">
-                                                <input type="radio" name="payment[role]" id="otherMethod" value="other" checked>
-                                                <div id="otherMethod">Use Other Payment       </div>
+                                                <input type="radio" name="pledgePayment" id="otherMethod" value="other" checked>
+                                                <div id="otherMethod">Use Other Payment</div>
                                             </div>
                                         </div>
                                     </div>
@@ -117,7 +138,7 @@
                                 </div>
 
                             </div>
-                            <div class="modal-footer">
+                            <div class="modal-footer greenBorder" style="background: #f0f0f0">
                                 <button id="cancalModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                                 <button id="approvePledge" type="button" class="btn btn-primary greenButton">Confirm</button>
                             </div>
@@ -136,11 +157,7 @@
     <form id="form" action="/services/payment/stripePayment" method="POST" style="display:none;">
         <input id="amount"  name="amount" value="0">
         <input id="notes"  name="notes" value="0">
-        <input id="receipientId"  name="receipientId" value="0">
-        <input id="stripeCustomerId"  name="stripeCustomerId" value="0">
-        <input id= stripeTokenInput type=hidden name=stripeToken />
-        <input id= confirmationCode type=hidden name=confirmationCode />
-        <input id="isPledge"  name="isPledge" value=false>
+
 
     </form>
 
@@ -158,67 +175,119 @@
     var pledgePaymentReporter = new MessageReporter("pledgePaymentReporter");
     var pledgePageReporter = new MessageReporter("pledgePageReporter");
 
+    var cardsToIcons = {
+        'Visa' : '/images/creditcards/visa.png',
+        'American Express' : '/images/creditcards/amex.png',
+        'MasterCard' : '/images/creditcards/mastercard.png',
+        'Discover' : '/images/creditcards/discover.png',
+        'JCB' : '/images/creditcards/jcb.png',
+        'Diners Club' : '/images/creditcards/diners.png',
+        'Unknown' : '/images/creditcards/credit.png'
+    }
+    var currentPB;
 
-    function approvePledge(pb) {
+    function clickApprove(pb) {
+        currentPB = pb;
 
         var queryPledgeByConfirmationCode = '/services/payment/stripePayment/queryPledge/';
         var existingUserById = '/services/payment/stripePayment/queryUser/';
-
-        console.dir("confirmationId: " + pb.id);//
-
+        checkExistingPaymentMethod();
         $.get(queryPledgeByConfirmationCode, { confirmationCode: pb.id}, function (result) {
             console.dir("queryPledgeByConfirmationCode: " + pb.id);
+            pledgePaymentReporter.clear();
+            pledgePageReporter.clear();
+            //update transaction history and mark status as complete
 
-            //update transaction histroy and mark status as complete
-
-            console.dir("current amount:" + result.amount);
-            console.dir("current recipientId:" + result.recipientId);
-            console.dir("current stripeCustomerId:" + result.stripeCustomerId);
+            console.info("current amount:" + result.amount);
+            console.log("current recipientId:" + result.recipientId);
+            console.log("current stripeCustomerId:" + result.stripeCustomerId);
 
             var amount = result.amount;
+            var notes = result.notes? result.notes.trim():'';
             var recipientId = result.recipientId;
 
             var stripeCustomerId = result.stripeCustomerId;
 
-            jQuery("#amount").val(amount);
+            jQuery("#paymentAmount").val(amount);
+            jQuery("#paymentNotes").val(notes);
             jQuery("#stripeCustomerId").val(stripeCustomerId);
-            jQuery("#receipientId").val(recipientId);
+            jQuery("#recipientId").val(recipientId);
             jQuery("#isPledge").val(true);
             jQuery("#confirmationCode").val(pb.id);
 
-            console.dir("hiding: " + pb.id + "tr");
-            jQuery("#" + pb.id + "tr").hide();
-
-
-            console.dir("stripeCustomerId(charity.ejs): " + stripeCustomerId);
-
             console.dir(" isPledge .val " + jQuery("#isPledge").val());
+        });
+    }
 
+    $('#existingCard').click(function(){
+        $('#rememberPaymentMethodCheckbox').hide();
+    })
+    $('#otherMethod').click(function(){
+        $('#rememberPaymentMethodCheckbox').show();
+    })
+
+    //Pop up confirm dialog, input payment amount and notes
+    function checkExistingPaymentMethod() {
+        <%if ( undefined==user || user.provider=='recipient' ) {%>
+        window.location.href='/login/signin';
+        <%} else {%>
+        pledgePaymentReporter.clear();
+        pledgePageReporter.clear();
+
+        existingStripeCustomerById = '/services/payment/stripePayment/queryUser/';
+        $.get(existingStripeCustomerById, {userId: <%=user.userId%>}, function (result) {
+            console.dir(result);
+            if (!result || result == "failed") {
+                //TODO show error message
+                console.dir("failed to get results");
+                return;
+            }
+
+            var stripeCustomerId = result.stripeCustomerId;
+            if (stripeCustomerId != null) {
+
+                $('#existingPaymentMethod').show();
+                $('#rememberPaymentMethodCheckbox').hide();
+                $("#existingCard").attr('checked',true);
+
+                $('#cardIcon').attr('src', cardsToIcons[result.type]);
+                $('#cardNumber').html("  "+result.type + ' ending in '+result.last4);
+                $("#stripeCustomerId").val(stripeCustomerId);
+
+            }
+        });
+        <%}%>
+    }
+
+
+    $('#approvePledge').click(function(){
+        approvePledge(currentPB);
+    });
+
+    function approvePledge(pb) {
+
+        console.dir("confirmationId: " + pb.id);//
+            var stripeCustomerId = $("#stripeCustomerId").val();
             //if stripCustomerId not null, then post to the payment page automatically
             if (stripeCustomerId != 'undefined' && $.trim(stripeCustomerId)) {
                 console.dir("existing customers");
 
-                jQuery("#stripeCustomerId").val(stripeCustomerId);
-                /*
-                 $('form').submit().done( function(msg) { console.dir("after submission succeed"); } )
-                 .fail( function(xhr, textStatus, errorThrown) {
-                 alert(xhr.responseText);
-                 });*/
-
                 $.post("/services/payment/stripePayment", {amount: jQuery("#amount").val(), notes: jQuery("#notes").val(),
-                            receipientId: jQuery("#receipientId").val(), stripeCustomerId: jQuery("#stripeCustomerId").val(),
+                            recipientId: jQuery("#recipientId").val(), stripeCustomerId: jQuery("#stripeCustomerId").val(),
                             stripeTokenInput: jQuery("#stripeTokenInput").val(), isPledge: jQuery("#isPledge").val(),
                             confirmationCode: jQuery("#confirmationCode").val()
                         }
                 ).done(function (msg) {
-                            console.dir("after submission succeed");
-                        })
-                        .fail(function (xhr, textStatus, errorThrown) {
-                            alert(xhr.responseText);
-                        });
+                    console.log("Pledge payment successfully made ");
+                    $('#cancalModal').click();
+                    location.reload();
+                })
+                .fail(function (xhr, textStatus, errorThrown) {
+                    $('#cancalModal').click();
+                    pledgePageReporter.errorStatus('Payment failed. Please try it again or contact us.');
+                    pledgePageReporter.render();
+                });
                 ;
-                console.dir("Pledge payment successfully made ");
-                //return;
             }
             else {
                 console.dir("now start paying");
@@ -229,17 +298,20 @@
                     $.post("/services/payment/stripePayment", {
                         amount: jQuery("#amount").val(),
                         notes: jQuery("#notes").val(),
-                        receipientId: jQuery("#receipientId").val(),
+                        recipientId: jQuery("#recipientId").val(),
                         stripeCustomerId: 0,
                         stripeToken: res.id
                     }).done(function (msg) {
                         $('#stripeTokenInput').val('');
+                        $('#cancalModal').click();
+                        location.reload();
                         console.dir("after submission succeed");
                     })
                     .fail(function (xhr, textStatus, errorThrown) {
                         $('#stripeTokenInput').val('');
-                        alert(xhr.responseText);
-                        console.dir("after submission failed");
+                        $('#cancalModal').click();
+                        pledgePageReporter.errorStatus('Payment failed. Please try it again or contact us.');
+                        pledgePageReporter.render();
                     });
                 };
                 var payAmount = jQuery("#amount").val();
@@ -258,7 +330,6 @@
 
                 return false;
             }
-        });
     }
 
     var defaultHTML =
@@ -267,7 +338,7 @@
             ' <td class="text-center"> {Amount} </td> ' +
             ' <td> {Recipient} </td> ' +
             ' <td> {Status} </td> ' +
-            ' <td> <button type="button" id={ConfirmationId} data-toggle="modal" data-target="#myModal" class="donateButton greenButton" onclick=\'approvePledge(this);\'>Approve</button></td>'
+            ' <td> <button type="button" id={ConfirmationId} data-toggle="modal" data-target="#myModal" class="donateButton greenButton" onclick=\'clickApprove(this);\'>Approve</button></td>'
     ' </tr> ';
 
     function replaceHtml(transaction) {
