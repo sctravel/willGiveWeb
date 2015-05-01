@@ -468,8 +468,15 @@
                       allowRememberMe: false,
                       panelLabel: 'Checkout',
                       token: token
+                      //allow-remember-me:false
                   });
                   $('#cancelModal').click();
+
+                  $(window).on('popstate', function() {
+
+                      alert("handler closed");
+                      StripeCheckout.close();
+                  });
               }
               <% } %>
           });
