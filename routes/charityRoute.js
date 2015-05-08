@@ -316,16 +316,43 @@ module.exports = function(app) {
 
     })
 
-  function 	verifyImagePath(results)
-  {
-	for(var i=0;i< results.length;++i) 
+    app.get('/services/user/getFavoriteCharity', isLoggedIn, function(req,res){
+        logger.info('calling /user/charity/getFavoriteCharity ' + req.user.userId);
+        charityOps.getFavoriteCharity(req.user.userId, function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            verifyImagePath(results);
+            logger.debug(results);
+            res.send(results);
+        })
+    })
+
+    app.get('/services/user/setFavoriteCharity', isLoggedIn, function(req,res){
+        logger.info('calling /services/user/setFavoriteCharity ' + req.user.userId + " " + req.query.rid + " " + req.query.value);
+        charityOps.setFavoriteCharity(req.user.userId, req.query.rid, req.query.value, function(err, results){
+            if(err){
+                logger.error(err);
+                res.send(constants.services.CALLBACK_FAILED);
+                return;
+            }
+            res.send(results);
+        })
+    })
+
+
+    function verifyImagePath(results)
+    {
+	    for(var i=0;i< results.length;++i)
 		{			    
-	           var imagePath = "/resources/recipients/profilePicture/pp_default";
-               if (global.fs.existsSync("public/resources/recipients/profilePicture/pp_" + results[i].recipientId)) {
-                    imagePath = "/resources/recipients/profilePicture/pp_" + results[i].recipientId;
-			    }
-				results[i].imagePath = imagePath;
-		}
+           var imagePath = "/resources/recipients/profilePicture/pp_default";
+           if (global.fs.existsSync("public/resources/recipients/profilePicture/pp_" + results[i].recipientId)) {
+                imagePath = "/resources/recipients/profilePicture/pp_" + results[i].recipientId;
+            }
+            results[i].imagePath = imagePath;
+    }
 	}
 
 
