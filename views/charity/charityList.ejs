@@ -1,4 +1,8 @@
 <script>
+    var itemsOnPage = 10;
+    var currentItem = 0;
+
+
     var defaultHTML =
         '<tr> <td> {name} </td> '+
         ' <td align=middle> {ICONS} </td> ' +
@@ -70,7 +74,7 @@
     function initResultPage(results){
         $('#botPage').empty();
 
-        var itemsOnPage = 10;
+
 
         $('#botPage').pagination({  
             items: results.length, 

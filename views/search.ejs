@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="/assets/css/ui.jqgrid.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/ui.multiselect.css">
     <link rel="stylesheet" href="/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/assets/css/colorStyle.css" >
 
 
     <script src="/jquery/dist/jquery.js"></script>
@@ -50,19 +51,20 @@
 </head>
 <body>
 <div class="container">
-    <div class="col-md-7 columns" style="padding-top: 5%">
+    <div class="col-md-7 columns" style="padding-top: 5%;padding-bottom: 3%">
 
         <h3>Please enter a confirmation code to query charity donation</h3>
         <p>We take the charity donation security and transparency very seriously. We've made all the donation transaction public and easy to track.
             WillGive wants only the best for you, so we use industry-leading Secure Sockets Layer (SSL) technology to keep personal information as secure as possible.
             Built in Stripe payment also helps protect your information by only working with partners that provide a secure and safe environment for credit card donations</em>.</p>
-        <div>
-
+        <div style="padding-bottom: 4%; padding-top: 3%">
             <label>Confirmation Code</label>
             <input id="transactionId" type="text" maxlength="100" autocomplete="off" class="required" />
         </div>
-        <button id="contribute_button"  class="btn btn-block btn-lg btn-primary" style="display:block;" onClick="refresh()">
-            Search
+
+
+        <button id="contribute_button"  class="btn btn-block btn-lg btn-primary greenButton" style="display:block;" onClick="refresh()">
+            Track
         </button>
 
        <div class="container" >
