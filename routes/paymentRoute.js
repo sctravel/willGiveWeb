@@ -161,7 +161,7 @@ module.exports = function(app) {
                         if (err) {
                             console.error(" error"+ err);
 
-                            res.send(constants.services.CALLBACK_SUCCESS);
+                            res.send(constants.services.CALLBACK_FAILED);
 
                             return;
                         }
@@ -190,11 +190,18 @@ module.exports = function(app) {
                                             logger.info("successfully sending emails");
 
                                         });
+                                        var response = {
+                                                status  : 200,
+                                                success : 'Successful payment',
+                                                confirmationCode: confirmationCode
+                                    }
 
+
+                                    res.send(JSON.stringify(response));
                                         console.log("done");
-                                        res.send(constants.services.CALLBACK_SUCCESS);
+                                    //    res.send(constants.services.CALLBACK_SUCCESS);
                                         return;
-                                    });;
+                                    });
                                     return;
                                 }
 
@@ -221,7 +228,14 @@ module.exports = function(app) {
                                     });
 
                                     console.log("done");
-                                    res.send(constants.services.CALLBACK_SUCCESS);
+                                    var response = {
+                                        status  : 200,
+                                        success : 'Successful payment',
+                                        confirmationCode: results
+                                    }
+
+
+                                    res.send(JSON.stringify(response));
                                     return;
                                 });
 
@@ -257,7 +271,14 @@ module.exports = function(app) {
                             logger.info("successfully sending emails");
                         });
 
-                        res.send(constants.services.CALLBACK_SUCCESS);
+                        var response = {
+                            status  : 200,
+                            success : 'Successful payment',
+                            confirmationCode: confirmationCode
+                        }
+
+
+                        res.send(JSON.stringify(response));
                         return;
                     });
                 }
@@ -314,6 +335,8 @@ module.exports = function(app) {
                                     //return;
                                 }
                                 console.dir("end saving customers");
+
+
                                 res.send(constants.services.CALLBACK_SUCCESS);
                                 return;
                             });

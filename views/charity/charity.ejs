@@ -417,7 +417,10 @@
                               rememberMe: false
                           }
                   ).done(function (msg) {
-                              window.location.href = '/confirmation';
+
+
+
+                              window.location.href="/confirmation?code=" + JSON.parse(msg).confirmationCode;
                           })
                           .fail(function (xhr, textStatus, errorThrown) {
                               //TODO change to error message
