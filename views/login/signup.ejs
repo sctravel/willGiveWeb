@@ -1,4 +1,3 @@
-﻿<!doctype html>
 <html lang="en" ng-app="willGiveApp" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
@@ -14,7 +13,8 @@
 <body style="">
     <%activeMenu = "SignUp"%>
     <%include ../layout/navbar.ejs%>
-<div class="container" style="min-height: 70%; padding-top: 5%">
+<div style="padding-top: 5%; height:auto; min-height: 90%;  margin: 0 auto -50px">
+<div class="container" >
     <h2 class="form-signin-heading text-center">Join WillGive</h2>
     <hr class="greenLine">
     <form id="userSignupForm" class="form-signin col-xs-4 col-xs-offset-1"  method="post" style="padding-top: 2%">
@@ -73,18 +73,19 @@
 </div>
 <style>
         a.signup{
-            color: #ffffc0;
+            color: #808080;
             text-decoration: none;
         }
         a:hover.signup {
-            color: white;
+            color: #99CC01;
         }
 </style>
-<div class="container" style="padding-top: 2%">
+   <div class="container" style="padding-top: 3%">
     <div class="text-center" >
         By joining you agree to the WillGive <a href='../terms' class=signup>Terms of Service</a> and <a href='../privacy' class=signup>Privacy Policy</a>.<br><br>
         Already have an account? <a href="/login/signin" class=signup>Sign In</a>
     </div>
+   </div>
 </div>
 <%include ../layout/footer.ejs%>
 <script src="/jquery/dist/jquery.min.js"></script>
