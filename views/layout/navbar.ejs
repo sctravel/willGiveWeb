@@ -9,6 +9,7 @@
     if(activeMenu == "SignIn") menuClass[3] = "";
     if(activeMenu == "SignUp") menuClass[4] = "";
     if(activeMenu == "MyAccount") menuClass[5] = "";
+    if(activeMenu == "Browse") menuClass[6] = "";
 
     %>
 <style>
@@ -82,30 +83,30 @@
 
         <div class="container" id="exampleNavbarCollapse">
             <ul class="nav navbar-nav">
-                <li><a href="/" style="padding-top:10px"><img height="30px" width="70px" src="/images/icon_big.png" /></a></li>
-           <!--     <li ><a href="/charities/listCharities">Charities</a></li> -->
-             <li>
-                 <form class="nav navbar-nav navbar-form " action="/charities/searchCharities" method="get" role="search">
-                     <div class="input-group">
-                         <input type="text" class="form-control greenBorder" placeholder="Search Charities" name="keyword" id="narbarKeyword">
-                         <div class="input-group-btn">
-                             <button class="btn btn-default greenButton" type="submit" ><i class="glyphicon glyphicon-search"></i></button>
+                 <li><a href="/" style="padding-top:10px"><img height="30px" width="70px" src="/images/icon_big.png" /></a></li>
+                 <!--     <li ><a href="/charities/listCharities">Charities</a></li> -->
+                 <li>
+                     <form class="nav navbar-nav navbar-form " action="/charities/searchCharities" method="get" role="search">
+                         <div class="input-group">
+                             <input type="text" class="form-control greenBorder" placeholder="Search Charities" name="keyword" id="narbarKeyword">
+                             <div class="input-group-btn">
+                                 <button class="btn btn-default greenButton" type="submit" ><i class="glyphicon glyphicon-search"></i></button>
+                             </div>
                          </div>
-                     </div>
-                 </form>
-             </li>
+                     </form>
+                 </li>
             </ul>
 
             <% if ( 'undefined' == typeof user || user == null ) { %>
 
             <ul class="nav navbar-nav navbar-right" style="padding-right:5px;padding-top: 0px ! important">
-                <li ><a href="/charities/listCharities" style="padding-top:15px; color:black">Charities</a></li>
+                <li class="<%=menuClass[6]%>"><a href="/charities/listCharities" style="padding-top:15px; font-size: 16px">Browse</a></li>
                 <li class="<%=menuClass[3]%>"><a href="/login/signin"><img height="30px" width="30px" src="/images/login.jpeg" />LOGIN</a></li>
                 <li class="<%=menuClass[4]%>"><a href="/login/signup"><img height="30px" width="30px" src="/images/signup.jpeg" />SIGNUP</a></li>
             </ul>
             <% } else if( 'recipient' != user.provider ){ %>
             <ul class="nav navbar-nav navbar-right"  style="padding-right:15px;padding-top: 0px ! important">
-                <li ><a href="/charities/listCharities" style="padding-top:15px; color:black;">Browse</a></li>
+                <li class="<%=menuClass[6]%>"><a href="/charities/listCharities" style="padding-top:15px; " >Browse</a></li>
                 <li class="dropdown">
                     <a href="" data-toggle="dropdown" class="dropdown-toggle">
                         <img src="<%=user.imageIconUrl%>" height="30" width="30"/>
